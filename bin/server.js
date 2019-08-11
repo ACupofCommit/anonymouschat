@@ -1,7 +1,7 @@
-const url = require('url')
-const next = require('next')
-const express = require('express')
-const routerApiSlack = require('../api/router-slack')
+import url from 'url'
+import next from 'next'
+import express from 'express'
+import routerApiSlack from '../api/router-slack'
 
 const port = parseInt(process.env.PORT || "3000", 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'

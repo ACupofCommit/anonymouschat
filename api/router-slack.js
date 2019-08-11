@@ -1,6 +1,6 @@
-const { Router } = require('express')
-const bodyParser = require('body-parser')
-const { isNotNullObject, isNotEmptyString } = require('../common/util')
+import { Router } from 'express'
+import bodyParser from 'body-parser'
+import { isNotNullObject, isNotEmptyString } from '../common/util'
 
 const isMySlashCommandRequest = (o) => {
   if (!isNotNullObject(o)) return false
@@ -26,4 +26,4 @@ router.all('/', async (req, res, next) => {
   res.send({ team_id, channel_id, user_id, text })
 })
 
-module.exports = router
+export default router
