@@ -3,6 +3,10 @@ module.exports = {
     ["@babel/env", {
       targets: { node: 'current' }
     }],
+    ["@babel/typescript", {
+      isTSX: true,
+      allExtensions: true,
+    }],
   ],
   plugins: [
     '@babel/plugin-transform-runtime',
