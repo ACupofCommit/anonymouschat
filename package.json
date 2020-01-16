@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon ./bin/server.ts --exec babel-node -- --config-file ./bin/babel.config.js --extensions .ts",
     "build": "next build",
-    "start": "next start"
+    "start": "NODE_ENV=production babel-node --config-file ./bin/babel.config.prod.js --extensions .ts bin/server.ts"
   },
   "license": "MIT",
   "dependencies": {
