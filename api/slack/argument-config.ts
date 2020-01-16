@@ -1,7 +1,6 @@
 import { compact } from 'lodash'
-
 import { ChatPostMessageArguments, ChatPostEphemeralArguments, KnownBlock } from '@slack/web-api'
-import { ACTION_APP_USE_AGREEMENT, ACTIVATION_QUORUM, NOT_YET, ACTION_APP_FORCE_ACTIVATE, ACTION_APP_FORCE_DEACTIVATE } from '../constant'
+import { ACTION_APP_USE_AGREEMENT, ACTIVATION_QUORUM, NOT_YET, ACTION_APP_FORCE_ACTIVATE, ACTION_APP_FORCE_DEACTIVATE, ACTION_OPEN_DIALOG_VOICE } from '../constant'
 import { STR_AGREEMENT_REQUIRED_DESC, STR_YOU_AREADY_AGREED, STR_AGREEMENT_ACCEPTED, STR_SHARE_AGREEMENT_LINK, STR_FORCE_ACTIVATE, STR_AGREE, STR_APP_ACTIVATED_BY_FORCE, STR_APP_DEACTIVATED_BY_FORCE, STR_FORCE_DEACTIVATE, STR_POST_VOICE, STR_YOU_HAVE_TO_AGREE_APP_USAGE, STR_HOW_TO_POST, STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION1, STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION2, STR_CONFIG_MSG, STR_QUESTION, STR_SERVER_VERSION } from '../strings'
 import { IGroup } from '../../types/type-group'
 import { getUrlToPostVoice } from '../util'
@@ -22,6 +21,17 @@ export const getHelpMessageArg = (channel: string, user: string, configMsgPermal
     as_user: false,
     blocks: compact<KnownBlock>([
       !isActivated && { "type": "section", "text": { "type": "mrkdwn", "text": strYouHaveTo }},
+      isActivated && {
+        "type": "actions",
+        "elements": [
+          {
+            action_id: ACTION_OPEN_DIALOG_VOICE,
+            "type": "button",
+            "text": { "type": "plain_text", "text": STR_POST_VOICE, "emoji": true },
+            "style": "primary",
+          }
+        ]
+      },
       ANONYMOUSLACK_MANAGER_SLACK_ID && { "type": "section", "text": { "type": "mrkdwn", "text": strQuestion }},
       isActivated && { "type": "section", "text": { "type": "mrkdwn", "text": strConfigMsg }},
       GIT_REVISION && { "type": "section", "text": { "type": "mrkdwn", "text": strServerVersion }},
@@ -54,6 +64,12 @@ const getActivatedConfigMsgBlocks = (group: IGroup): KnownBlock[] => {
     {
       "type": "actions",
       "elements": [
+        {
+          action_id: ACTION_OPEN_DIALOG_VOICE,
+          "type": "button",
+          "text": { "type": "plain_text", "text": STR_POST_VOICE, "emoji": true },
+          "style": "primary",
+        },
         {
           "type": "button",
           "text": { "type": "plain_text", "text": strAgreeButton, "emoji": true },

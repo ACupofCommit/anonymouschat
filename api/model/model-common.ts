@@ -1,5 +1,6 @@
 import { BlockActionPayload } from "seratch-slack-types/app-backend/interactive-messages"
-import { Team, Channel, User, Container } from "seratch-slack-types/app-backend/interactive-messages/BlockActionPayload"
+import { Team, Channel, User, View, Container } from "seratch-slack-types/app-backend/interactive-messages/BlockActionPayload"
+import { ViewSubmissionPayload } from "seratch-slack-types/app-backend/views/ViewSubmissionPayload"
 import { NOT_GRID } from "../constant"
 import { STR_REPORTED_MESSAGE, STR_DELETED_MESSAGE } from "../strings"
 import { IReply } from "../../types/type-reply"
@@ -57,6 +58,27 @@ export const isMyBlockActionPayload = (o: any): o is IMyBlockActionPayload => {
   const { team, channel, container, user, response_url, trigger_id } = o
   if (!team || !channel || !container || !user || !response_url || !trigger_id) return false
   if (!team.id || !channel.id || !channel.name || !user.id || !container.message_ts) return false
+
+  return true
+}
+
+export interface IMyViewSubmissionPayload extends ViewSubmissionPayload {
+  user: User & { id: string }
+  team: Team & { id: string }
+  view: View & {
+    private_metadata: string
+    state: {
+      values: {[key: string]: any}
+    }
+  }
+}
+
+export const isMyViewSubmissionPayload = (o: any): o is IMyViewSubmissionPayload => {
+  if (!o || typeof o !== 'object') return false
+
+  const { team, user, view } = o
+  if (!team || !user || !view) return false
+  if (!team.id || !user.id || !view.private_metadata) return false
 
   return true
 }

@@ -48,12 +48,13 @@ export const STR_SERVER_VERSION = '서버 버전: `%s`'
 export const STR_YOU_CAN_CREATE_VOICE = `:grinning: *${STR_APP_NAME}* 를 사용 할 수 있습니다`
 export const STR_YOU_HAVE_TO_AGREE_APP_USAGE = `:disappointed_relieved: 익명 메시지를 작성하려면 채널 멤버들의 동의를 받아야 합니다.\n*아래 컨피그 메시지를 참고하세요:*\n%s`
 
-export const STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION1 = 'Slack App 이 본 채널의 메시지 작성 권한이 없습니다.'
+export const STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION1 = '슬랙앱이 본 채널의 메시지 작성 권한이 없습니다.'
 export const STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION2 = '아래 url 에 방문하여 권한을 부여 해주세요.'
 
 export const STR_LIKE = ':thumbsup:'
 export const STR_DISLIKE = ':thumbsdown:'
 export const STR_AGREE = '앱 사용 동의'
+export const STR_DELETE = '삭제'
 export const STR_REPLY_AS_ANON = '익명으로 댓글 달기'
 export const STR_POST_VOICE = '익명 메시지 작성'
 export const STR_CONFIG_MSG = '컨피그 메시지: %s'

@@ -75,3 +75,16 @@ export const isParamNewVoice = (p: any): p is IParamNewVoice => {
 
   return true
 }
+
+export interface IPMNewVoiceView {
+  channelId: string
+  channelName: string
+}
+
+export const isPMNewVoiceView = (o: any): o is IPMNewVoiceView => {
+  if (!isNotNullObject(o)) return false
+  if (!isNotEmptyString(o.channelId)) return false
+  if (!isNotEmptyString(o.channelName)) return false
+
+  return true
+}

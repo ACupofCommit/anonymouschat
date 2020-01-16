@@ -6,7 +6,7 @@ import { createLogger } from "../logger"
 import { putGroup, getOrCreateGetGroup } from "../model/model-group"
 import { getSlackAT } from "../model/model-slackAT"
 import { isGroup } from "../../types/type-group"
-import { canPostMessageIntoChannel, getSlackValidAT } from "../slack/core"
+import { canPostMessageIntoChannel, getSlackValidAT } from "../slack/core-common"
 import { getErrorMsgChannelNotFound } from "../slack/argument-config"
 
 const logger = createLogger('handler-valid-token')

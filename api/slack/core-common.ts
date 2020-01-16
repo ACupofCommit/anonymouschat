@@ -1,83 +1,28 @@
 import axios from 'axios'
 import to from 'await-to-js'
 import { isObject } from "lodash"
-import { WebClient, WebAPICallError, ChatGetPermalinkArguments } from "@slack/web-api"
-import { ChatPostMessageResponse, ChatGetPermalinkResponse } from 'seratch-slack-types/web-api'
+import { WebClient, WebAPICallError, ChatGetPermalinkArguments, View } from "@slack/web-api"
+import { ChatGetPermalinkResponse } from 'seratch-slack-types/web-api'
 
-import { NOT_YET, ACTIVATION_QUORUM, VOICE_LIMIT_RECENT24H } from '../constant'
+import { NOT_YET, ACTIVATION_QUORUM, INPUT_NAME_PASSWORD } from '../constant'
 import { getVoiceArg } from './argument-voice'
 import { getReplyArg } from './argument-reply'
 import { getConfigMsgArg, getHelpMessageArg, getAlreadyAgreedMessageArg } from './argument-config'
 import { createLogger } from '../logger'
-import { IParamNewVoice, IVoice, isVoice } from '../../types/type-voice'
-import { IParamNewReply, IReply } from '../../types/type-reply'
-import { newReply, putReply, getReply } from '../model/model-reply'
-import { isNotEmptyString, getMSFromHours, toggle } from '../../common/common-util'
+import { IVoice, isVoice } from '../../types/type-voice'
+import { IReply } from '../../types/type-reply'
+import { putReply, getReply, deleteReply } from '../model/model-reply'
+import { toggle } from '../../common/common-util'
 import { IGroup } from '../../types/type-group'
 import { getSlackATArrByTeamId, deleteSlackAT } from '../model/model-slackAT'
-import { putVoice, newVoice, getVoiceIdArrByTimeRange, getVoice } from '../model/model-voice'
+import { putVoice, getVoice, deleteVoice } from '../model/model-voice'
 import { putGroup, getGroup, updateBatchGroup, getGroupKeysArrByAccessToken } from '../model/model-group'
-import { getGroupId, getVoiceId, getReplyId, IMyBlockActionPayload } from '../model/model-common'
+import { getGroupId, getVoiceId, getReplyId, IMyBlockActionPayload, IMyViewSubmissionPayload, isMyViewSubmissionPayload } from '../model/model-common'
+import { IPMDeletionView } from '../../types/type-common'
+import { isReplyByTsThreadTs, getDeletionViewOpenArg, getErrorMsgBlockInView } from './argument-common'
+import { STR_NOT_MATCHED_PASSWORD } from '../strings'
 
 const logger = createLogger('core')
-
-export const postAndPutSlackVoice = async (web: WebClient, param: IParamNewVoice) => {
-  const now = Date.now()
-  const yesterday = new Date(now - getMSFromHours(24)).getTime()
-  const arr = await getVoiceIdArrByTimeRange(yesterday, now, param.groupId)
-  if (arr.length >= VOICE_LIMIT_RECENT24H) throw new Error('VOICE_LIMIT_RECENT24H')
-
-  const voice = newVoice(param)
-  const result = await web.chat.postMessage(getVoiceArg(voice))
-  if (!isNotEmptyString(result.ts)) throw new Error('Wrong result.ts')
-
-  const voiceId = getVoiceId(param.groupId, result.ts)
-  const updatedVoice = await putVoice({ ...voice, voiceId, platformId: result.ts })
-  await web.chat.update({ ...getVoiceArg(updatedVoice), ts: result.ts })
-}
-
-export const postAndPutReply = async (web: WebClient, param: IParamNewReply) => {
-  const { threadTs, groupId } = param
-  const reply = newReply(param)
-  const replyArg = getReplyArg(reply, threadTs)
-  const result: ChatPostMessageResponse = await web.chat.postMessage(replyArg)
-  if (!result.ts) throw new Error('Wrong result.ts')
-
-  const voiceId = getVoiceId(groupId, threadTs)
-  const replyId = getReplyId(voiceId, result.ts)
-  await putReply({ ...reply, replyId, platformId: result.ts })
-}
-
-export const voteSlackVoice = async (payload: IMyBlockActionPayload, type: 'LIKE' | 'DISLIKE') => {
-  const { container, channel, team, user } = payload
-  const groupId = getGroupId(channel.id, team.id, team.enterprise_id)
-  const voiceId = getVoiceId(groupId, container.message_ts)
-  const v = await getVoice(voiceId)
-
-  const userLikeArr = type === 'LIKE' ? toggle(v.userLikeArr, user.id) : v.userLikeArr
-  const userDislikeArr = type === 'DISLIKE' ? toggle(v.userDislikeArr, user.id) : v.userDislikeArr
-  const newVoice: IVoice = { ...v, userLikeArr, userDislikeArr }
-
-  const updatedVoice = await putVoice(newVoice)
-  await axios.post(payload.response_url, getVoiceArg(updatedVoice))
-}
-
-export const voteSlackReply = async (payload: IMyBlockActionPayload, type: 'LIKE' | 'DISLIKE') => {
-  const { team, channel, container, user, response_url } = payload
-  if (!container.thread_ts) throw new Error('not found message.thread_ts')
-
-  const groupId = getGroupId(channel.id, team.id, team.enterprise_id)
-  const voiceId = getVoiceId(groupId, container.thread_ts)
-  const replyId = getReplyId(voiceId, container.message_ts)
-  const r = await getReply(replyId)
-
-  const userLikeArr = type === 'LIKE' ? toggle(r.userLikeArr, user.id) : r.userLikeArr
-  const userDislikeArr = type === 'DISLIKE' ? toggle(r.userDislikeArr, user.id) : r.userDislikeArr
-  const newReply: IReply = { ...r, userLikeArr, userDislikeArr }
-
-  const updatedReply = await putReply(newReply)
-  await axios.post(response_url, getReplyArg(updatedReply))
-}
 
 export const reportVoiceOrReply = async (web: WebClient, payload: IMyBlockActionPayload) => {
   const { team, channel, container, user } = payload
@@ -221,4 +166,39 @@ export const getConfigMsgPermalink = async (web: WebClient, group: IGroup) => {
     return null
   }
   return (r && r.permalink) ? r.permalink : null
+}
+
+export const openViewToDelete = async (web: WebClient, payload: IMyBlockActionPayload) => {
+  const { trigger_id, container, channel } = payload
+  const { message_ts, thread_ts } = container
+  const pm: IPMDeletionView = { channelId: channel.id, ts: message_ts, threadTs: thread_ts, channelName: channel.name }
+  await web.views.open(getDeletionViewOpenArg(trigger_id, pm))
+}
+
+export const deleteVoiceOrReply = async (web: WebClient, payload: IMyViewSubmissionPayload) => {
+  if (!isMyViewSubmissionPayload(payload)) throw new Error('Invalid payload')
+  const { view, team } = payload
+  const pm: IPMDeletionView = JSON.parse(view.private_metadata)
+  const { channelId, ts, threadTs } = pm
+  const isVoice = ! isReplyByTsThreadTs(ts, threadTs)
+
+  const password = payload.view.state.values[INPUT_NAME_PASSWORD].s.value
+  const groupId = getGroupId(channelId, team.id, team.enterprise_id)
+  const voiceId = getVoiceId(groupId, threadTs ? threadTs : ts)
+  const replyId = getReplyId(voiceId, ts)
+  const isSuccess = isVoice ? await deleteVoice(voiceId, password) : await deleteReply(replyId, password)
+  if (!isSuccess) {
+    const arg = getDeletionViewOpenArg('', pm)
+    const errorMsgBlock = getErrorMsgBlockInView(STR_NOT_MATCHED_PASSWORD)
+    const view: View = { ...arg.view, blocks: [ ...arg.view.blocks, errorMsgBlock ]}
+    return { response_action: 'update', view }
+  }
+
+  if (isVoice) {
+    const voice = await getVoice(voiceId)
+    return await web.chat.update({ ...getVoiceArg(voice), ts })
+  }
+
+  const reply = await getReply(replyId)
+  return await web.chat.update({ ...getReplyArg(reply), ts })
 }

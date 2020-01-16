@@ -77,3 +77,17 @@ export const isParamNewReply = (p: any): p is IParamNewReply => {
 
   return true
 }
+
+export interface IPMNewReplyView {
+  channelId: string
+  channelName: string
+  threadTs: string
+}
+
+export const isPMCreateReplyView = (o: any): o is IPMNewReplyView => {
+  if (!isNotNullObject(o)) return false
+  if (!isNotEmptyString(o.channelId)) return false
+  if (!isNotEmptyString(o.channelName)) return false
+  if (!isNotEmptyString(o.threadTs)) return false
+  return true
+}

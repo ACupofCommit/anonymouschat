@@ -1,45 +1,27 @@
-import gp from 'generate-password'
 import { compact } from 'lodash'
-import sillyname from 'sillyname'
-import { DialogOpenArguments, ChatPostMessageArguments, Action, Button } from '@slack/web-api'
+import { DialogOpenArguments, ChatPostMessageArguments, Action, Button, ViewsOpenArguments } from '@slack/web-api'
 
-import { INPUT_NAME_NICKNAME, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_REPORT, password_min_length, nickname_min_length, nickname_max_length, password_max_length } from '../constant'
-import { STR_APP_NAME, STR_DIALOG_PASSWORD_TITLE, STR_DIALOG_PASSWORD_HINT, STR_LIKE, STR_DISLIKE, STR_DIALOG_NICKNAME_TITLE, STR_DIALOG_NICKNAME_PLACEHOLDER, STR_REPORT, STR_REPORT_N } from '../strings'
-import { IReply } from '../../types/type-reply'
+import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_REPORT, password_min_length, password_max_length, ACTION_SUBMISSION_REPLY, ACTION_OPEN_DIALOG_DELETE_REPLY } from '../constant'
+import { STR_APP_NAME, STR_DIALOG_PASSWORD_TITLE, STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_LABEL_CONTENT, STR_PLACEHOLDER_CONTENT_FOR_REPLY, STR_DELETE } from '../strings'
+import { IReply, IPMNewReplyView } from '../../types/type-reply'
+import { getInputFaceImojiBlock, getInputNicknameBlock, getInputContentBlock, getInputPasswordBlock } from './argument-common'
 
-export const getNewReplyDialogArg = (callbackId: string, trigger_id: string, stateValue: string): DialogOpenArguments => {
+export const getNewReplyViewsOpen = (trigger_id: string, pm: IPMNewReplyView): ViewsOpenArguments => {
   return {
     trigger_id,
-    dialog: {
-      "callback_id": callbackId,
-      state: stateValue,
-      "title": STR_APP_NAME,
-      "submit_label": "Reply",
-      "elements": [
-        {
-          "type": "text",
-          "value": sillyname().split(' ')[0],
-          "label": STR_DIALOG_NICKNAME_TITLE,
-          "name": INPUT_NAME_NICKNAME,
-          "min_length": nickname_min_length,
-          "max_length": nickname_max_length,
-          "placeholder": STR_DIALOG_NICKNAME_PLACEHOLDER,
-        },
-        {
-          "type": "textarea",
-          "label": "Reply as anonymous",
-          "name": INPUT_NAME_CONTENT
-        },
-        {
-          "type": "text",
-          value: gp.generate({ length: 16, numbers: true }),
-          "label": STR_DIALOG_PASSWORD_TITLE,
-          "name": INPUT_NAME_PASSWORD,
-          "min_length": password_min_length,
-          "max_length": password_max_length,
-          "hint": STR_DIALOG_PASSWORD_HINT
-        }
-      ]
+    view: {
+      private_metadata: JSON.stringify(pm),
+      "callback_id": ACTION_SUBMISSION_REPLY,
+      "type": "modal",
+      "title": { "type": "plain_text", "text": STR_APP_NAME, "emoji": true },
+      "submit": { "type": "plain_text", "text": "Reply", "emoji": true },
+      "close": { "type": "plain_text", "text": "Cancel", "emoji": true },
+      "blocks": [
+        getInputFaceImojiBlock(),
+        getInputNicknameBlock(),
+        getInputContentBlock(STR_LABEL_CONTENT, STR_PLACEHOLDER_CONTENT_FOR_REPLY),
+        getInputPasswordBlock(),
+      ],
     },
   }
 }
@@ -70,6 +52,12 @@ export const getReplyArg = (reply: IReply, thread_ts?: string): ChatPostMessageA
             action_id: ACTION_VOTE_REPLY_DISLIKE,
             "type": "button",
             "text": { "type": "plain_text", "text": strCountDislike, "emoji": true },
+          },
+          !isHiddenByReport && !reply.isDeleted && {
+            action_id: ACTION_OPEN_DIALOG_DELETE_REPLY,
+            "type": "button",
+            "text": { "type": "plain_text", "text": STR_DELETE, "emoji": true },
+            "style": "danger",
           },
           !isHiddenByReport && !reply.isDeleted && {
             action_id: ACTION_VOTE_REPORT,

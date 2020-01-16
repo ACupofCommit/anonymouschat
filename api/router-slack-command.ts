@@ -1,4 +1,3 @@
-import { IncomingMessage, ServerResponse } from 'http'
 import { Router } from 'express'
 import to from 'await-to-js'
 import bodyParser from 'body-parser'
@@ -12,7 +11,8 @@ import { isGroup } from '../types/type-group'
 import { createLogger } from './logger'
 import { EnumCommand } from './constant'
 import { validTokenHandler } from './middleware/handler-valid-token'
-import { postAgreementMesssage, sendHelpMessage, getConfigMsgPermalink } from './slack/core'
+import { postAgreementMesssage, sendHelpMessage, getConfigMsgPermalink } from './slack/core-common'
+import { openViewToPostVoice } from './slack/core-voice'
 
 interface IMySlashCommandPayload extends SlashCommandPayload {
   team_id: string
@@ -72,7 +72,12 @@ router.all('/', async (req, res, next) => {
     return err ? next(err) : res.status(200).end()
   }
 
-  const [err] = await to(sendHelpMessage(web, group, user_id, permalink))
+  if (command === EnumCommand.help || !group.isPostingAvailable) {
+    const [err] = await to(sendHelpMessage(web, group, user_id, permalink))
+    return err ? next(err) : res.status(200).end()
+  }
+
+  const [err] = await to(openViewToPostVoice(web, trigger_id, channel_id, channel_name))
   return err ? next(err) : res.status(200).end()
 })
 

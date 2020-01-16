@@ -9,8 +9,9 @@ import { getGroupByWebAccessToken } from './model/model-group'
 import { isGroup } from '../types/type-group'
 import { checkAndConvertUrlTsToDotTs } from './util'
 import { getGroupId } from './model/model-common'
-import { postAndPutReply, postAndPutSlackVoice } from './slack/core'
 import { isParamNewVoiceFromWeb, IParamNewVoice } from '../types/type-voice'
+import { postAndPutReply } from './slack/core-reply'
+import { postAndPutSlackVoice } from './slack/core-voice'
 
 const logger = createLogger()
 
