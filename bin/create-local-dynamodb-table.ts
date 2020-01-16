@@ -1,10 +1,11 @@
 import { CreateTableInput } from 'aws-sdk/clients/dynamodb'
 import to from 'await-to-js'
 import { getDD } from '../api/util'
+import { TABLENAME_GROUP, TABLENAME_VOICE, TABLENAME_REPLY, TABLENAME_AT, TABLENAME_TEAM } from '../api/constant'
 
 const paramsGroup: CreateTableInput = {
   BillingMode: 'PAY_PER_REQUEST',
-  TableName: 'Anonymouslack-Group',
+  TableName: TABLENAME_GROUP,
   AttributeDefinitions: [
     { AttributeName: 'teamId', AttributeType: 'S' },
     { AttributeName: 'channelId', AttributeType: 'S' },
@@ -46,9 +47,9 @@ const paramsGroup: CreateTableInput = {
   },
 }
 
-const params2: CreateTableInput = {
+const paramVoice: CreateTableInput = {
   BillingMode: 'PAY_PER_REQUEST',
-  TableName: 'Anonymouslack-Voice',
+  TableName: TABLENAME_VOICE,
   AttributeDefinitions: [
     { AttributeName: 'voiceId', AttributeType: 'S' },
     { AttributeName: 'groupId', AttributeType: 'S' },
@@ -71,7 +72,7 @@ const params2: CreateTableInput = {
   },
 }
 
-const params3: CreateTableInput = {
+const paramReply: CreateTableInput = {
   AttributeDefinitions: [
     { AttributeName: 'replyId', AttributeType: 'S' },
     { AttributeName: 'voiceId', AttributeType: 'S' },
@@ -91,13 +92,13 @@ const params3: CreateTableInput = {
     ],
   }],
   BillingMode: 'PAY_PER_REQUEST',
-  TableName: 'Anonymouslack-Reply',
+  TableName: TABLENAME_REPLY,
   StreamSpecification: {
     StreamEnabled: false
   },
 }
 
-const params4: CreateTableInput = {
+const paramAT: CreateTableInput = {
   AttributeDefinitions: [
     { AttributeName: 'ownerId', AttributeType: 'S' },
     { AttributeName: 'accessToken', AttributeType: 'S' },
@@ -108,7 +109,7 @@ const params4: CreateTableInput = {
     { AttributeName: 'ownerId', KeyType: 'RANGE' },
   ],
   BillingMode: 'PAY_PER_REQUEST',
-  TableName: 'Anonymouslack-AT',
+  TableName: TABLENAME_AT,
   StreamSpecification: {
     StreamEnabled: false,
   },
@@ -121,7 +122,7 @@ const params4: CreateTableInput = {
   }],
 }
 
-const params5: CreateTableInput = {
+const paramTeam: CreateTableInput = {
   AttributeDefinitions: [
     { AttributeName: 'gridId', AttributeType: 'S' },
     { AttributeName: 'teamId', AttributeType: 'S' },
@@ -131,7 +132,7 @@ const params5: CreateTableInput = {
     { AttributeName: 'teamId', KeyType: 'RANGE' },
   ],
   BillingMode: 'PAY_PER_REQUEST',
-  TableName: 'Anonymouslack-Team',
+  TableName: TABLENAME_TEAM,
   StreamSpecification: {
     StreamEnabled: false,
   },
@@ -144,21 +145,21 @@ const run = async () => {
   if (errGroup) console.log("Error", errGroup)
   else console.log("Table Created: " + paramsGroup.TableName)
 
-  const [err2, data2] = await to(ddb.createTable(params2).promise())
+  const [err2, data2] = await to(ddb.createTable(paramVoice).promise())
   if (err2) console.log("Error", err2)
-  else console.log("Table Created: " + params2.TableName)
+  else console.log("Table Created: " + paramVoice.TableName)
 
-  const [err3, data3] = await to(ddb.createTable(params3).promise())
+  const [err3, data3] = await to(ddb.createTable(paramReply).promise())
   if (err3) console.log("Error", err3)
-  else console.log("Table Created: " + params3.TableName)
+  else console.log("Table Created: " + paramReply.TableName)
 
-  const [err4, data4] = await to(ddb.createTable(params4).promise())
+  const [err4, data4] = await to(ddb.createTable(paramAT).promise())
   if (err4) console.log("Error", err4)
-  else console.log("Table Created: " + params4.TableName)
+  else console.log("Table Created: " + paramAT.TableName)
 
-  const [err5, data5] = await to(ddb.createTable(params5).promise())
+  const [err5, data5] = await to(ddb.createTable(paramTeam).promise())
   if (err5) console.log("Error", err5)
-  else console.log("Table Created: " + params5.TableName)
+  else console.log("Table Created: " + paramTeam.TableName)
 }
 
 if (require.main === module) run()

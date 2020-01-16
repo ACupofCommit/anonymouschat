@@ -3,9 +3,9 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../logger'
 import { getDDC } from '../util'
 import { isTeamArr, ITeam } from '../../types/type-team'
-import { NOT_GRID } from '../constant'
+import { NOT_GRID, TABLENAME_TEAM } from '../constant'
 
-const TableName = 'Anonymouslack-Team'
+const TableName = TABLENAME_TEAM
 const ddc = getDDC()
 const logger = createLogger('team')
 

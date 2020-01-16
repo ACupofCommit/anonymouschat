@@ -5,8 +5,9 @@ import { createLogger } from '../logger'
 import { getVoiceIdFromReplyId, getContent, getReplyId, getVoiceId } from './model-common'
 import { getDDC } from '../util'
 import { IParamNewReply, IReply, isReply } from '../../types/type-reply'
+import { TABLENAME_REPLY } from '../constant'
 
-const TableName = 'Anonymouslack-Reply'
+const TableName = TABLENAME_REPLY
 const ddc = getDDC()
 const logger = createLogger('reply')
 

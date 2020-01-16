@@ -4,8 +4,9 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../logger';
 import { isArray } from 'util';
 import { getDDC } from '../util';
+import { TABLENAME_AT } from '../constant';
 
-const TableName = 'Anonymouslack-AT'
+const TableName = TABLENAME_AT
 const ddc = getDDC()
 
 const logger = createLogger('at')

@@ -7,8 +7,9 @@ import { createLogger } from '../logger'
 import { getDDC } from '../util'
 import { IParamNewVoice, IVoice, isVoice } from '../../types/type-voice'
 import { STR_DELETED_MESSAGE } from '../strings'
+import { TABLENAME_VOICE } from '../constant'
 
-const TableName = 'Anonymouslack-Voice'
+const TableName = TABLENAME_VOICE
 const ddc = getDDC()
 const logger = createLogger('MODEL_VOICE')
 

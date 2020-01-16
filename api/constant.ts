@@ -54,3 +54,10 @@ export const password_max_length = 30
 export const nickname_min_length = 1
 export const nickname_max_length = 20
 export const REPORT_MAX_ALLOWED_LENGTH = 5
+
+const TABLENAME_PREFIX = process.env.ANONYMOUSLACK_TABLENAME_PREFIX || 'Anonymouslack'
+export const TABLENAME_TEAM = `${TABLENAME_PREFIX}-Team`
+export const TABLENAME_GROUP = `${TABLENAME_PREFIX}-Group`
+export const TABLENAME_VOICE = `${TABLENAME_PREFIX}-Voice`
+export const TABLENAME_REPLY = `${TABLENAME_PREFIX}-Reply`
+export const TABLENAME_AT = `${TABLENAME_PREFIX}-AT`

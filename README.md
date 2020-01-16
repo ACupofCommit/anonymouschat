@@ -23,6 +23,7 @@ export ANONYMOUSLACK_CLIENT_SECRET=9b...x0i                      # From Basic In
 export ANONYMOUSLACK_SHARABLE_URL='https://....'                 # From Manage Distribution
 export ANONYMOUSLACK_MANAGER_SLACK_ID='WXXXXXXX0'                # From Your Slack Profile
 
+export ANONYMOUSLACK_TABLENAME_PREFIX=Anonymouslack              # Dynamodb table name prefix
 export ANONYMOUSLACK_LOGLEVEL=debug
 ```
 

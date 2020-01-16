@@ -4,11 +4,11 @@ import gp from 'generate-password'
 
 import { createLogger } from '../logger'
 import { getDDC } from '../util'
-import { NOT_GRID, NOT_YET, ERROR_CAN_NOT_QUERY_GROUP_BY_WEB_ACCESS_TOKEN, ERROR_CAN_NOT_GET_GROUP_BY_WEB_ACCESS_TOKEN } from '../constant'
+import { NOT_GRID, NOT_YET, ERROR_CAN_NOT_QUERY_GROUP_BY_WEB_ACCESS_TOKEN, ERROR_CAN_NOT_GET_GROUP_BY_WEB_ACCESS_TOKEN, TABLENAME_GROUP } from '../constant'
 import { isGroup, isGroupKeysArr, IGroup, IGroupKeys } from '../../types/type-group'
 import { getMSFromHours, isNotEmptyString } from '../../common/common-util'
 
-const TableName = 'Anonymouslack-Group'
+const TableName = TABLENAME_GROUP
 const ddc = getDDC()
 const logger = createLogger('group')
 
