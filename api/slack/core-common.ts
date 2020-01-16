@@ -2,7 +2,6 @@ import axios from 'axios'
 import to from 'await-to-js'
 import { isObject } from "lodash"
 import { WebClient, WebAPICallError, ChatGetPermalinkArguments, View } from "@slack/web-api"
-import { ChatGetPermalinkResponse } from 'seratch-slack-types/web-api'
 
 import { NOT_YET, ACTIVATION_QUORUM, INPUT_NAME_PASSWORD } from '../constant'
 import { getVoiceArg } from './argument-voice'
@@ -18,7 +17,7 @@ import { getSlackATArrByTeamId, deleteSlackAT } from '../model/model-slackAT'
 import { putVoice, getVoice, deleteVoice } from '../model/model-voice'
 import { putGroup, getGroup, updateBatchGroup, getGroupKeysArrByAccessToken } from '../model/model-group'
 import { getGroupId, getVoiceId, getReplyId, IMyBlockActionPayload, IMyViewSubmissionPayload, isMyViewSubmissionPayload } from '../model/model-common'
-import { IPMDeletionView } from '../../types/type-common'
+import { IPMDeletionView, IChatGetPermalinkResponse } from '../../types/type-common'
 import { isReplyByTsThreadTs, getDeletionViewOpenArg, getErrorMsgBlockInView } from './argument-common'
 import { STR_NOT_MATCHED_PASSWORD } from '../strings'
 
@@ -160,7 +159,7 @@ export const getConfigMsgPermalink = async (web: WebClient, group: IGroup) => {
 
   const { channelId, activationMsgTs } = group
   const opt: ChatGetPermalinkArguments = { channel: channelId, message_ts: activationMsgTs }
-  const [err1, r] = await to<ChatGetPermalinkResponse, WebAPICallError>(web.chat.getPermalink(opt))
+  const [err1, r] = await to<IChatGetPermalinkResponse, WebAPICallError>(web.chat.getPermalink(opt))
   if (err1 && err1.code === 'slack_webapi_platform_error' && err1.data && err1.data.error === 'message_not_found') {
     // 활성화 메시지가 삭제된 상황
     return null

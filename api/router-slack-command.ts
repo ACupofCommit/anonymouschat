@@ -3,9 +3,7 @@ import to from 'await-to-js'
 import bodyParser from 'body-parser'
 import { find, values } from 'lodash'
 import { WebClient } from '@slack/web-api'
-import { SlashCommandPayload } from 'seratch-slack-types/app-backend/slash-commands'
 
-import { isNotNullObject, isNotEmptyString } from '../common/common-util'
 import { getOrCreateGetGroup } from './model/model-group'
 import { isGroup } from '../types/type-group'
 import { createLogger } from './logger'
@@ -13,28 +11,7 @@ import { EnumCommand } from './constant'
 import { validTokenHandler } from './middleware/handler-valid-token'
 import { postAgreementMesssage, sendHelpMessage, getConfigMsgPermalink } from './slack/core-common'
 import { openViewToPostVoice } from './slack/core-voice'
-
-interface IMySlashCommandPayload extends SlashCommandPayload {
-  team_id: string
-  channel_id: string
-  user_id: string
-  response_url: string
-  trigger_id: string
-  text: string
-}
-const isMySlashCommandRequest = (o: any): o is IMySlashCommandPayload => {
-  if (!isNotNullObject(o)) return false
-  if (!isNotEmptyString(o.team_id)) return false
-  if (!isNotEmptyString(o.channel_id)) return false
-  if (!isNotEmptyString(o.user_id)) return false
-  if (!isNotEmptyString(o.response_url)) return false
-  if (!isNotEmptyString(o.trigger_id)) return false
-
-  // user가 typing하는 부분. 빈 문자가 올 수도 있음
-  if (typeof o.text !== 'string') return false
-
-  return true
-}
+import { ISlashCommandPayload, isMySlashCommandRequest } from '../types/type-common'
 
 const logger = createLogger('command-av')
 
@@ -50,7 +27,7 @@ router.use(bodyParser.urlencoded({ extended: true }))
 router.use(validTokenHandler)
 
 router.all('/', async (req, res, next) => {
-  const body: SlashCommandPayload  = req.body
+  const body: ISlashCommandPayload  = req.body
   if (!isMySlashCommandRequest(body)) return next('Wrong SlashCommandPayload')
 
   const { team_id, channel_id, user_id, text, trigger_id, enterprise_id, channel_name } = body

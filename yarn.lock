@@ -6099,11 +6099,6 @@ send@0.17.1:
     range-parser "~1.2.1"
     statuses "~1.5.0"
 
-seratch-slack-types@^0.4.1:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/seratch-slack-types/-/seratch-slack-types-0.4.1.tgz#1c4cb73789427ef259064eeb83edfcb26052bd53"
-  integrity sha512-2/3fxDe8eQRD3Uz10xlQSgrDao7lFGEoECoKe96G3XnE+2glZ4b+D9htKixhA/VqP3eDQD5HVm05KkhOMy1bPg==
-
 serialize-javascript@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/serialize-javascript/-/serialize-javascript-2.1.2.tgz#ecec53b0e0317bdc95ef76ab7074b7384785fa61"

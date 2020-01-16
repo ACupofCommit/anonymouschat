@@ -1,10 +1,10 @@
-import { BlockActionPayload } from "seratch-slack-types/app-backend/interactive-messages"
-import { Team, Channel, User, View, Container } from "seratch-slack-types/app-backend/interactive-messages/BlockActionPayload"
-import { ViewSubmissionPayload } from "seratch-slack-types/app-backend/views/ViewSubmissionPayload"
+
 import { NOT_GRID } from "../constant"
 import { STR_REPORTED_MESSAGE, STR_DELETED_MESSAGE } from "../strings"
 import { IReply } from "../../types/type-reply"
 import { IVoice } from "../../types/type-voice"
+import { BlockActionPayload, Team, Channel, Container, User, View } from "../../types/BlockActionPayload"
+import { ViewSubmissionPayload } from "../../types/ViewSubmissionPayload"
 
 /**
  * voiceId 생성 규칙에 따라 voiceId를 생성하여 반환

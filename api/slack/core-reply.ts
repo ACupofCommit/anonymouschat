@@ -1,11 +1,10 @@
 import axios from 'axios'
 import { WebClient } from "@slack/web-api"
-import { ChatPostMessageResponse } from "seratch-slack-types/web-api"
 import { IParamNewReply, IReply, IPMNewReplyView, isPMCreateReplyView } from "../../types/type-reply"
 import { newReply, putReply, getReply } from "../model/model-reply"
 import { getReplyArg, getNewReplyViewsOpen } from "./argument-reply"
 import { getVoiceId, getReplyId, IMyBlockActionPayload, getGroupId, IMyViewSubmissionPayload } from "../model/model-common"
-import { toggle } from "../../common/common-util"
+import { toggle, isNotEmptyString } from "../../common/common-util"
 import { IGroup } from "../../types/type-group"
 import { INPUT_NAME_NICKNAME, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, INPUT_FACE_IMOJI, NOT_YET } from "../constant"
 
@@ -30,8 +29,8 @@ export const postAndPutReply = async (web: WebClient, param: IParamNewReply) => 
   const { threadTs, groupId } = param
   const reply = newReply(param)
   const replyArg = getReplyArg(reply, threadTs)
-  const result: ChatPostMessageResponse = await web.chat.postMessage(replyArg)
-  if (!result.ts) throw new Error('Wrong result.ts')
+  const result = await web.chat.postMessage(replyArg)
+  if (!isNotEmptyString(result?.ts)) throw new Error('Wrong result.ts')
 
   const voiceId = getVoiceId(groupId, threadTs)
   const replyId = getReplyId(voiceId, result.ts)

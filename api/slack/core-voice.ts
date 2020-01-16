@@ -64,7 +64,7 @@ export const postAndPutSlackVoice = async (web: WebClient, param: IParamNewVoice
 
   const voice = newVoice(param)
   const result = await web.chat.postMessage(getVoiceArg(voice))
-  if (!isNotEmptyString(result.ts)) throw new Error('Wrong result.ts')
+  if (!isNotEmptyString(result?.ts)) throw new Error('Wrong result.ts')
 
   const voiceId = getVoiceId(param.groupId, result.ts)
   const updatedVoice = await putVoice({ ...voice, voiceId, platformId: result.ts })
