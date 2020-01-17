@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import gp from 'generate-password'
 import { WebAPIPlatformError } from '@slack/web-api'
 import { IFaceImoji } from '../types/type-common'
@@ -22,19 +23,16 @@ export const getBEHRError = (err: Error | null, functionName?: string) => {
   return ErrorObj
 }
 
-export const toggle = (arr: Array<any>, item: any) => {
-  // const onTest = true
-  // if (onTest) return [ item, ...arr ];
-
-  const idx = arr.indexOf(item)
-  return (idx > -1)
-    ? [ ...arr.slice(0,idx), ...arr.slice(idx+1)]
-    : [ item, ...arr ]
+export const sha256Hash = (str: string, salt: string) => {
+  return crypto.createHmac('sha256', `${str}:${salt}`).digest('base64')
 }
 
-export const addItem = (arr: Array<any>, item: any) => {
-  const idx = arr.indexOf(item)
-  return idx > -1 ? arr : [ item, ...arr ]
+export const hashAndtoggle = (arr: Array<any>, str: string, salt: string) => {
+  const hashedStr = sha256Hash(str, salt)
+  const idx = arr.indexOf(hashedStr)
+  return (idx > -1)
+    ? [ ...arr.slice(0,idx), ...arr.slice(idx+1)]
+    : [ hashedStr, ...arr ]
 }
 
 export const isWebAPIPlatformError = (err: any): err is WebAPIPlatformError => {

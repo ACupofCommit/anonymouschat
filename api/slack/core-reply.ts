@@ -4,7 +4,7 @@ import { IParamNewReply, IReply, IPMNewReplyView, isPMCreateReplyView } from "..
 import { newReply, putReply, getReply } from "../model/model-reply"
 import { getReplyArg, getNewReplyViewsOpen } from "./argument-reply"
 import { getVoiceId, getReplyId, IMyBlockActionPayload, getGroupId, IMyViewSubmissionPayload } from "../model/model-common"
-import { toggle, isNotEmptyString } from "../../common/common-util"
+import { hashAndtoggle, isNotEmptyString } from "../../common/common-util"
 import { IGroup } from "../../types/type-group"
 import { INPUT_NAME_NICKNAME, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, INPUT_FACE_IMOJI, NOT_YET } from "../constant"
 
@@ -46,8 +46,8 @@ export const voteSlackReply = async (payload: IMyBlockActionPayload, type: 'LIKE
   const replyId = getReplyId(voiceId, container.message_ts)
   const r = await getReply(replyId)
 
-  const userLikeArr = type === 'LIKE' ? toggle(r.userLikeArr, user.id) : r.userLikeArr
-  const userDislikeArr = type === 'DISLIKE' ? toggle(r.userDislikeArr, user.id) : r.userDislikeArr
+  const userLikeArr = type === 'LIKE' ? hashAndtoggle(r.userLikeArr, user.id, replyId) : r.userLikeArr
+  const userDislikeArr = type === 'DISLIKE' ? hashAndtoggle(r.userDislikeArr, user.id, replyId) : r.userDislikeArr
   const newReply: IReply = { ...r, userLikeArr, userDislikeArr }
 
   const updatedReply = await putReply(newReply)

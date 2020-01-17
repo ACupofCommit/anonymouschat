@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import axios from 'axios'
 import to from 'await-to-js'
 import { isObject } from "lodash"
@@ -11,7 +12,7 @@ import { createLogger } from '../logger'
 import { IVoice, isVoice } from '../../types/type-voice'
 import { IReply } from '../../types/type-reply'
 import { putReply, getReply, deleteReply } from '../model/model-reply'
-import { toggle } from '../../common/common-util'
+import { hashAndtoggle, sha256Hash } from '../../common/common-util'
 import { IGroup } from '../../types/type-group'
 import { getSlackATArrByTeamId, deleteSlackAT } from '../model/model-slackAT'
 import { putVoice, getVoice, deleteVoice } from '../model/model-voice'
@@ -27,15 +28,15 @@ export const reportVoiceOrReply = async (web: WebClient, payload: IMyBlockAction
   const { team, channel, container, user } = payload
   const ts = container.message_ts
   const threadTs = container.thread_ts || ts
-  const isVoiceButton = ts === threadTs
+  const isReply = isReplyByTsThreadTs(ts, threadTs)
 
   const groupId = getGroupId(channel.id, team.id, team.enterprise_id)
   const voiceId = getVoiceId(groupId, threadTs)
   const replyId = getReplyId(voiceId, ts)
   const group = await getGroup(channel.id)
 
-  const voiceOrReply = isVoiceButton ? await getVoice(voiceId) : await getReply(replyId)
-  const userReportArr = toggle(voiceOrReply.userReportArr, user.id)
+  const voiceOrReply = isReply ? await getReply(replyId) : await getVoice(voiceId)
+  const userReportArr = hashAndtoggle(voiceOrReply.userReportArr, user.id, isReply ? replyId : voiceId)
   // 콘셉: 한번 isHiddenByReport: true 된 경우 번복되지 않음.
   const isHiddenByReport = voiceOrReply.isHiddenByReport || userReportArr.length >= (group.numberOfReportToHidden || 1)
   // 신고 개수 상승으로 hidden 처리가 될 수 있으므로 updateVoice 에서 반환된 voice를 사용
@@ -64,14 +65,15 @@ export const sendHelpMessage = async (web: WebClient, group: IGroup, user: strin
 }
 
 export const agreeAppActivation = async (web: WebClient, group: IGroup, userId: string, responseUrl: string) => {
-  if (group.agreedUserArr.indexOf(userId) > -1) {
+  const hashedUserId = sha256Hash(userId, group.channelId)
+  if (group.agreedUserArr.indexOf(hashedUserId) > -1) {
     const alreadyArg = getAlreadyAgreedMessageArg(group.channelId, userId)
     return await to(web.chat.postEphemeral(alreadyArg))
   }
 
   // force agreement 가 있으므로, ACTIVATION_QUORUM 을 넘지 않는
   // isPostingAvailable: true 가 있을 수 있는데 이 경우 false 로 변경하면 안됨
-  const agreedUserArr = [...group.agreedUserArr, userId]
+  const agreedUserArr = [...group.agreedUserArr, hashedUserId]
   const isPostingAvailable = group.forceActivateUserId !== NOT_YET ? true : agreedUserArr.length >= ACTIVATION_QUORUM
   const updatedGroup = await putGroup({ ...group, agreedUserArr, isPostingAvailable })
   await axios.post(responseUrl, getConfigMsgArg(updatedGroup))

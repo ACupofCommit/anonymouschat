@@ -8,7 +8,7 @@ import { STR_FAILED_TO_CREATE_VOICE } from "../strings"
 import { getNewVoiceViewsArg, getVoiceArg } from "./argument-voice"
 import { getErrorMsgBlockInView } from "./argument-common"
 import { getVoice, putVoice, getVoiceIdArrByTimeRange, newVoice } from "../model/model-voice"
-import { toggle, getMSFromHours, isNotEmptyString } from "../../common/common-util"
+import { hashAndtoggle, getMSFromHours, isNotEmptyString } from "../../common/common-util"
 
 export const createVoiceFromSlack = async (web: WebClient, payload: IMyViewSubmissionPayload) => {
   const { team, view } = payload
@@ -48,8 +48,8 @@ export const voteSlackVoice = async (payload: IMyBlockActionPayload, type: 'LIKE
   const voiceId = getVoiceId(groupId, container.message_ts)
   const v = await getVoice(voiceId)
 
-  const userLikeArr = type === 'LIKE' ? toggle(v.userLikeArr, user.id) : v.userLikeArr
-  const userDislikeArr = type === 'DISLIKE' ? toggle(v.userDislikeArr, user.id) : v.userDislikeArr
+  const userLikeArr = type === 'LIKE' ? hashAndtoggle(v.userLikeArr, user.id, voiceId) : v.userLikeArr
+  const userDislikeArr = type === 'DISLIKE' ? hashAndtoggle(v.userDislikeArr, user.id, voiceId) : v.userDislikeArr
   const newVoice: IVoice = { ...v, userLikeArr, userDislikeArr }
 
   const updatedVoice = await putVoice(newVoice)
