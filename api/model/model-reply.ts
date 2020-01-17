@@ -2,7 +2,7 @@ import crypto from 'crypto'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import { createLogger } from '../logger'
-import { getVoiceIdFromReplyId, getContent, getReplyId, getVoiceId } from './model-common'
+import { getVoiceIdFromReplyId, getReplyId, getVoiceId } from './model-common'
 import { getDDC } from '../util'
 import { IParamNewReply, IReply, isReply } from '../../types/type-reply'
 import { TABLENAME_REPLY } from '../constant'
@@ -39,7 +39,7 @@ export const getReply = async (replyId: string) : Promise<IReply> => {
   const r = await ddc.get({ TableName, Key }).promise()
   if (!isReply(r.Item)) throw new Error('can not get reply by: ' + replyId)
 
-  return { ...r.Item, content: getContent(r.Item) }
+  return r.Item
 }
 
 export const putReply = async (reply: IReply): Promise<IReply> => {
@@ -47,5 +47,5 @@ export const putReply = async (reply: IReply): Promise<IReply> => {
   await ddc.put(params).promise()
   logger.debug(`put reply into '${TableName}'. replyId: ${reply.replyId}`)
 
-  return { ...reply, content: getContent(reply) }
+  return reply
 }

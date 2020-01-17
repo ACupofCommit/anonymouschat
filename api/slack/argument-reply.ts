@@ -4,7 +4,7 @@ import { DialogOpenArguments, ChatPostMessageArguments, Action, Button, ViewsOpe
 import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_REPORT, password_min_length, password_max_length, ACTION_SUBMISSION_REPLY, ACTION_OPEN_DIALOG_DELETE_REPLY } from '../constant'
 import { STR_APP_NAME, STR_DIALOG_PASSWORD_TITLE, STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_LABEL_CONTENT, STR_PLACEHOLDER_CONTENT_FOR_REPLY, STR_DELETE } from '../strings'
 import { IReply, IPMNewReplyView } from '../../types/type-reply'
-import { getInputFaceImojiBlock, getInputNicknameBlock, getInputContentBlock, getInputPasswordBlock } from './argument-common'
+import { getInputFaceImojiBlock, getInputNicknameBlock, getInputContentBlock, getInputPasswordBlock, getContent } from './argument-common'
 
 export const getNewReplyViewsOpen = (trigger_id: string, pm: IPMNewReplyView): ViewsOpenArguments => {
   return {
@@ -27,10 +27,11 @@ export const getNewReplyViewsOpen = (trigger_id: string, pm: IPMNewReplyView): V
 }
 
 export const getReplyArg = (reply: IReply, thread_ts?: string): ChatPostMessageArguments => {
-  const { userLikeArr, userDislikeArr, userReportArr, content, isHiddenByReport } = reply
+  const { userLikeArr, userDislikeArr, userReportArr, isHiddenByReport } = reply
   const strCountLike = userLikeArr.length === 0 ? STR_LIKE : `${STR_LIKE} ${userLikeArr.length}`
   const strCountDislike = userDislikeArr.length === 0 ? STR_DISLIKE : `${STR_DISLIKE} ${userDislikeArr.length}`
   const strCountReport = userReportArr.length === 0 ? STR_REPORT : STR_REPORT_N.replace("%d", ""+userReportArr.length)
+
   return {
     text: '',
     channel: reply.voiceId.split('-')[2],
@@ -39,7 +40,7 @@ export const getReplyArg = (reply: IReply, thread_ts?: string): ChatPostMessageA
     icon_emoji: reply.faceImoji,
     username: reply.nickname,
     blocks: [
-      { type: "section", text: { type: "mrkdwn", text: content }},
+      { type: "section", text: { type: "mrkdwn", text: getContent(reply) }},
       {
         "type": "actions",
         "elements": compact<Action | Button>([

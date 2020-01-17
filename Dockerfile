@@ -1,4 +1,4 @@
-FROM node:10.18.1-alpine
+FROM node:10.18.1-buster
 
 COPY api /root/app/api
 COPY bin /root/app/bin
@@ -15,6 +15,7 @@ COPY yarn.lock /root/app/
 COPY next-env.d.ts /root/app/
 COPY next.config.js /root/app/
 COPY babel.config.js /root/app/
+COPY tsconfig.json /root/app/
 COPY LICENSE /root/app
 
 WORKDIR /root/app

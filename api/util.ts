@@ -20,7 +20,7 @@ export const getDDC = (_region?: string, accessKeyId?: string, secretAccessKey?:
   return ddc
 }
 
-const getDDEndpoint = (region: string) => {
+export const getDDEndpoint = (region: string) => {
   return region.split('-')[0] === 'cn'
     ? `https://dynamodb.${region}.amazonaws.com.cn`
     : `https://dynamodb.${region}.amazonaws.com`

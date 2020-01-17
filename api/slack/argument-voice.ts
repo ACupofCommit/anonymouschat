@@ -2,19 +2,16 @@ import { compact } from 'lodash'
 import { ChatPostMessageArguments, Action, Button, ViewsOpenArguments } from '@slack/web-api'
 
 import { ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_VOTE_REPORT, NOT_YET, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_VIEW_DELETE, ACTION_SUBMISSION_VOICE } from '../constant'
-import { STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_THIS_VOICE_ID, STR_REPLY_AS_ANON, STR_DELETE, STR_APP_NAME, STR_DIALOG_MESSAGES_TITLE, STR_DIALOG_VOICE_PLACEHOLDER } from '../strings'
+import { STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_REPLY_AS_ANON, STR_DELETE, STR_APP_NAME, STR_DIALOG_MESSAGES_TITLE, STR_DIALOG_VOICE_PLACEHOLDER } from '../strings'
 import { IVoice, IPMNewVoiceView } from '../../types/type-voice'
-import { getInputFaceImojiBlock, getInputNicknameBlock, getInputContentBlock, getInputPasswordBlock } from './argument-common'
+import { getInputFaceImojiBlock, getInputNicknameBlock, getInputContentBlock, getInputPasswordBlock, getContent } from './argument-common'
 
 export const getVoiceArg = (voice: IVoice): ChatPostMessageArguments => {
   const { nickname, faceImoji, userLikeArr, userDislikeArr, userReportArr, isHiddenByReport } = voice
   const strCountLike = userLikeArr.length === 0 ? STR_LIKE : `${STR_LIKE} ${userLikeArr.length}`
   const strCountDislike = userDislikeArr.length === 0 ? STR_DISLIKE : `${STR_DISLIKE} ${userDislikeArr.length}`
   const strCountReport = userReportArr.length === 0 ? STR_REPORT : STR_REPORT_N.replace("%d", ""+userReportArr.length)
-
-  const content = voice.platformId !== NOT_YET
-    ? voice.content + '\n\n' + STR_THIS_VOICE_ID.replace('%s', voice.platformId)
-    : voice.content
+  const content = getContent(voice)
 
   return {
     channel: voice.groupId.split('-')[2],

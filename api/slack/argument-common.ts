@@ -2,14 +2,41 @@ import { Option, InputBlock, ViewsOpenArguments, SectionBlock } from '@slack/web
 import sillyname from 'sillyname'
 import { IFaceImoji, IPMDeletionView } from '../../types/type-common'
 import { getFaceImojiList, getRawPassword } from '../../common/common-util'
-import { INPUT_FACE_IMOJI, INPUT_NAME_NICKNAME, nickname_min_length, nickname_max_length, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, password_min_length, password_max_length, ACTION_SUBMISSION_DELETE } from '../constant'
-import { STR_DIALOG_FACE_IMOJI, STR_DIALOG_FACE_IMOJI_PLACEHOLDER, STR_DIALOG_NICKNAME_PLACEHOLDER, STR_DIALOG_NICKNAME_TITLE, STR_DIALOG_PASSWORD_PLACEHOLDER, STR_DIALOG_PASSWORD_TITLE, STR_DIALOG_PASSWORD_HINT, STR_VIEW_TITLE_REPLY_DELETION, STR_VIEW_TITLE_VOICE_DELETION, STR_VIEW_DELETE, STR_VIEW_CANCEL } from '../strings'
+import { INPUT_FACE_IMOJI, INPUT_NAME_NICKNAME, nickname_min_length, nickname_max_length, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, password_min_length, password_max_length, ACTION_SUBMISSION_DELETE, VOICE_LIMIT_RECENT24H, NOT_YET } from '../constant'
+import { STR_DIALOG_FACE_IMOJI, STR_DIALOG_FACE_IMOJI_PLACEHOLDER, STR_DIALOG_NICKNAME_PLACEHOLDER, STR_DIALOG_NICKNAME_TITLE, STR_DIALOG_PASSWORD_PLACEHOLDER, STR_DIALOG_PASSWORD_TITLE, STR_DIALOG_PASSWORD_HINT, STR_VIEW_TITLE_REPLY_DELETION, STR_VIEW_TITLE_VOICE_DELETION, STR_VIEW_DELETE, STR_VIEW_CANCEL, STR_REPORTED_MESSAGE, STR_DELETED_MESSAGE, STR_THIS_VOICE_ID } from '../strings'
+import { IVoice, isVoice } from '../../types/type-voice'
+import { IReply } from '../../types/type-reply'
+
+const ANONYMOUSLACK_TABLENAME_ENV = process.env.ANONYMOUSLACK_TABLENAME_ENV
 
 export const isReplyByTsThreadTs = (ts: string, threadTs?: string) => {
   // reply 인지 voice 인지 ts, threadTs로 구분
   // true 이면 reply, false 이면 voice
   return threadTs && ts !== threadTs
 }
+
+export const getContent = (obj: IVoice | IReply) => {
+  const { isHiddenByReport, isDeleted, content } = obj
+
+  let modifiedContent =
+      isHiddenByReport ? STR_REPORTED_MESSAGE
+    : isDeleted        ? STR_DELETED_MESSAGE
+    : content
+
+  if (isVoice(obj) && obj.platformId !== NOT_YET) {
+    modifiedContent = modifiedContent + '\n\n' + STR_THIS_VOICE_ID.replace('%s', obj.platformId)
+  }
+
+  if (ANONYMOUSLACK_TABLENAME_ENV !== 'production') {
+    modifiedContent = `
+(test용 슬랙앱에서 작성된 메시지 입니다)
+${modifiedContent}
+`.trim()
+  }
+
+  return modifiedContent
+}
+
 
 const getEmojiOption = (f: IFaceImoji): Option => {
   return {

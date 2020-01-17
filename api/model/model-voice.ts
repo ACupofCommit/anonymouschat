@@ -2,7 +2,7 @@ import crypto from 'crypto'
 import { isArray, every } from 'lodash'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-import { getContent, getGroupIdFromVoiceId, getVoiceId } from './model-common'
+import { getGroupIdFromVoiceId, getVoiceId } from './model-common'
 import { createLogger } from '../logger'
 import { getDDC } from '../util'
 import { IParamNewVoice, IVoice, isVoice } from '../../types/type-voice'
@@ -22,7 +22,7 @@ export const newVoice = (p: IParamNewVoice): IVoice => {
     userLikeArr: [], userDislikeArr: [], userReportArr: [],
     platformId, password, faceImoji, isDeleted: false, isHiddenByReport: false,
   }
-  return { ...voice, content: getContent(voice) }
+  return voice
 }
 
 export const getVoice = async (voiceId: string): Promise<IVoice> => {
@@ -30,7 +30,7 @@ export const getVoice = async (voiceId: string): Promise<IVoice> => {
   const r = await ddc.get({ TableName, Key }).promise()
   if (!isVoice(r.Item)) throw new Error('can not get voice by voiceId: ' + voiceId)
 
-  return { ...r.Item, content: getContent(r.Item) }
+  return r.Item
 }
 
 export const getVoiceArrByGroupId = async (groupId: string): Promise<IVoice[]> => {
@@ -68,7 +68,7 @@ export const putVoice = async (voice: IVoice): Promise<IVoice> => {
   await ddc.put(params).promise()
   logger.debug(`put voice into ${TableName}. voiceId: ${voice.voiceId}`)
 
-  return { ...voice, content: getContent(voice) }
+  return voice
 }
 
 export const getVoiceIdArrByTimeRange = async (start: string | number, end: string | number, groupId: string) => {

@@ -1,8 +1,5 @@
 
 import { NOT_GRID } from "../constant"
-import { STR_REPORTED_MESSAGE, STR_DELETED_MESSAGE } from "../strings"
-import { IReply } from "../../types/type-reply"
-import { IVoice } from "../../types/type-voice"
 import { BlockActionPayload, Team, Channel, Container, User, View } from "../../types/BlockActionPayload"
 import { ViewSubmissionPayload } from "../../types/ViewSubmissionPayload"
 
@@ -31,16 +28,6 @@ export const getGroupId = (channelId: string, teamId: string, gridId: string=NOT
 export const getGroupIdFromVoiceId = (voiceId: string) => {
   const [gridId, teamId, channelId] = voiceId.split('-')
   return getGroupId(channelId, teamId, gridId)
-}
-
-export const getContent = (obj: IVoice | IReply) => {
-  const { isHiddenByReport, isDeleted, content } = obj
-  const modifiedContent =
-      isHiddenByReport ? STR_REPORTED_MESSAGE
-    : isDeleted        ? STR_DELETED_MESSAGE
-    : content
-
-  return modifiedContent
 }
 
 export interface IMyBlockActionPayload extends BlockActionPayload {
