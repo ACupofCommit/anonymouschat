@@ -81,7 +81,6 @@ router.post('/voice', async (req, res, next) => {
 
 router.post('/get-group', async (req, res, next) => {
   const { webAccessToken } = req.body
-
   const [err,group] = await to(getGroupByWebAccessToken(webAccessToken))
   if (err || !isGroup(group)) return next(err || new Error('group is not IGroup'))
 

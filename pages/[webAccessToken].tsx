@@ -56,14 +56,13 @@ Home.getInitialProps = async (ctx) => {
   // const json = await res.json()
   const { query } = ctx
   const webAccessToken = isNotEmptyString(query.webAccessToken) ? query.webAccessToken : 'wrong-at'
-
   const [err, res] = await to(axiosInstance.post('/get-group', { webAccessToken }))
-  if (err || ((res || {}).data || {}).ok !== true) logger.warn('can not get channelName')
+  if (err || res?.data?.ok !== true) logger.warn('can not get channelName')
 
   return {
     // https://apps.timwhitlock.info/emoji/tables/unicode
     webAccessToken,
-    channelName: res.data.channelName || '',
+    channelName: res?.data?.channelName || '',
     faceImojiList: getFaceImojiList(),
   }
 }

@@ -29,7 +29,7 @@ app.prepare().then(() => {
     if (err) throw err
     console.info(`NODE_ENV: ${process.env.NODE_ENV}`)
     console.info(`GIT_REVISION: ${process.env.GIT_REVISION}`)
-    console.info(`> Ready on http://localhost:${port}`)
+    console.info(`> Ready on port:${port}`)
   })
 })
 
