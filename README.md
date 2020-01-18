@@ -51,3 +51,8 @@ development tool and debugging tool.
 $ yarn dev
 ```
 
+## License
+
+[MIT](http://opensource.org/licenses/MIT)
+
+Copyright (c) 2019-present aluc.io
