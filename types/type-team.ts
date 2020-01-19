@@ -5,6 +5,7 @@ export interface ITeam {
   gridId: string
   teamId: string
   teamName: string
+  teamDomain: string
 }
 
 export const isTeam = (o: any): o is ITeam => {

@@ -3,7 +3,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../logger'
 import { getDDC } from '../util'
 import { isTeamArr, ITeam } from '../../types/type-team'
-import { NOT_GRID, TABLENAME_TEAM } from '../constant'
+import { NOT_GRID, TABLENAME_TEAM, NOT_YET } from '../constant'
 
 const TableName = TABLENAME_TEAM
 const ddc = getDDC()
@@ -29,8 +29,12 @@ export const getTeamArrByGridId = async (gridId: string) => {
   return result.Items
 }
 
-export const upsertTeam = async (teamId: string, teamName: string, gridId: string | null) => {
-  const team: ITeam = { teamId, teamName, gridId: gridId || NOT_GRID }
+export const newTeam = (teamId: string, teamName: string=NOT_YET, teamDomain: string=NOT_YET, gridId: string=NOT_GRID) => {
+  const team: ITeam = { teamId, teamName, gridId, teamDomain }
+  return team
+}
+
+export const putTeam = async (team: ITeam) => {
   const params: DocumentClient.PutItemInput = { TableName, Item: team }
   await ddc.put(params).promise()
 }
