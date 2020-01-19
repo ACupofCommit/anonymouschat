@@ -137,12 +137,14 @@ const ButtonNavi: FC<IButtonNaviProps> = (props) => {
 
 export interface IPropsMainForm {
   faceImojiList: IFaceImoji[]
+  channelId: string
   channelName: string
   webAccessToken: string
 }
 const MainForm: FC<IPropsMainForm> = (props) => {
-  const { faceImojiList, webAccessToken, channelName } = props
-  const modifiedChannelName = channelName ? `#${channelName}` : '슬랙'
+  const { faceImojiList, webAccessToken, channelName, channelId } = props
+  const modifiedChannelName = (channelName && channelName !== 'privategroup')
+    ? `#${channelName}` : `[${channelId}]`
   const classes = useStyles({})
   const [tabIdx, setTabIdx] = useState(0)
   const [threadTs, setThreadTs] = useState('')

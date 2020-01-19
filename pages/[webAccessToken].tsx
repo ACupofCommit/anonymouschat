@@ -23,6 +23,7 @@ const Home: NextPage<IPropsHome> = (p) => (
       <h1 className='title'>Anonymouslack</h1>
       <MainForm
         faceImojiList={p.faceImojiList}
+        channelId={p.channelId}
         channelName={p.channelName}
         webAccessToken={p.webAccessToken}
       />
@@ -62,6 +63,7 @@ Home.getInitialProps = async (ctx) => {
   return {
     // https://apps.timwhitlock.info/emoji/tables/unicode
     webAccessToken,
+    channelId: res?.data?.channelId || '',
     channelName: res?.data?.channelName || '',
     faceImojiList: getFaceImojiList(),
   }
