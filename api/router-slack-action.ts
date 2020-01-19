@@ -102,7 +102,7 @@ router.all('/', async (req, res, next) => {
       : [new Error('Unkown action: ' + action)]
 
     if(err3) return next(err3)
-    if((r || {}).response_action === 'update') return res.send(r)
+    if(r && r.response_action === 'update') return res.send(r)
   }
 
   if (isMyBlockActionPayload(payload)) {

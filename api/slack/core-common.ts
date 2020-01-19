@@ -1,4 +1,3 @@
-import crypto from 'crypto'
 import axios from 'axios'
 import to from 'await-to-js'
 import { isObject } from "lodash"
@@ -25,7 +24,7 @@ import { STR_NOT_MATCHED_PASSWORD } from '../strings'
 const logger = createLogger('core')
 
 export const reportVoiceOrReply = async (web: WebClient, payload: IMyBlockActionPayload) => {
-  const { team, channel, container, user } = payload
+  const { team, channel, container, user, response_url } = payload
   const ts = container.message_ts
   const threadTs = container.thread_ts || ts
   const isReply = isReplyByTsThreadTs(ts, threadTs)
@@ -43,7 +42,7 @@ export const reportVoiceOrReply = async (web: WebClient, payload: IMyBlockAction
   const tmp: IVoice | IReply = { ...voiceOrReply, userReportArr, isHiddenByReport }
   const updated: IVoice | IReply = isVoice(tmp) ? await putVoice(tmp) : await putReply(tmp)
   const arg = isVoice(updated) ? getVoiceArg(updated) : getReplyArg(updated)
-  await web.chat.update({ ...arg, ts })
+  await axios.post(response_url, { ...arg, ts})
 }
 
 export const postAgreementMesssage = async (web: WebClient, group: IGroup) => {
@@ -170,9 +169,12 @@ export const getConfigMsgPermalink = async (web: WebClient, group: IGroup) => {
 }
 
 export const openViewToDelete = async (web: WebClient, payload: IMyBlockActionPayload) => {
-  const { trigger_id, container, channel } = payload
+  const { trigger_id, container, channel, response_url } = payload
   const { message_ts, thread_ts } = container
-  const pm: IPMDeletionView = { channelId: channel.id, ts: message_ts, threadTs: thread_ts, channelName: channel.name }
+  const pm: IPMDeletionView = {
+    channelId: channel.id, ts: message_ts, threadTs: thread_ts,
+    channelName: channel.name, responseUrl: response_url,
+  }
   await web.views.open(getDeletionViewOpenArg(trigger_id, pm))
 }
 
@@ -180,7 +182,7 @@ export const deleteVoiceOrReply = async (web: WebClient, payload: IMyViewSubmiss
   if (!isMyViewSubmissionPayload(payload)) throw new Error('Invalid payload')
   const { view, team } = payload
   const pm: IPMDeletionView = JSON.parse(view.private_metadata)
-  const { channelId, ts, threadTs } = pm
+  const { channelId, ts, threadTs, responseUrl } = pm
   const isVoice = ! isReplyByTsThreadTs(ts, threadTs)
 
   const password = payload.view.state.values[INPUT_NAME_PASSWORD].s.value
@@ -197,9 +199,10 @@ export const deleteVoiceOrReply = async (web: WebClient, payload: IMyViewSubmiss
 
   if (isVoice) {
     const voice = await getVoice(voiceId)
-    return await web.chat.update({ ...getVoiceArg(voice), ts })
+    // TODO: password 입력창이 30분이상 열려있었다면 responseUrl이 만료됨
+    await axios.post(responseUrl, { ...getVoiceArg(voice), ts })
   }
 
   const reply = await getReply(replyId)
-  return await web.chat.update({ ...getReplyArg(reply), ts })
+  await axios.post(responseUrl, { ...getReplyArg(reply), ts })
 }

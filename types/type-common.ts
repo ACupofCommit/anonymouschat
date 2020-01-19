@@ -21,6 +21,10 @@ export interface IPMDeletionView {
   channelName: string
   ts: string
   threadTs?: string
+
+  // web.chat.update 사용하면 imoji_name, name이 사라지는 문제 발생.
+  // 문제 해결될 때 까지 response_url 을 사용해야함
+  responseUrl: string
 }
 
 export interface IChatGetPermalinkResponse {
