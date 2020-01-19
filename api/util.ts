@@ -7,7 +7,8 @@ export const getDD = () => {
   if (!region) throw new Error('process.env.AWS_DEFAULT_REGION is required')
 
   const endpoint = process.env.DYNAMO_ENDPOINT || getDDEndpoint(region)
-  const dd = new AWS.DynamoDB({apiVersion: '2012-08-10', region, endpoint })
+  const httpOptions: AWS.HTTPOptions = { timeout: 5000 }
+  const dd = new AWS.DynamoDB({apiVersion: '2012-08-10', region, endpoint, httpOptions })
   return dd
 }
 
@@ -16,7 +17,8 @@ export const getDDC = (_region?: string, accessKeyId?: string, secretAccessKey?:
   if (!region) throw new Error('process.env.AWS_DEFAULT_REGION is required')
 
   const endpoint = _endpoint || process.env.DYNAMO_ENDPOINT || getDDEndpoint(region)
-  const ddc = new AWS.DynamoDB.DocumentClient({ region, endpoint, accessKeyId, secretAccessKey })
+  const httpOptions: AWS.HTTPOptions = { timeout: 5000 }
+  const ddc = new AWS.DynamoDB.DocumentClient({ region, endpoint, accessKeyId, secretAccessKey, httpOptions })
   return ddc
 }
 
