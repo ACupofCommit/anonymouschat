@@ -1,7 +1,7 @@
 import { compact } from 'lodash'
 import { ChatPostMessageArguments, ChatPostEphemeralArguments, KnownBlock } from '@slack/web-api'
-import { ACTION_APP_USE_AGREEMENT, ACTIVATION_QUORUM, NOT_YET, ACTION_APP_FORCE_ACTIVATE, ACTION_APP_FORCE_DEACTIVATE, ACTION_OPEN_DIALOG_VOICE } from '../constant'
-import { STR_AGREEMENT_REQUIRED_DESC, STR_YOU_AREADY_AGREED, STR_AGREEMENT_ACCEPTED, STR_SHARE_AGREEMENT_LINK, STR_FORCE_ACTIVATE, STR_AGREE, STR_APP_ACTIVATED_BY_FORCE, STR_APP_DEACTIVATED_BY_FORCE, STR_FORCE_DEACTIVATE, STR_POST_VOICE, STR_YOU_HAVE_TO_AGREE_APP_USAGE, STR_HOW_TO_POST, STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION1, STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION2, STR_CONFIG_MSG, STR_QUESTION, STR_SERVER_VERSION } from '../strings'
+import { ACTION_APP_USE_AGREEMENT, ACTIVATION_QUORUM, NOT_YET, ACTION_APP_FORCE_ACTIVATE, ACTION_APP_FORCE_DEACTIVATE, ACTION_OPEN_DIALOG_VOICE, CONST_SLASH_COMMAND } from '../constant'
+import { STR_AGREEMENT_REQUIRED_DESC, STR_YOU_AREADY_AGREED, STR_AGREEMENT_ACCEPTED, STR_FORCE_ACTIVATE, STR_AGREE, STR_APP_ACTIVATED_BY_FORCE, STR_APP_DEACTIVATED_BY_FORCE, STR_FORCE_DEACTIVATE, STR_POST_VOICE, STR_YOU_HAVE_TO_AGREE_APP_USAGE, STR_HOW_TO_POST, STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION1, STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION2, STR_CONFIG_MSG, STR_QUESTION, STR_SERVER_VERSION } from '../strings'
 import { IGroup } from '../../types/type-group'
 import { getUrlToPostVoice } from '../util'
 
@@ -58,7 +58,8 @@ const getActivatedConfigMsgBlocks = (group: IGroup): KnownBlock[] => {
   const strActivatedByForce = STR_APP_ACTIVATED_BY_FORCE.replace('%s', `<@${forceActivateUserId}>`)
 
   const reasonOfActivated = isMeetQuorum ? strActivatedByAgreeUsers : strActivatedByForce
-  const description = [reasonOfActivated, STR_HOW_TO_POST].join(' ')
+  const strHowToPost = STR_HOW_TO_POST.replace('%s', CONST_SLASH_COMMAND)
+  const description = [reasonOfActivated, strHowToPost].join(' ')
 
   return [
     {
@@ -140,11 +141,6 @@ export const getConfigMsgArg = (group: IGroup): ChatPostMessageArguments => {
     as_user: false,
     blocks,
   }
-}
-
-export const getMemberAgreementLinkArg = (channelId: string, userId: string, permalink: string): ChatPostEphemeralArguments => {
-  const text = STR_SHARE_AGREEMENT_LINK.replace("%link", permalink)
-  return { text, user: userId, channel: channelId, as_user: false, unfurl_links: true }
 }
 
 export const getErrorMsgChannelNotFound = () => {

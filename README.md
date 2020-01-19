@@ -21,10 +21,11 @@ export ANONYMOUSLACK_CLIENT_ID=5100000000000000000000003         # From Basic In
 export ANONYMOUSLACK_CLIENT_SECRET=9b...x0i                      # From Basic Information
 export ANONYMOUSLACK_SHARABLE_URL='https://....'                 # From Manage Distribution
 export ANONYMOUSLACK_MANAGER_SLACK_ID='WXXXXXXX0'                # From Your Slack Profile
-
-export ANONYMOUSLACK_TABLENAME_PREFIX=Anonymouslack              # Dynamodb table name prefix
+export ANONYMOUSLACK_TABLENAME_PREFIX=Anonymouslack-test         # Dynamodb table name prefix
 export ANONYMOUSLACK_ENV=test                                    # 'production' or others
-export ANONYMOUSLACK_LOGLEVEL=debug
+export ANONYMOUSLACK_SLASH_COMMAND=/anonymouslack-test           # Slack slash command you want
+export ANONYMOUSLACK_APP_NAME=Anonymouslack-test                 # Slack app name you want
+export ANONYMOUSLACK_LOGLEVEL=debug                              # loglevel
 ```
 
 ## 2. Development
@@ -68,7 +69,7 @@ $ ngrok http 3000
 development tool and debugging tool.
 
 ### `Basic Information`
-- App name: `<Slack App name you want>`
+- App name: `<value of 'ANONYMOUSLACK_APP_NAME'>`
 - Short description: `<Slack App description you want>`
 
 ### `Interactive Components`
@@ -84,7 +85,7 @@ development tool and debugging tool.
 
 ### `Slack Commands`
 - Click `Create New Command` button and fill out the form below
-    - Command: `<slash command you want>`
+    - Command: `<value of 'ANONYMOUSLACK_SLASH_COMMAND'>`
     - Request URL: `{endpoint-url}/api/slack/command`
     - Short Description: `Post message anonymously`
 

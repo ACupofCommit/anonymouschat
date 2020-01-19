@@ -1,8 +1,8 @@
 import { compact } from 'lodash'
 import { DialogOpenArguments, ChatPostMessageArguments, Action, Button, ViewsOpenArguments } from '@slack/web-api'
 
-import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_REPORT, password_min_length, password_max_length, ACTION_SUBMISSION_REPLY, ACTION_OPEN_DIALOG_DELETE_REPLY } from '../constant'
-import { STR_APP_NAME, STR_DIALOG_PASSWORD_TITLE, STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_LABEL_CONTENT, STR_PLACEHOLDER_CONTENT_FOR_REPLY, STR_DELETE } from '../strings'
+import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_REPORT, password_min_length, password_max_length, ACTION_SUBMISSION_REPLY, ACTION_OPEN_DIALOG_DELETE_REPLY, CONST_APP_NAME } from '../constant'
+import { STR_DIALOG_PASSWORD_TITLE, STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_LABEL_CONTENT, STR_PLACEHOLDER_CONTENT_FOR_REPLY, STR_DELETE, STR_MESSAGE_DELETION } from '../strings'
 import { IReply, IPMNewReplyView } from '../../types/type-reply'
 import { getInputFaceImojiBlock, getInputNicknameBlock, getInputContentBlock, getInputPasswordBlock, getContent } from './argument-common'
 
@@ -13,7 +13,7 @@ export const getNewReplyViewsOpen = (trigger_id: string, pm: IPMNewReplyView): V
       private_metadata: JSON.stringify(pm),
       "callback_id": ACTION_SUBMISSION_REPLY,
       "type": "modal",
-      "title": { "type": "plain_text", "text": STR_APP_NAME, "emoji": true },
+      "title": { "type": "plain_text", "text": CONST_APP_NAME, "emoji": true },
       "submit": { "type": "plain_text", "text": "Reply", "emoji": true },
       "close": { "type": "plain_text", "text": "Cancel", "emoji": true },
       "blocks": [
@@ -76,7 +76,7 @@ export const getReplyDeletionDialogArg = (callbackId: string, triggerId: string,
     trigger_id: triggerId,
     dialog: {
       "callback_id": callbackId,
-      "title": STR_APP_NAME,
+      "title": STR_MESSAGE_DELETION,
       "submit_label": "Delete",
       state,
       "elements": [
