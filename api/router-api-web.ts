@@ -84,7 +84,7 @@ router.post('/get-group', async (req, res, next) => {
   const [err,group] = await to(getGroupByWebAccessToken(webAccessToken))
   if (err || !isGroup(group)) return next(err || new Error('group is not IGroup'))
 
-  res.send({ ok: true, channelName: group.channelName })
+  res.send({ ok: true, channelId: group.channelId, channelName: group.channelName })
 })
 
 export default router
