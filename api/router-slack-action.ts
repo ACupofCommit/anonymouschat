@@ -6,7 +6,7 @@ import { includes } from 'lodash'
 import { WebClient } from '@slack/web-api'
 import { createLogger } from './logger'
 import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_USERREPLY_LIKE, ACTION_VOTE_USERREPLY_DISLIKE, ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_OPEN_DIALOG_DELETE_VOICE, ACTION_OPEN_DIALOG_DELETE_REPLY, ACTION_OPEN_DIALOG_DELETE_USERREPLY, ACTION_OPEN_VIEW_DELETE, ACTION_APP_USE_AGREEMENT, ACTION_APP_FORCE_ACTIVATE, ACTION_APP_FORCE_DEACTIVATE, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_DIALOG_VOICE, ACTION_VOTE_REPORT, ACTION_SUBMISSION_VOICE, ACTION_SUBMISSION_REPLY, ACTION_SUBMISSION_DELETE, ACTION_ON_MORE_OPEN_VIEW_REPLY } from './constant'
-import { isMyBlockActionPayload, isMyViewSubmissionPayload } from './model/model-common'
+import { isMyBlockActionPayload, isMyViewSubmissionPayload, isMoreActionPayload } from './model/model-common'
 import { getOrCreateGetGroup } from './model/model-group'
 import { isGroup } from '../types/type-group'
 import { getBEHRError } from '../common/common-util'
@@ -140,6 +140,31 @@ router.all('/', async (req, res, next) => {
 
       : [new Error('Unkown action: ' + action)]
 
+    if(err2) return next(err2)
+  }
+
+  if (isMoreActionPayload(payload)) {
+    const { team, channel, user } = payload
+    const [err,group] = await to(getOrCreateGetGroup(channel.id, team.id, channel.name, team.enterprise_id))
+    if (!isGroup(group)) return next(getBEHRError(err, 'Wrong getOrCreateGetGroup()'))
+
+    const web = new WebClient(group.accessToken)
+    // slack posting action은 추후 구현 예정
+    // TODO: 위에와 반복됨
+    const isPostingAction = includes([ACTION_OPEN_DIALOG_VOICE, ACTION_OPEN_DIALOG_REPLY], action)
+    if (!group.isPostingAvailable && isPostingAction) {
+      const permalink = await getConfigMsgPermalink(web, group)
+      const [err] = !! permalink
+        ? await to(sendHelpMessage(web, group, user.id, permalink))
+        : await to(postAgreementMesssage(web, group))
+
+      return err ? next(err) : res.status(200).end()
+    }
+
+    if (action !== 'ACTION_ON_MORE_OPEN_VIEW_REPLY') {
+      return next(new Error('Unknown action from More Action' + action))
+    }
+    const [err2] = await to(openViewToPostReply(web, payload))
     if(err2) return next(err2)
   }
 

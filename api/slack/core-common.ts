@@ -18,8 +18,9 @@ import { putVoice, getVoice, deleteVoice } from '../model/model-voice'
 import { putGroup, getGroup, updateBatchGroup, getGroupKeysArrByAccessToken } from '../model/model-group'
 import { getGroupId, getVoiceId, getReplyId, IMyBlockActionPayload, IMyViewSubmissionPayload, isMyViewSubmissionPayload } from '../model/model-common'
 import { IPMDeletionView, IChatGetPermalinkResponse } from '../../types/type-common'
-import { isReplyByTsThreadTs, getDeletionViewOpenArg, getErrorMsgBlockInView } from './argument-common'
+import { getDeletionViewOpenArg, getErrorMsgBlockInView } from './argument-common'
 import { STR_NOT_MATCHED_PASSWORD } from '../strings'
+import { isReplyByTsThreadTs } from '../util'
 
 const logger = createLogger('core')
 
