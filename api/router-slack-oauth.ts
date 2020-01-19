@@ -7,7 +7,7 @@ import { createLogger } from './logger';
 import { STR_DENIED_APP, STR_ALLOWED_APP } from './strings';
 import { getBEHRError } from '../common/common-util';
 import { createSlackAT } from './model/model-slackAT';
-import { upsertTeam } from './model/model-team';
+import { newTeam, putTeam } from './model/model-team';
 
 const logger = createLogger('oauth')
 
@@ -65,12 +65,14 @@ router.get('/', async (req, res, next) => {
   const [err, result] = await to(axios.post<IOAuthAcessResult>(url, data))
   if (err || !result) return next(getBEHRError(err, 'axios.post'))
   if (!isOAuthAccessSuccessResult(result.data)) return next(getBEHRError(err, 'result.data is not success'))
+  console.log(result.data)
 
   const { access_token, scope, team_id, user_id, team_name, enterprise_id } = result.data
   const [err2, slackAT] = await to(createSlackAT(team_id, user_id, access_token, scope))
   if (err2 || !slackAT) return next(getBEHRError(err2, 'createSlackAT'))
 
-  const [err3] = await to(upsertTeam(team_id, team_name, enterprise_id))
+  const team = newTeam(team_id, team_name, void 0, enterprise_id)
+  const [err3] = await to(putTeam(team))
   if (err3) return next(err3)
 
   res.send(`<h1>${STR_ALLOWED_APP}</h1>`)
