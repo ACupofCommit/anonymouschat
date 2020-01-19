@@ -7,7 +7,7 @@ import { STR_DIALOG_FACE_IMOJI, STR_DIALOG_FACE_IMOJI_PLACEHOLDER, STR_DIALOG_NI
 import { IVoice, isVoice } from '../../types/type-voice'
 import { IReply } from '../../types/type-reply'
 
-const ANONYMOUSLACK_TABLENAME_ENV = process.env.ANONYMOUSLACK_TABLENAME_ENV
+const ANONYMOUSLACK_ENV = process.env.ANONYMOUSLACK_ENV
 
 export const isReplyByTsThreadTs = (ts: string, threadTs?: string) => {
   // reply 인지 voice 인지 ts, threadTs로 구분
@@ -27,7 +27,7 @@ export const getContent = (obj: IVoice | IReply) => {
     modifiedContent = modifiedContent + '\n\n' + STR_THIS_VOICE_ID.replace('%s', obj.platformId)
   }
 
-  if (ANONYMOUSLACK_TABLENAME_ENV !== 'production') {
+  if (ANONYMOUSLACK_ENV !== 'production') {
     modifiedContent = `
 (test용 슬랙앱에서 작성된 메시지 입니다)
 ${modifiedContent}
