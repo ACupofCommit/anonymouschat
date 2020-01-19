@@ -40,6 +40,7 @@ export const updateAndShareWebAccessToken = async (group: IGroup) => {
     webAccessTokenExpirationTime: Date.now() + getMSFromHours(24),
   })
 
+  // TODO: permalink 확인 하고 해야하나
   const arg = { ...getConfigMsgArg(updatedGroup), ts: group.activationMsgTs }
   await web.chat.update(arg)
 }

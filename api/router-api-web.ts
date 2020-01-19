@@ -12,7 +12,9 @@ import { getGroupId } from './model/model-common'
 import { isParamNewVoiceFromWeb, IParamNewVoice } from '../types/type-voice'
 import { postAndPutReply } from './slack/core-reply'
 import { postAndPutSlackVoice } from './slack/core-voice'
+import { refreshAllTeam } from './slack/core-web-token'
 
+const ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD = process.env.ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD || 'secret'
 const logger = createLogger()
 
 const router = Router()
@@ -85,6 +87,18 @@ router.post('/get-group', async (req, res, next) => {
   if (err || !isGroup(group)) return next(err || new Error('group is not IGroup'))
 
   res.send({ ok: true, channelId: group.channelId, channelName: group.channelName })
+})
+
+router.post('/refresh-daily-web-token', async (req, res, next) => {
+  const { password } = req.body
+  if (password !== ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD) {
+    return res.status(404).send({ ok: false, reason: 'check your ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD' })
+  }
+
+  const [err, groupKeysArr] = await to(refreshAllTeam())
+  if (err) return next(err)
+
+  res.send(groupKeysArr)
 })
 
 export default router
