@@ -140,6 +140,7 @@ export const getConfigMsgArg = (group: IGroup): ChatPostMessageArguments => {
     channel: channelId,
     as_user: false,
     blocks,
+    attachments: [],
   }
 }
 
