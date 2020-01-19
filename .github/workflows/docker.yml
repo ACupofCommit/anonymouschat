@@ -1,0 +1,27 @@
+name: docker-image
+
+on:
+  push:
+    branches:
+      - "*"
+    tags:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: azure/docker-login@v1
+      with:
+        username: ${{ secrets.GHACTION_DOCKER_USERNAME }}
+        password: ${{ secrets.GHACTION_DOCKER_PASSWORD }}
+    - name: tsc and build in docker image
+      run: |
+        docker run --rm -v $PWD:/root/app -w /root/app node:10.18.1-alpine /bin/sh -c "yarn install --frozen-lockfile && yarn tsc && yarn build"
+    - name: build docker image
+      run: |
+        IMAGE_NAME=alucio/anonymouslack:$GITHUB_REF
+        docker build --build-arg GIT_REVISION=$GITHUB_REF -f Dockerfile -t $IMAGE_NAME .
+      env:
+        CI: true
