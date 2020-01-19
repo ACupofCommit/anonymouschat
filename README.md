@@ -1,4 +1,9 @@
 # Anonymouslack
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/aluc-io/anonymouslack/tsc-build)
+![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/alucio/anonymouslack)
+![Docker Pulls](https://img.shields.io/docker/pulls/alucio/anonymouslack)
+
 Share your mind anonymously on Slack.
 
 ## Install dependencies
