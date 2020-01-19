@@ -2,6 +2,7 @@ import url from 'url'
 import next from 'next'
 import express from 'express'
 import morgan from 'morgan'
+import urlJoin from 'url-join'
 import routerApiWeb from '../api/router-api-web'
 import routerSlackAction from '../api/router-slack-action'
 import routerSlackCommand from '../api/router-slack-command'
@@ -18,6 +19,12 @@ app.prepare().then(() => {
 
   server.use(morgan('combined'))
 
+  server.use((req, res, next) => {
+    if (process.env.ANONYMOUSLACK_REDIRECT_HTTP_TO_HTTPS !== 'true') return next()
+    if (req.headers["x-forwarded-proto"] === 'https') return next()
+    res.redirect(urlJoin('https:', req.headers.host, req.originalUrl))
+  })
+
   server.use('/api/slack/action', routerSlackAction)
   server.use('/api/slack/command', routerSlackCommand)
   server.use('/api/slack/oauth', routerSlackOauth)
@@ -25,6 +32,8 @@ app.prepare().then(() => {
 
   server.use('/', (req, res) => {
     const parsedUrl = url.parse(req.url, true)
+
+    // console.log(req.headers["x-forwarded-proto"])
     handle(req, res, parsedUrl)
   })
 
