@@ -27,6 +27,7 @@ WORKDIR /root/app
 
 # NOTICE: yarn install 시 NODE_ENV=production 일때,
 # devDependencies 설치가 안되므로 반드시 yarn install 이후에 셋팅해야함
+ARG GIT_REVISION
 ENV GIT_REVISION="${GIT_REVISION}"
 ENV NODE_ENV="production"
 

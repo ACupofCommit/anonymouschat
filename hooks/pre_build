@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Dockerfile FROM 에서 사용하는 docker image와 일치해야함
+docker run --rm -v $PWD:/root/app -w /root/app node:10.18.1-alpine /bin/sh -c "yarn install --frozen-lockfile && yarn tsc && yarn build"
