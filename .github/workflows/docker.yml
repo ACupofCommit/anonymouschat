@@ -2,8 +2,6 @@ name: docker-image
 
 on:
   push:
-    branches:
-      - "*"
     tags:
       - "*"
 
@@ -21,7 +19,7 @@ jobs:
         docker run --rm -v $PWD:/root/app -w /root/app node:10.18.1-alpine /bin/sh -c "yarn install --frozen-lockfile && yarn tsc && yarn build"
     - name: build docker image
       run: |
-        IMAGE_NAME=alucio/anonymouslack:$GITHUB_REF
-        docker build --build-arg GIT_REVISION=$GITHUB_REF -f Dockerfile -t $IMAGE_NAME .
+        IMAGE_NAME=alucio/anonymouslack:$GITHUB_SHA
+        docker build --build-arg GIT_REVISION=$GITHUB_SHA -f Dockerfile -t $IMAGE_NAME .
       env:
         CI: true
