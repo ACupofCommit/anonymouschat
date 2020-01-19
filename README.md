@@ -25,6 +25,7 @@ export ANONYMOUSLACK_TABLENAME_PREFIX=Anonymouslack-test         # Dynamodb tabl
 export ANONYMOUSLACK_ENV=test                                    # 'production' or others
 export ANONYMOUSLACK_SLASH_COMMAND=/anonymouslack-test           # Slack slash command you want
 export ANONYMOUSLACK_APP_NAME=Anonymouslack-test                 # Slack app name you want
+export ANONYMOUSLACK_REDIRECT_HTTP_TO_HTTPS=false                # if true, http request is redirected to https
 export ANONYMOUSLACK_LOGLEVEL=debug                              # loglevel
 ```
 
