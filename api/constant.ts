@@ -59,3 +59,10 @@ export const TABLENAME_GROUP = `${TABLENAME_PREFIX}-Group`
 export const TABLENAME_VOICE = `${TABLENAME_PREFIX}-Voice`
 export const TABLENAME_REPLY = `${TABLENAME_PREFIX}-Reply`
 export const TABLENAME_AT = `${TABLENAME_PREFIX}-AT`
+
+const getSlashCommand = (str?: string) => {
+  if (!str) return `/anonymouslack`
+  return /^\//.test(str) ? str : '/' + str
+}
+export const CONST_SLASH_COMMAND = getSlashCommand(process.env.ANONYMOUSLACK_SLASH_COMMAND)
+export const CONST_APP_NAME = process.env.ANONYMOUSLACK_APP_NAME || 'Anonymouslack'

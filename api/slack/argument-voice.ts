@@ -1,8 +1,8 @@
 import { compact } from 'lodash'
 import { ChatPostMessageArguments, Action, Button, ViewsOpenArguments } from '@slack/web-api'
 
-import { ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_VOTE_REPORT, NOT_YET, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_VIEW_DELETE, ACTION_SUBMISSION_VOICE } from '../constant'
-import { STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_REPLY_AS_ANON, STR_DELETE, STR_APP_NAME, STR_DIALOG_MESSAGES_TITLE, STR_DIALOG_VOICE_PLACEHOLDER } from '../strings'
+import { ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_VOTE_REPORT, NOT_YET, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_VIEW_DELETE, ACTION_SUBMISSION_VOICE, CONST_APP_NAME } from '../constant'
+import { STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_REPLY_AS_ANON, STR_DELETE, STR_DIALOG_MESSAGES_TITLE, STR_DIALOG_VOICE_PLACEHOLDER } from '../strings'
 import { IVoice, IPMNewVoiceView } from '../../types/type-voice'
 import { getInputFaceImojiBlock, getInputNicknameBlock, getInputContentBlock, getInputPasswordBlock, getContent } from './argument-common'
 
@@ -64,7 +64,7 @@ export const getNewVoiceViewsArg = (trigger_id: string, pm: IPMNewVoiceView): Vi
       private_metadata: JSON.stringify(pm),
       "callback_id": ACTION_SUBMISSION_VOICE,
       "type": "modal",
-      "title": { "type": "plain_text", "text": STR_APP_NAME, "emoji": true },
+      "title": { "type": "plain_text", "text": CONST_APP_NAME, "emoji": true },
       "submit": { "type": "plain_text", "text": "Post", "emoji": true },
       "close": { "type": "plain_text", "text": "Cancel", "emoji": true },
       "blocks": [
