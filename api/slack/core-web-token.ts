@@ -10,17 +10,17 @@ import { getExpiredGroupKeysArrByTeamId, getGroup, putGroup, createWebAccessToke
 
 const logger = createLogger('core-web-token')
 
-export const getExpiredGroupKeysArr = async () => {
+export const getExpiredGroupKeysArr = async (h: number) => {
   const teamArr = await getTeamArr()
 
   // 3시간 이내에 만료되는 친구들
-  const ts = new Date(Date.now() + getMSFromHours(3)).getTime()
+  const ts = new Date(Date.now() + getMSFromHours(h)).getTime()
   const promiseArr = teamArr.map( t => getExpiredGroupKeysArrByTeamId(t.teamId, ts))
   return flatten(await Promise.all(promiseArr))
 }
 
-export const refreshAllTeam = async () => {
-  const groupKeysArr = await getExpiredGroupKeysArr()
+export const refreshAllTeam = async (h: number) => {
+  const groupKeysArr = await getExpiredGroupKeysArr(h)
   await Promise.all(groupKeysArr.map( async gk => {
     const group = await getGroup(gk.channelId)
     if (group.activationMsgTs === NOT_YET) return
@@ -40,6 +40,7 @@ export const updateAndShareWebAccessToken = async (group: IGroup) => {
     webAccessTokenExpirationTime: Date.now() + getMSFromHours(24),
   })
 
+  // TODO: permalink 확인 하고 해야하나
   const arg = { ...getConfigMsgArg(updatedGroup), ts: group.activationMsgTs }
   await web.chat.update(arg)
 }
