@@ -1,6 +1,7 @@
 import url from 'url'
 import next from 'next'
 import express from 'express'
+import morgan from 'morgan'
 import routerApiWeb from '../api/router-api-web'
 import routerSlackAction from '../api/router-slack-action'
 import routerSlackCommand from '../api/router-slack-command'
@@ -14,6 +15,8 @@ const handle = app.getRequestHandler()
 app.prepare().then(() => {
 
   const server = express()
+
+  server.use(morgan('combined'))
 
   server.use('/api/slack/action', routerSlackAction)
   server.use('/api/slack/command', routerSlackCommand)
