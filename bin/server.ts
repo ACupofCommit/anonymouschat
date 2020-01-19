@@ -13,11 +13,17 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
+const handleByNextJs = (req,res) => {
+  const parsedUrl = url.parse(req.url, true)
+  handle(req, res, parsedUrl)
+}
+
 app.prepare().then(() => {
 
   const server = express()
 
   server.use(morgan('combined'))
+  server.use('/health', (_, res) => res.send({ ok: true }))
 
   server.use((req, res, next) => {
     if (process.env.ANONYMOUSLACK_REDIRECT_HTTP_TO_HTTPS !== 'true') return next()
@@ -29,13 +35,7 @@ app.prepare().then(() => {
   server.use('/api/slack/command', routerSlackCommand)
   server.use('/api/slack/oauth', routerSlackOauth)
   server.use('/api/web', routerApiWeb)
-
-  server.use('/', (req, res) => {
-    const parsedUrl = url.parse(req.url, true)
-
-    // console.log(req.headers["x-forwarded-proto"])
-    handle(req, res, parsedUrl)
-  })
+  server.use('/', handleByNextJs)
 
   server.listen(port, (err) => {
     if (err) throw err
