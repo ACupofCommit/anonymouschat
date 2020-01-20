@@ -78,3 +78,7 @@ export const isReplyByTsThreadTs = (ts: string, threadTs?: string) => {
   // true 이면 reply, false 이면 voice
   return threadTs && ts !== threadTs
 }
+
+export const delay = (ms: number) => new Promise(resolve => {
+  setTimeout(resolve, ms)
+})
