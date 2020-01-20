@@ -2,13 +2,13 @@
 FROM node:10.18.1-alpine
 
 # TODO: nextjs 빌드 후 삭제해도 되는 파일들 삭제하여 image사이즈 최적화
-COPY api /root/app/
-COPY bin /root/app/
-COPY common /root/app/
-COPY types /root/app/
-COPY components /root/app/
-COPY pages /root/app/
-COPY web /root/app/
+COPY api /root/app/api
+COPY bin /root/app/bin
+COPY common /root/app/common
+COPY types /root/app/types
+COPY components /root/app/components
+COPY pages /root/app/pages
+COPY web /root/app/web
 
 COPY package.json /root/app/
 COPY yarn.lock /root/app/
@@ -16,17 +16,18 @@ COPY next-env.d.ts /root/app/
 COPY next.config.js /root/app/
 COPY babel.config.js /root/app/
 COPY tsconfig.json /root/app/
-COPY README.md /root/app
-COPY LICENSE /root/app
+COPY README.md /root/app/
+COPY LICENSE /root/app/
 
 # hooks/build 참고
-COPY node_modules /root/app/
-COPY .next /root/app/
+COPY node_modules /root/app/node_modules
+COPY .next /root/app/.next
 
 WORKDIR /root/app
 
 # NOTICE: yarn install 시 NODE_ENV=production 일때,
 # devDependencies 설치가 안되므로 반드시 yarn install 이후에 셋팅해야함
+ARG GIT_REVISION
 ENV GIT_REVISION="${GIT_REVISION}"
 ENV NODE_ENV="production"
 

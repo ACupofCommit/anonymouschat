@@ -2,6 +2,7 @@
 import { NOT_GRID } from "../constant"
 import { BlockActionPayload, Team, Channel, Container, User, View } from "../../types/BlockActionPayload"
 import { ViewSubmissionPayload } from "../../types/ViewSubmissionPayload"
+import { isNotNullObject, isNotEmptyString } from "../../common/common-util"
 
 /**
  * voiceId 생성 규칙에 따라 voiceId를 생성하여 반환
@@ -66,6 +67,50 @@ export const isMyViewSubmissionPayload = (o: any): o is IMyViewSubmissionPayload
   const { team, user, view } = o
   if (!team || !user || !view) return false
   if (!team.id || !user.id || !view.private_metadata) return false
+
+  return true
+}
+
+
+export interface IMoreActionPayload {
+  team: { id: string, domain: string, enterprise_id?: string }
+  channel: { id: string, name: string }
+  user: { id: string, name: string }
+  callback_id: 'ACTION_ON_MORE_OPEN_VIEW_REPLY'
+  trigger_id: string
+  message_ts: string
+  response_url: string
+  action_ts: string
+  type: string
+  message: {
+    thread_ts?: string
+  }
+}
+
+export const isMoreActionPayload = (o: any): o is IMoreActionPayload => {
+  if (!isNotNullObject(o)) return false
+
+  if (!isNotNullObject(o.team)) return false
+  if (!isNotEmptyString(o.team.id)) return false
+  if (!isNotEmptyString(o.team.domain)) return false
+
+  if (!isNotNullObject(o.user)) return false
+  if (!isNotEmptyString(o.user.id)) return false
+  if (!isNotEmptyString(o.user.name)) return false
+
+  if (!isNotNullObject(o.channel)) return false
+  if (!isNotEmptyString(o.channel.id)) return false
+  if (!isNotEmptyString(o.channel.name)) return false
+
+  if (!isNotNullObject(o.message)) return false
+  if (o.message.thread_ts && typeof o.message.thread_ts !== 'string') return false
+
+  if (o.callback_id !== 'ACTION_ON_MORE_OPEN_VIEW_REPLY') return false
+  if (!isNotEmptyString(o.message_ts)) return false
+  if (!isNotEmptyString(o.trigger_id)) return false
+  if (!isNotEmptyString(o.response_url)) return false
+  if (!isNotEmptyString(o.action_ts)) return false
+  if (!isNotEmptyString(o.type)) return false
 
   return true
 }

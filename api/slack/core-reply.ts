@@ -3,10 +3,11 @@ import { WebClient } from "@slack/web-api"
 import { IParamNewReply, IReply, IPMNewReplyView, isPMCreateReplyView } from "../../types/type-reply"
 import { newReply, putReply, getReply } from "../model/model-reply"
 import { getReplyArg, getNewReplyViewsOpen } from "./argument-reply"
-import { getVoiceId, getReplyId, IMyBlockActionPayload, getGroupId, IMyViewSubmissionPayload } from "../model/model-common"
+import { getVoiceId, getReplyId, IMyBlockActionPayload, getGroupId, IMyViewSubmissionPayload, IMoreActionPayload, isMoreActionPayload } from "../model/model-common"
 import { hashAndtoggle, isNotEmptyString } from "../../common/common-util"
 import { IGroup } from "../../types/type-group"
 import { INPUT_NAME_NICKNAME, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, INPUT_FACE_IMOJI, NOT_YET } from "../constant"
+import { getTheradTs } from '../util'
 
 export const createReplyFromSlack = async (web: WebClient, payload: IMyViewSubmissionPayload, group: IGroup) => {
   const { view } = payload
@@ -54,9 +55,15 @@ export const voteSlackReply = async (payload: IMyBlockActionPayload, type: 'LIKE
   await axios.post(response_url, getReplyArg(updatedReply))
 }
 
-export const openViewToPostReply = async (web: WebClient, payload: IMyBlockActionPayload) => {
-  const { trigger_id, channel, container } = payload
-  const pm: IPMNewReplyView = { channelId: channel.id, threadTs: container.message_ts, channelName: channel.name }
+export const openViewToPostReply = async (web: WebClient, payload: IMyBlockActionPayload | IMoreActionPayload) => {
+  const channelId = payload.channel.id
+  const channelName = payload.channel.name
+  const { trigger_id, channel } = payload
+  const threadTs = isMoreActionPayload(payload)
+    ? getTheradTs(payload.message_ts, payload.message.thread_ts)
+    : getTheradTs(payload.container.message_ts, payload.container.thread_ts)
+
+  const pm: IPMNewReplyView = { channelId, threadTs, channelName }
   const arg = getNewReplyViewsOpen(trigger_id, pm)
   await web.views.open(arg)
 }
