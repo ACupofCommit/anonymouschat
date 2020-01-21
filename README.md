@@ -1,8 +1,8 @@
 # Anonymouslack
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/aluc-io/anonymouslack/tsc-build)
-![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/alucio/anonymouslack)
-![Docker Pulls](https://img.shields.io/docker/pulls/alucio/anonymouslack)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/aluc-io/anonymouslack/tsc-build)](https://github.com/aluc-io/anonymouslack/actions)
+[![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/alucio/anonymouslack)](https://hub.docker.com/repository/docker/alucio/anonymouslack/general)
+[![Docker Pulls](https://img.shields.io/docker/pulls/alucio/anonymouslack)](https://hub.docker.com/repository/docker/alucio/anonymouslack/general)
 
 Share your mind anonymously on Slack.
 
