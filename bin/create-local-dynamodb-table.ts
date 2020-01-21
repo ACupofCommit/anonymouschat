@@ -35,7 +35,10 @@ const paramsGroup: CreateTableInput = {
       { AttributeName: 'webAccessToken', KeyType: 'HASH' },
     ],
   }, {
-    Projection: { ProjectionType: 'KEYS_ONLY' },
+    Projection: {
+      ProjectionType: 'INCLUDE',
+      NonKeyAttributes: ['teamId','webAccessTokenExpirationTime','activationMsgTs'],
+    },
     IndexName: 'IndexWebAccessTokenExpirationTime',
     KeySchema: [
       { AttributeName: 'teamId', KeyType: 'HASH' },
