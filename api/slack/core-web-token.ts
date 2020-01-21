@@ -1,46 +1,52 @@
 import { flatten } from "lodash"
-import { NOT_YET } from "../constant"
 import { WebClient } from "@slack/web-api"
 import { getConfigMsgArg } from "./argument-config"
 import { getMSFromHours } from "../../common/common-util"
-import { createLogger } from "../logger"
 import { getTeamArr } from "../model/model-team"
-import { IGroup } from "../../types/type-group"
-import { getExpiredGroupKeysArrByTeamId, getGroup, putGroup, createWebAccessToken } from "../model/model-group"
+import { getGroup, putGroup, createWebAccessToken, getExpiredGroupKeysArrByTeamId } from "../model/model-group"
+import { canPostMessageIntoChannel, getConfigMsgPermalink } from "./core-common"
+import to from "await-to-js"
+import { createLogger } from "../logger"
 
 const logger = createLogger('core-web-token')
 
-export const getExpiredGroupKeysArr = async (h: number) => {
-  const teamArr = await getTeamArr()
-
-  // 3시간 이내에 만료되는 친구들
-  const ts = new Date(Date.now() + getMSFromHours(h)).getTime()
-  const promiseArr = teamArr.map( t => getExpiredGroupKeysArrByTeamId(t.teamId, ts))
-  return flatten(await Promise.all(promiseArr))
-}
+// 3분에 한번씩 이 함수가 호출된다면,
+// 최대 팀당 3개씩 처리되니 하루 1440개 그룹을 커버 할 수 있음.
+const NUMBER_OF_GROUPS_IN_A_TEAM_TO_RENEW_TOKEN_AT_ONCE = 3
 
 export const refreshAllTeam = async (h: number) => {
-  const groupKeysArr = await getExpiredGroupKeysArr(h)
-  await Promise.all(groupKeysArr.map( async gk => {
-    const group = await getGroup(gk.channelId)
-    if (group.activationMsgTs === NOT_YET) return
+  const teamArr = await getTeamArr()
+  const ts = new Date(Date.now() + getMSFromHours(h)).getTime()
+  const limit = NUMBER_OF_GROUPS_IN_A_TEAM_TO_RENEW_TOKEN_AT_ONCE
+  const promiseArr = teamArr.map(t => getExpiredGroupKeysArrByTeamId(t.teamId, ts, limit))
 
-    return updateAndShareWebAccessToken(group)
-  }))
-  return groupKeysArr
+  const tmpArr = await Promise.all(promiseArr)
+  const groupKeysArr = flatten(tmpArr)
+
+  const resultArr = await Promise.all(groupKeysArr.map(k => updateAndShareWebAccessToken(k.channelId)))
+  logger.info(JSON.stringify(resultArr, null, 2))
+  return resultArr
 }
 
-export const updateAndShareWebAccessToken = async (group: IGroup) => {
-  if (group.activationMsgTs === NOT_YET) throw new Error('Failed to updateAndShareWebAccessToken. group.activationMsgTs === NOT_YET')
-
-  const web = new WebClient(group.accessToken)
+export const updateAndShareWebAccessToken = async (channelId: string) => {
+  const group = await getGroup(channelId)
   const updatedGroup = await putGroup({
     ...group,
     webAccessToken: createWebAccessToken(),
     webAccessTokenExpirationTime: Date.now() + getMSFromHours(24),
   })
 
-  // TODO: permalink 확인 하고 해야하나
+  const canPost = await canPostMessageIntoChannel(group.accessToken, group.channelId)
+  if (!canPost) return { channelId, ok: false, reason: 'canPost: false' }
+
+  const web = new WebClient(group.accessToken)
+  const permalink = await getConfigMsgPermalink(web, group)
+  if (!permalink) return { channelId, ok: false, reason: 'permalink: false' }
+
+  // getConfigMsgARg 에서 남의 AT로 쓰니깐
   const arg = { ...getConfigMsgArg(updatedGroup), ts: group.activationMsgTs }
-  await web.chat.update(arg)
+  const [err] = await to(web.chat.update(arg))
+  if (err) return { channelId, ok: false, reason: 'failed to web.chat.udpate()' }
+
+  return { channelId, ok: true }
 }
