@@ -106,13 +106,15 @@ export const getGroupKeysArrByAccessToken = async (accessToken: string) => {
   return result.Items
 }
 
-export const getExpiredGroupKeysArrByTeamId = async (teamId: string, ts: number) => {
+export const getExpiredGroupKeysArrByTeamId = async (teamId: string, ts: number, Limit: number) => {
   const params: DocumentClient.QueryInput = {
-    TableName : TableName,
-    ExpressionAttributeValues: { ":ts": ts, ":teamId": teamId },
+    TableName: TableName,
+    ExpressionAttributeNames: { "#activationMsgTs": "activationMsgTs" },
+    ExpressionAttributeValues: { ":ts": ts, ":teamId": teamId, ":notYet": NOT_YET },
     IndexName: 'IndexWebAccessTokenExpirationTime',
     KeyConditionExpression: "teamId = :teamId AND webAccessTokenExpirationTime < :ts",
-    Limit: 200,
+    FilterExpression: "#activationMsgTs <> :notYet",
+    Limit,
   }
   const result = await ddc.query(params).promise()
   if (!result || !isGroupKeysArr(result.Items)) throw new Error('Can not get group getExpiredGroupKeysArrByTeamId')
