@@ -91,15 +91,16 @@ router.post('/get-group', async (req, res, next) => {
 
 router.post('/refresh-daily-web-token', async (req, res, next) => {
   const { password, hours } = req.body
-  // hours 값이 2일때 2시간 내 말료 토큰을 refresh 시킨다
+  // Example: hours: 2 일때, 2시간 내 말료될 토큰을 query해서 refresh 시킴.
+  // limit가 있어서 모든 토큰이 만료되지는 않음.
   if (password !== ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD) {
     return res.status(404).send({ ok: false, reason: 'check your ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD' })
   }
 
-  const [err, groupKeysArr] = await to(refreshAllTeam(hours || 3))
+  const [err, resultArr] = await to(refreshAllTeam(hours || 3))
   if (err) return next(err)
 
-  res.send(groupKeysArr)
+  res.send(resultArr)
 })
 
 export default router

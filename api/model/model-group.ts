@@ -106,18 +106,31 @@ export const getGroupKeysArrByAccessToken = async (accessToken: string) => {
   return result.Items
 }
 
-export const getExpiredGroupKeysArrByTeamId = async (teamId: string, ts: number) => {
+export const getExpiredGroupKeysArrByTeamId = async (teamId: string, ts: number, Limit: number) => {
+  let groupKeysArr: IGroupKeys[] = []
   const params: DocumentClient.QueryInput = {
-    TableName : TableName,
-    ExpressionAttributeValues: { ":ts": ts, ":teamId": teamId },
+    TableName: TableName,
+    ExpressionAttributeNames: { "#activationMsgTs": "activationMsgTs" },
+    ExpressionAttributeValues: { ":ts": ts, ":teamId": teamId, ":notYet": NOT_YET },
     IndexName: 'IndexWebAccessTokenExpirationTime',
     KeyConditionExpression: "teamId = :teamId AND webAccessTokenExpirationTime < :ts",
-    Limit: 200,
+    FilterExpression: "#activationMsgTs <> :notYet",
+    Limit,
   }
-  const result = await ddc.query(params).promise()
-  if (!result || !isGroupKeysArr(result.Items)) throw new Error('Can not get group getExpiredGroupKeysArrByTeamId')
 
-  return result.Items
+  while(true) {
+    const result = await ddc.query(params).promise()
+    if (!result || !isGroupKeysArr(result.Items)) throw new Error('Can not get group getExpiredGroupKeysArrByTeamId')
+
+    groupKeysArr = [...groupKeysArr, ...result.Items]
+    params.ExclusiveStartKey = result.LastEvaluatedKey
+
+    if (groupKeysArr.length >= Limit) break
+    if (!params.ExclusiveStartKey) break
+    logger.debug('continue while -- ' + params.ExclusiveStartKey)
+  }
+
+  return groupKeysArr
 }
 
 interface IRequetArrGroupBatchUpdate extends IGroupKeys {
