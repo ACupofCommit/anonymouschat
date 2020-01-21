@@ -58,7 +58,8 @@ export const newGroup = (channelId: string, teamId: string, channelName: string,
     forceActivateUserId: NOT_YET, forceDeactivateUserId: NOT_YET,
     accessToken: NOT_YET, activationMsgTs: NOT_YET,
     webAccessToken: createWebAccessToken(),
-    webAccessTokenExpirationTime: Date.now() + getMSFromHours(24),
+    // isPostingAvailable: false일때는 갱신을 위한 query날릴때 앞에 나오지 않도록 만료를 100년 후로 셋팅
+    webAccessTokenExpirationTime: Date.now() + getMSFromHours(24 * 365 * 100),
     numberOfReportToHidden: 5
   }
   return group
