@@ -1,16 +1,63 @@
 import to from 'await-to-js'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import { DocumentClient, CreateTableInput } from 'aws-sdk/clients/dynamodb'
 import gp from 'generate-password'
 
 import { createLogger } from '../logger'
 import { getDDC } from '../util'
 import { NOT_GRID, NOT_YET, ERROR_CAN_NOT_QUERY_GROUP_BY_WEB_ACCESS_TOKEN, ERROR_CAN_NOT_GET_GROUP_BY_WEB_ACCESS_TOKEN, TABLENAME_GROUP } from '../constant'
 import { isGroup, isGroupKeysArr, IGroup, IGroupKeys } from '../../types/type-group'
-import { getMSFromHours, isNotEmptyString } from '../../common/common-util'
+import { isNotEmptyString } from '../../common/common-util'
 
 const TableName = TABLENAME_GROUP
 const ddc = getDDC()
 const logger = createLogger('group')
+
+export const scheme: CreateTableInput = {
+  BillingMode: 'PAY_PER_REQUEST',
+  TableName,
+  AttributeDefinitions: [
+    { AttributeName: 'teamId', AttributeType: 'S' },
+    { AttributeName: 'channelId', AttributeType: 'S' },
+    { AttributeName: 'accessToken', AttributeType: 'S' },
+    { AttributeName: 'webAccessToken', AttributeType: 'S' },
+    { AttributeName: 'webAccessTokenExpirationTime', AttributeType: 'N' },
+  ],
+  KeySchema: [
+    { AttributeName: 'channelId', KeyType: 'HASH' },
+  ],
+  GlobalSecondaryIndexes: [{
+    Projection: { ProjectionType: 'KEYS_ONLY' },
+    IndexName: 'IndexTeamId',
+    KeySchema: [
+      { AttributeName: 'teamId', KeyType: 'HASH' },
+    ],
+  }, {
+    Projection: { ProjectionType: 'KEYS_ONLY' },
+    IndexName: 'IndexAccessToken',
+    KeySchema: [
+      { AttributeName: 'accessToken', KeyType: 'HASH' },
+    ],
+  }, {
+    Projection: { ProjectionType: 'KEYS_ONLY' },
+    IndexName: 'IndexWebAccessToken',
+    KeySchema: [
+      { AttributeName: 'webAccessToken', KeyType: 'HASH' },
+    ],
+  }, {
+    Projection: {
+      ProjectionType: 'INCLUDE',
+      NonKeyAttributes: ['teamId','webAccessTokenExpirationTime','activationMsgTs'],
+    },
+    IndexName: 'IndexWebAccessTokenExpirationTime',
+    KeySchema: [
+      { AttributeName: 'teamId', KeyType: 'HASH' },
+      { AttributeName: 'webAccessTokenExpirationTime', KeyType: 'RANGE' },
+    ],
+  }],
+  StreamSpecification: {
+    StreamEnabled: false
+  },
+}
 
 /**
  * 그룹을 찾아 리턴하고, 없으면 새로운 그룹 생성 후 리턴
@@ -58,7 +105,8 @@ export const newGroup = (channelId: string, teamId: string, channelName: string,
     forceActivateUserId: NOT_YET, forceDeactivateUserId: NOT_YET,
     accessToken: NOT_YET, activationMsgTs: NOT_YET,
     webAccessToken: createWebAccessToken(),
-    webAccessTokenExpirationTime: Date.now() + getMSFromHours(24),
+    // isPostingAvailable: false일때는 갱신을 위한 query날릴때 앞에 나오지 않도록 -1로 셋팅해둠.
+    webAccessTokenExpirationTime: -1,
     numberOfReportToHidden: 5
   }
   return group
@@ -106,14 +154,16 @@ export const getGroupKeysArrByAccessToken = async (accessToken: string) => {
   return result.Items
 }
 
-export const getExpiredGroupKeysArrByTeamId = async (teamId: string, ts: number) => {
+export const getExpiredGroupKeysArrByTeamId = async (teamId: string, ts: number, Limit: number) => {
+  console.log(TableName)
   const params: DocumentClient.QueryInput = {
-    TableName : TableName,
-    ExpressionAttributeValues: { ":ts": ts, ":teamId": teamId },
+    TableName: TableName,
+    ExpressionAttributeValues: { ":ts": ts, ":teamId": teamId, ":zero": 0 },
     IndexName: 'IndexWebAccessTokenExpirationTime',
-    KeyConditionExpression: "teamId = :teamId AND webAccessTokenExpirationTime < :ts",
-    Limit: 200,
+    KeyConditionExpression: "teamId = :teamId AND webAccessTokenExpirationTime BETWEEN :zero AND :ts",
+    Limit,
   }
+
   const result = await ddc.query(params).promise()
   if (!result || !isGroupKeysArr(result.Items)) throw new Error('Can not get group getExpiredGroupKeysArrByTeamId')
 
@@ -126,4 +176,11 @@ interface IRequetArrGroupBatchUpdate extends IGroupKeys {
 export const updateBatchGroup = async (requestArr: IRequetArrGroupBatchUpdate[]) => {
   const putRequestArr = requestArr.map( Item => ({ PutRequest: { Item }}))
   await ddc.batchWrite({ RequestItems: {[TableName]: putRequestArr }}).promise()
+}
+
+export const isWebTokenValid = (token: string, tokenExpirationTime: number) => {
+  if (token === NOT_YET) return false
+  if (tokenExpirationTime < new Date().getTime()) return false
+
+  return true
 }
