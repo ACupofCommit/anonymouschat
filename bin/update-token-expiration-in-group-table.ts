@@ -27,20 +27,20 @@ const ddcTo = REAL_RUN
 const updateDB = async () => {
   const Limit = 200   // 현
 
-  let groupKeysArr: IGroup[] = []
+  let groupArr: IGroup[] = []
   let params: DocumentClient.ScanInput = { TableName: TABLENAME, Limit }
   while(true) {
     const result = await ddcFrom.scan(params).promise()
     if (!isGroupArr(result.Items)) throw new Error('Items is not GroupArr')
 
-    groupKeysArr = [...groupKeysArr, ...result.Items]
+    groupArr = [...groupArr, ...result.Items]
     params.ExclusiveStartKey = result.LastEvaluatedKey
 
-    if (groupKeysArr.length >= Limit) break
+    if (groupArr.length >= Limit) break
     if (!params.ExclusiveStartKey) break
   }
 
-  const pArr = groupKeysArr.map(group => {
+  const pArr = groupArr.map(group => {
     // 로그보고 실제에 배포
     if (group.accessToken !== NOT_YET) return
     // if (group.isPostingAvailable) return
