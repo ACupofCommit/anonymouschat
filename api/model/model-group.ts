@@ -155,7 +155,6 @@ export const getGroupKeysArrByAccessToken = async (accessToken: string) => {
 }
 
 export const getExpiredGroupKeysArrByTeamId = async (teamId: string, ts: number, Limit: number) => {
-  console.log(TableName)
   const params: DocumentClient.QueryInput = {
     TableName: TableName,
     ExpressionAttributeValues: { ":ts": ts, ":teamId": teamId, ":zero": 0 },
