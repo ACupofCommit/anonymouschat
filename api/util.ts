@@ -2,13 +2,13 @@ import AWS from 'aws-sdk'
 import urljoin from 'url-join'
 
 const ANONYMOUSLACK_WEB_ENDPOINT = process.env.ANONYMOUSLACK_WEB_ENDPOINT || '/'
-export const getDD = () => {
-  const region = process.env.AWS_DEFAULT_REGION
+export const getDD = (_region?: string, accessKeyId?: string, secretAccessKey?: string, _endpoint?: string) => {
+  const region = _region || process.env.AWS_DEFAULT_REGION
   if (!region) throw new Error('process.env.AWS_DEFAULT_REGION is required')
 
-  const endpoint = process.env.DYNAMO_ENDPOINT || getDDEndpoint(region)
+  const endpoint = _endpoint || process.env.DYNAMO_ENDPOINT || getDDEndpoint(region)
   const httpOptions: AWS.HTTPOptions = { timeout: 5000 }
-  const dd = new AWS.DynamoDB({apiVersion: '2012-08-10', region, endpoint, httpOptions })
+  const dd = new AWS.DynamoDB({apiVersion: '2012-08-10', region, endpoint, accessKeyId, secretAccessKey, httpOptions })
   return dd
 }
 

@@ -5,14 +5,14 @@ import { WebClient } from '@slack/web-api'
 import { createLogger } from './logger'
 import { isParamNewReplyFromWeb, IParamNewReply } from '../types/type-reply'
 import { ERROR_INVALID_PARAMETER, NOT_YET } from './constant'
-import { getGroupByWebAccessToken } from './model/model-group'
+import { getGroupByWebAccessToken, isWebTokenValid } from './model/model-group'
 import { isGroup } from '../types/type-group'
 import { checkAndConvertUrlTsToDotTs } from './util'
 import { getGroupId } from './model/model-common'
 import { isParamNewVoiceFromWeb, IParamNewVoice } from '../types/type-voice'
 import { postAndPutReply } from './slack/core-reply'
 import { postAndPutSlackVoice } from './slack/core-voice'
-import { refreshAllTeam } from './slack/core-web-token'
+import { refreshAllTeam, updateAndShareWebAccessToken } from './slack/core-web-token'
 
 const ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD = process.env.ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD || 'secret'
 const logger = createLogger()
@@ -31,9 +31,9 @@ router.post('/reply', async (req, res, next) => {
   const [err,group] = await to(getGroupByWebAccessToken(webAccessToken))
   if (err || !isGroup(group)) return next(err || new Error('group is not IGroup'))
 
-  if (Date.now() > group.webAccessTokenExpirationTime) {
+  if (!isWebTokenValid(webAccessToken, group.webAccessTokenExpirationTime)) {
     // double check
-    return res.status(400).send({ ok: false, error: 'EXPIRED_WEB_ACCEESS_TOKEN' })
+    return res.status(400).send({ ok: false, error: 'INVALID_WEB_ACCEESS_TOKEN' })
   }
 
   const { threadTs } = paramNewReplyFromWeb
@@ -63,7 +63,7 @@ router.post('/voice', async (req, res, next) => {
   const [err,group] = await to(getGroupByWebAccessToken(webAccessToken))
   if (err || !isGroup(group)) return next(err || new Error('group is not IGroup'))
 
-  if (Date.now() > group.webAccessTokenExpirationTime) {
+  if (!isWebTokenValid(webAccessToken, group.webAccessTokenExpirationTime)) {
     // double check
     return res.status(400).send({ ok: false, error: 'EXPIRED_WEB_ACCEESS_TOKEN' })
   }
@@ -91,15 +91,28 @@ router.post('/get-group', async (req, res, next) => {
 
 router.post('/refresh-daily-web-token', async (req, res, next) => {
   const { password, hours } = req.body
-  // hours 값이 2일때 2시간 내 말료 토큰을 refresh 시킨다
+  // Example: hours: 2 일때, 2시간 내 말료될 토큰을 query해서 refresh 시킴.
+  // limit가 있어서 모든 토큰이 만료되지는 않음.
   if (password !== ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD) {
     return res.status(404).send({ ok: false, reason: 'check your ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD' })
   }
 
-  const [err, groupKeysArr] = await to(refreshAllTeam(hours || 3))
+  const [err, resultArr] = await to(refreshAllTeam(hours || 3))
   if (err) return next(err)
 
-  res.send(groupKeysArr)
+  res.send(resultArr)
+})
+
+router.post('/refresh-daily-web-token-for-group', async (req, res, next) => {
+  const { password, channelId } = req.body
+  if (password !== ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD) {
+    return res.status(404).send({ ok: false, reason: 'check your ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD' })
+  }
+
+  const [err, result] = await to(updateAndShareWebAccessToken(channelId))
+  if (err) return next(err)
+
+  res.send(result)
 })
 
 export default router

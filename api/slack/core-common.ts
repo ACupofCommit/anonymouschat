@@ -11,7 +11,7 @@ import { createLogger } from '../logger'
 import { IVoice, isVoice } from '../../types/type-voice'
 import { IReply } from '../../types/type-reply'
 import { putReply, getReply, deleteReply } from '../model/model-reply'
-import { hashAndtoggle, sha256Hash } from '../../common/common-util'
+import { hashAndtoggle, sha256Hash, getMSFromHours } from '../../common/common-util'
 import { IGroup } from '../../types/type-group'
 import { getSlackATArrByTeamId, deleteSlackAT } from '../model/model-slackAT'
 import { putVoice, getVoice, deleteVoice } from '../model/model-voice'
@@ -64,6 +64,16 @@ export const sendHelpMessage = async (web: WebClient, group: IGroup, user: strin
   await web.chat.postEphemeral(helpArg)
 }
 
+const getWATETByChanging = (newValue: boolean, oldValue: boolean, currentTime: number) => {
+  // isPostingAvailable이 false에서 true가 되었을때, 만료시간을 하루 뒤로 셋팅
+  // isPostingAvailable이 true에서 false가 되었을때, 만료시간을 -1로 셋팅
+  return (
+      (newValue && !oldValue) ? Date.now() + getMSFromHours(24)
+    : (!newValue && oldValue) ? -1
+    : currentTime
+  )
+}
+
 export const agreeAppActivation = async (web: WebClient, group: IGroup, userId: string, responseUrl: string) => {
   const hashedUserId = sha256Hash(userId, group.channelId)
   if (group.agreedUserArr.indexOf(hashedUserId) > -1) {
@@ -75,20 +85,28 @@ export const agreeAppActivation = async (web: WebClient, group: IGroup, userId: 
   // isPostingAvailable: true 가 있을 수 있는데 이 경우 false 로 변경하면 안됨
   const agreedUserArr = [...group.agreedUserArr, hashedUserId]
   const isPostingAvailable = group.forceActivateUserId !== NOT_YET ? true : agreedUserArr.length >= ACTIVATION_QUORUM
-  const updatedGroup = await putGroup({ ...group, agreedUserArr, isPostingAvailable })
+  const webAccessTokenExpirationTime = getWATETByChanging(isPostingAvailable, group.isPostingAvailable, group.webAccessTokenExpirationTime)
+
+  const updatedGroup = await putGroup({ ...group, agreedUserArr, isPostingAvailable, webAccessTokenExpirationTime })
   await axios.post(responseUrl, getConfigMsgArg(updatedGroup))
 }
 
 export const forceAppActivate = async (group: IGroup, forceActivateUserId: string, responseUrl: string) => {
+  const webAccessTokenExpirationTime = getWATETByChanging(true, false, group.webAccessTokenExpirationTime)
   const updatedGroup = await putGroup({
-    ...group, isPostingAvailable: true, forceActivateUserId, forceDeactivateUserId: NOT_YET,
+    ...group,
+    isPostingAvailable: true, webAccessTokenExpirationTime,
+    forceActivateUserId, forceDeactivateUserId: NOT_YET,
   })
   await axios.post(responseUrl, getConfigMsgArg(updatedGroup))
 }
 
 export const forceAppDeactivate = async (group: IGroup, forceDeactivateUserId: string, responseUrl: string) => {
+  const webAccessTokenExpirationTime = getWATETByChanging(false, true, group.webAccessTokenExpirationTime)
   const updatedGroup = await putGroup({
-    ...group, agreedUserArr: [], isPostingAvailable: false, forceDeactivateUserId, forceActivateUserId: NOT_YET,
+    ...group, agreedUserArr: [],
+    isPostingAvailable: false, webAccessTokenExpirationTime,
+    forceDeactivateUserId, forceActivateUserId: NOT_YET,
   })
   await axios.post(responseUrl, getConfigMsgArg(updatedGroup))
 }

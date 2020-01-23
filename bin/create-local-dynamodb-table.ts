@@ -1,54 +1,8 @@
 import { CreateTableInput } from 'aws-sdk/clients/dynamodb'
 import to from 'await-to-js'
 import { getDD } from '../api/util'
-import { TABLENAME_GROUP, TABLENAME_VOICE, TABLENAME_REPLY, TABLENAME_AT, TABLENAME_TEAM } from '../api/constant'
-
-const paramsGroup: CreateTableInput = {
-  BillingMode: 'PAY_PER_REQUEST',
-  TableName: TABLENAME_GROUP,
-  AttributeDefinitions: [
-    { AttributeName: 'teamId', AttributeType: 'S' },
-    { AttributeName: 'channelId', AttributeType: 'S' },
-    { AttributeName: 'accessToken', AttributeType: 'S' },
-    { AttributeName: 'webAccessToken', AttributeType: 'S' },
-    { AttributeName: 'webAccessTokenExpirationTime', AttributeType: 'N' },
-  ],
-  KeySchema: [
-    { AttributeName: 'channelId', KeyType: 'HASH' },
-  ],
-  GlobalSecondaryIndexes: [{
-    Projection: { ProjectionType: 'KEYS_ONLY' },
-    IndexName: 'IndexTeamId',
-    KeySchema: [
-      { AttributeName: 'teamId', KeyType: 'HASH' },
-    ],
-  }, {
-    Projection: { ProjectionType: 'KEYS_ONLY' },
-    IndexName: 'IndexAccessToken',
-    KeySchema: [
-      { AttributeName: 'accessToken', KeyType: 'HASH' },
-    ],
-  }, {
-    Projection: { ProjectionType: 'KEYS_ONLY' },
-    IndexName: 'IndexWebAccessToken',
-    KeySchema: [
-      { AttributeName: 'webAccessToken', KeyType: 'HASH' },
-    ],
-  }, {
-    Projection: {
-      ProjectionType: 'INCLUDE',
-      NonKeyAttributes: ['teamId','webAccessTokenExpirationTime','activationMsgTs'],
-    },
-    IndexName: 'IndexWebAccessTokenExpirationTime',
-    KeySchema: [
-      { AttributeName: 'teamId', KeyType: 'HASH' },
-      { AttributeName: 'webAccessTokenExpirationTime', KeyType: 'RANGE' },
-    ],
-  }],
-  StreamSpecification: {
-    StreamEnabled: false
-  },
-}
+import { TABLENAME_VOICE, TABLENAME_REPLY, TABLENAME_AT, TABLENAME_TEAM } from '../api/constant'
+import { scheme as paramsGroup } from '../api/model/model-group'
 
 const paramVoice: CreateTableInput = {
   BillingMode: 'PAY_PER_REQUEST',
