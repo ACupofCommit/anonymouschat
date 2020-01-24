@@ -1,7 +1,6 @@
 # Anonymouslack
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/aluc-io/anonymouslack/tsc-build)](https://github.com/aluc-io/anonymouslack/actions)
-[![Docker Cloud Automated build](https://img.shields.io/docker/cloud/automated/alucio/anonymouslack)](https://hub.docker.com/repository/docker/alucio/anonymouslack/general)
 [![Docker Pulls](https://img.shields.io/docker/pulls/alucio/anonymouslack)](https://hub.docker.com/repository/docker/alucio/anonymouslack/general)
 
 Share your mind anonymously on Slack.
@@ -98,7 +97,31 @@ development tool and debugging tool.
     - `commands`: To add slash commands and add actions to messages
     - `channels:write`, `groups:write`,`im:write`,`mpim:write`: To check access_token is available on specific channel
 
-## 4. License
+## 4. Operation
+
+### Run production server
+To run server as container use `dokcer-compose.prod.yml`
+
+### Refresh webAccessToken
+To refresh `webAccessToken`, make the `cronjob` file:
+
+```
+*/3 * * * * curl -X POST https://<endpoint-url>/api/web/refresh-daily-web-token -d '{"password": "<value of ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD>", "hours": 3 }' -H "Content-Type: application/json"
+```
+
+This job try to renew tokens that expire in 3 hours every 3 minutes.
+It Renew maximum (hardcoded)3 group's tokens per team at once.
+
+Register above job in crontab to run every 3 minutes:
+
+```
+$ crontab cronjob
+$ crontab -l
+```
+
+> unregiter: `$ crontab -r`
+
+## 5. License
 
 [MIT](http://opensource.org/licenses/MIT)
 
