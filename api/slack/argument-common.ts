@@ -1,9 +1,9 @@
 import { Option, InputBlock, ViewsOpenArguments, SectionBlock } from '@slack/web-api'
 import sillyname from 'sillyname'
-import { IFaceImoji, IPMDeletionView } from '../../types/type-common'
+import { IFaceImoji, IPMDeletionView, IPMDeactivateWarningView } from '../../types/type-common'
 import { getFaceImojiList, getRawPassword } from '../../common/common-util'
-import { INPUT_FACE_IMOJI, INPUT_NAME_NICKNAME, nickname_min_length, nickname_max_length, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, password_min_length, password_max_length, ACTION_SUBMISSION_DELETE, NOT_YET } from '../constant'
-import { STR_DIALOG_FACE_IMOJI, STR_DIALOG_FACE_IMOJI_PLACEHOLDER, STR_DIALOG_NICKNAME_PLACEHOLDER, STR_DIALOG_NICKNAME_TITLE, STR_DIALOG_PASSWORD_PLACEHOLDER, STR_DIALOG_PASSWORD_TITLE, STR_DIALOG_PASSWORD_HINT, STR_VIEW_TITLE_REPLY_DELETION, STR_VIEW_TITLE_VOICE_DELETION, STR_VIEW_DELETE, STR_VIEW_CANCEL, STR_REPORTED_MESSAGE, STR_DELETED_MESSAGE, STR_THIS_VOICE_ID } from '../strings'
+import { INPUT_FACE_IMOJI, INPUT_NAME_NICKNAME, nickname_min_length, nickname_max_length, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, password_min_length, password_max_length, ACTION_SUBMISSION_DELETE, NOT_YET, CONST_APP_NAME, ACTION_APP_FORCE_DEACTIVATE } from '../constant'
+import { STR_DIALOG_FACE_IMOJI, STR_DIALOG_FACE_IMOJI_PLACEHOLDER, STR_DIALOG_NICKNAME_PLACEHOLDER, STR_DIALOG_NICKNAME_TITLE, STR_DIALOG_PASSWORD_PLACEHOLDER, STR_DIALOG_PASSWORD_TITLE, STR_DIALOG_PASSWORD_HINT, STR_VIEW_TITLE_REPLY_DELETION, STR_VIEW_TITLE_VOICE_DELETION, STR_VIEW_DELETE, STR_VIEW_CANCEL, STR_REPORTED_MESSAGE, STR_DELETED_MESSAGE, STR_THIS_VOICE_ID, STR_DEACTIVATE_WARNING_MSG, STR_DEACTIVATE_BUTTON, STR_DEACTIVATE_WARNING_MSG_N } from '../strings'
 import { IVoice, isVoice } from '../../types/type-voice'
 import { IReply } from '../../types/type-reply'
 import { isReplyByTsThreadTs } from '../util'
@@ -14,7 +14,7 @@ export const getContent = (obj: IVoice | IReply) => {
   const { isHiddenByReport, isDeleted, content } = obj
 
   let modifiedContent =
-      isHiddenByReport ? STR_REPORTED_MESSAGE
+    isHiddenByReport ? STR_REPORTED_MESSAGE
     : isDeleted        ? STR_DELETED_MESSAGE
     : content
 
@@ -61,7 +61,7 @@ export const getInputFaceImojiBlock = (): InputBlock => {
 export const getInputNicknameBlock = (): InputBlock => {
   return {
     "type": "input",
-    "block_id" : INPUT_NAME_NICKNAME,
+    "block_id": INPUT_NAME_NICKNAME,
     "element": {
       action_id: 's',
       "type": "plain_text_input",
@@ -119,7 +119,7 @@ export const getDeletionViewOpenArg = (trigger_id: string, pm: IPMDeletionView):
       blocks: [
         {
           "type": "input",
-          "block_id" : INPUT_NAME_PASSWORD,
+          "block_id": INPUT_NAME_PASSWORD,
           "element": {
             action_id: 's',
             "type": "plain_text_input",
@@ -140,4 +140,27 @@ export const getErrorMsgBlockInView = (msg: string) => {
     "text": { type: "plain_text", text: ':warning: ' + msg, emoji: true }
   }
   return sectionBlock
+}
+
+export const getAppDeactivateWarningViewsArg = (trigger_id: string, pm: IPMDeactivateWarningView): ViewsOpenArguments => {
+  return {
+    trigger_id,
+    view: {
+      "callback_id": ACTION_APP_FORCE_DEACTIVATE,
+      private_metadata: JSON.stringify(pm),
+      "type": "modal",
+      "title": { "type": "plain_text", "text": CONST_APP_NAME, "emoji": true },
+      "submit": { "type": "plain_text", "text": STR_DEACTIVATE_BUTTON, "emoji": true },
+      "close": { "type": "plain_text", "text": STR_VIEW_CANCEL, "emoji": true },
+      "blocks": [
+        {
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": (pm.agreedUserCount > 0 ? STR_DEACTIVATE_WARNING_MSG_N : STR_DEACTIVATE_WARNING_MSG).replace('%d', "" + pm.agreedUserCount).replace('%s', CONST_APP_NAME)
+          }
+        }
+      ]
+    }
+  }
 }

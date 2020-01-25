@@ -22,6 +22,9 @@ export const STR_FAILED_TO_CREATE_VOICE = "메시지 작성 실패. 최근 24시
 export const STR_UNKOWN_ERROR = "알 수 없는 에러 발생"
 export const STR_SUCCESS_VOICE_CREATION = "익명 글 작성 성공. 웹 페이지를 새로고침 합니다"
 export const STR_INVALID_URL = "유효하지 않은 url 입니다. url 은 수시로 변경 될 수 있으므로 정확한 url 을 확인하세요."
+export const STR_DEACTIVATE_WARNING_MSG = "앱 사용이 중단되고 사용자 동의 기록이 `리셋`됩니다. \n또한 이 내용이 버튼을 누른 유저의 실명과 함께 채널에 공유됩니다. \n\n정말 *%s* 을 `비활성화` 하시겠습니까?"
+export const STR_DEACTIVATE_WARNING_MSG_N = "앱 사용이 중단되고 사용자 *%d명의* 동의 기록이 `리셋`됩니다. \n또한 이 내용이 버튼을 누른 유저의 실명과 함께 채널에 공유됩니다. \n\n정말 *%s* 을 `비활성화` 하시겠습니까?"
+export const STR_DEACTIVATE_BUTTON = "비활성화"
 
 // agreement
 export const STR_AGREEMENT_REQUIRED_DESC = `슬랙 앱 사용을 위해 최소 %d 명의 동의가 필요합니다.\n익명으로 *동의* 하거나 실명으로 *활성화* 시킬 수 있습니다`

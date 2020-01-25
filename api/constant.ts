@@ -21,6 +21,7 @@ export const ACTION_VOTE_REPORT                  = 'ACTION_VOTE_REPORT'
 export const ACTION_APP_USE_AGREEMENT            = 'ACTION_APP_USE_AGREEMENT'
 export const ACTION_APP_FORCE_ACTIVATE           = 'ACTION_APP_FORCE_ACTIVATE'
 export const ACTION_APP_FORCE_DEACTIVATE         = 'ACTION_APP_FORCE_DEACTIVATE'
+export const ACTION_SHOW_DEACTIVATE_WARNING      = 'ACTION_SHOW_DEACTIVATE_WARNING'
 export const ACTION_ON_MORE_OPEN_VIEW_REPLY      = 'ACTION_ON_MORE_OPEN_VIEW_REPLY'
 
 // Compatible actions
@@ -61,7 +62,7 @@ export const TABLENAME_REPLY = `${TABLENAME_PREFIX}-Reply`
 export const TABLENAME_AT = `${TABLENAME_PREFIX}-AT`
 
 const getSlashCommand = (str?: string) => {
-  if (!str) return `/anonymouslack`
+  if (!str || str === '/') return `/anonymouslack`
   return /^\//.test(str) ? str : '/' + str
 }
 export const CONST_SLASH_COMMAND = getSlashCommand(process.env.ANONYMOUSLACK_SLASH_COMMAND)

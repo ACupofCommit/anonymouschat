@@ -17,8 +17,8 @@ import { getSlackATArrByTeamId, deleteSlackAT } from '../model/model-slackAT'
 import { putVoice, getVoice, deleteVoice } from '../model/model-voice'
 import { putGroup, getGroup, updateBatchGroup, getGroupKeysArrByAccessToken } from '../model/model-group'
 import { getGroupId, getVoiceId, getReplyId, IMyBlockActionPayload, IMyViewSubmissionPayload, isMyViewSubmissionPayload } from '../model/model-common'
-import { IPMDeletionView, IChatGetPermalinkResponse } from '../../types/type-common'
-import { getDeletionViewOpenArg, getErrorMsgBlockInView } from './argument-common'
+import { IPMDeletionView, IChatGetPermalinkResponse, IPMDeactivateWarningView, isPMDeactivateWarningView } from '../../types/type-common'
+import { getDeletionViewOpenArg, getErrorMsgBlockInView, getAppDeactivateWarningViewsArg } from './argument-common'
 import { STR_NOT_MATCHED_PASSWORD } from '../strings'
 import { isReplyByTsThreadTs } from '../util'
 
@@ -101,14 +101,23 @@ export const forceAppActivate = async (group: IGroup, forceActivateUserId: strin
   await axios.post(responseUrl, getConfigMsgArg(updatedGroup))
 }
 
-export const forceAppDeactivate = async (group: IGroup, forceDeactivateUserId: string, responseUrl: string) => {
+export const forceAppDeactivate = async (group: IGroup, payload) => {
+  const pm: IPMDeactivateWarningView = JSON.parse(payload.view.private_metadata)
+  if (!isPMDeactivateWarningView(pm)) throw new Error('pm is not IPMDeactivateWarningView')
+
   const webAccessTokenExpirationTime = getWATETByChanging(false, true, group.webAccessTokenExpirationTime)
   const updatedGroup = await putGroup({
     ...group, agreedUserArr: [],
     isPostingAvailable: false, webAccessTokenExpirationTime,
-    forceDeactivateUserId, forceActivateUserId: NOT_YET,
+    forceDeactivateUserId: payload.user.id, forceActivateUserId: NOT_YET,
   })
-  await axios.post(responseUrl, getConfigMsgArg(updatedGroup))
+  await axios.post(pm.response_url, getConfigMsgArg(updatedGroup))
+}
+
+export const showDeactivateWarning = async (web: WebClient, triggerId: string, channelId: string, channelName: string, response_url: string, group : IGroup) => {
+  const pm: IPMDeactivateWarningView = { channelId, channelName, response_url, agreedUserCount : group.agreedUserArr.length }
+  const arg = getAppDeactivateWarningViewsArg(triggerId, pm)
+  await web.views.open(arg)
 }
 
 /*
