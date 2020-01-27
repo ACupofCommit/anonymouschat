@@ -3,10 +3,11 @@ import sillyname from 'sillyname'
 import { IFaceImoji, IPMDeletionView, IPMDeactivateWarningView } from '../../types/type-common'
 import { getFaceImojiList, getRawPassword } from '../../common/common-util'
 import { INPUT_FACE_IMOJI, INPUT_NAME_NICKNAME, nickname_min_length, nickname_max_length, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, password_min_length, password_max_length, ACTION_SUBMISSION_DELETE, NOT_YET, CONST_APP_NAME, ACTION_APP_FORCE_DEACTIVATE } from '../constant'
-import { STR_DIALOG_FACE_IMOJI, STR_DIALOG_FACE_IMOJI_PLACEHOLDER, STR_DIALOG_NICKNAME_PLACEHOLDER, STR_DIALOG_NICKNAME_TITLE, STR_DIALOG_PASSWORD_PLACEHOLDER, STR_DIALOG_PASSWORD_TITLE, STR_DIALOG_PASSWORD_HINT, STR_VIEW_TITLE_REPLY_DELETION, STR_VIEW_TITLE_VOICE_DELETION, STR_VIEW_DELETE, STR_VIEW_CANCEL, STR_REPORTED_MESSAGE, STR_DELETED_MESSAGE, STR_THIS_VOICE_ID, STR_DEACTIVATE_WARNING_MSG, STR_DEACTIVATE_BUTTON, STR_DEACTIVATE_WARNING_MSG_N, STR_DEACTIVATED_NOTI, STR_DEACTIVATED_NOTI_N, STR_ACTIVATED_NOTI } from '../strings'
+import { STR_DIALOG_FACE_IMOJI, STR_DIALOG_FACE_IMOJI_PLACEHOLDER, STR_DIALOG_NICKNAME_PLACEHOLDER, STR_DIALOG_NICKNAME_TITLE, STR_DIALOG_PASSWORD_PLACEHOLDER, STR_DIALOG_PASSWORD_TITLE, STR_DIALOG_PASSWORD_HINT, STR_VIEW_TITLE_REPLY_DELETION, STR_VIEW_TITLE_VOICE_DELETION, STR_VIEW_DELETE, STR_VIEW_CANCEL, STR_REPORTED_MESSAGE, STR_DELETED_MESSAGE, STR_THIS_VOICE_ID, STR_DEACTIVATE_BUTTON, STR_DEACTIVATE_WARNING_MSG_N, STR_DEACTIVATED_NOTI_N, STR_ACTIVATED_NOTI } from '../strings'
 import { IVoice, isVoice } from '../../types/type-voice'
 import { IReply } from '../../types/type-reply'
 import { isReplyByTsThreadTs } from '../util'
+import { IGroup } from '../../types/type-group'
 
 const ANONYMOUSLACK_ENV = process.env.ANONYMOUSLACK_ENV
 
@@ -142,7 +143,11 @@ export const getErrorMsgBlockInView = (msg: string) => {
   return sectionBlock
 }
 
-export const getAppDeactivateWarningViewsArg = (trigger_id: string, pm: IPMDeactivateWarningView): ViewsOpenArguments => {
+export const getAppDeactivateWarningViewsArg = (trigger_id: string, agreedUserCount: number, pm: IPMDeactivateWarningView): ViewsOpenArguments => {
+  const text = STR_DEACTIVATE_WARNING_MSG_N
+    .replace('%d', ''+agreedUserCount)
+    .replace('%s', CONST_APP_NAME)
+
   return {
     trigger_id,
     view: {
@@ -157,7 +162,7 @@ export const getAppDeactivateWarningViewsArg = (trigger_id: string, pm: IPMDeact
           "type": "section",
           "text": {
             "type": "mrkdwn",
-            "text": (pm.agreedUserCount > 0 ? STR_DEACTIVATE_WARNING_MSG_N : STR_DEACTIVATE_WARNING_MSG).replace('%d', "" + pm.agreedUserCount).replace('%s', CONST_APP_NAME)
+            "text": text,
           }
         }
       ]
@@ -179,10 +184,13 @@ export const getActivatedArg = (channelId: string, forceDeactivateUserId: string
   }
 }
 
-export const getDeactivatedArg = (channelId: string, forceDeactivateUserId: string, userAgreedCount: number, permalink: string): ChatPostMessageArguments => {
-  const strDeactivatedByForce = (userAgreedCount > 0 ? STR_DEACTIVATED_NOTI_N : STR_DEACTIVATED_NOTI)
-    .replace('{user}', `<@${forceDeactivateUserId}>`).replace('{app_name}', CONST_APP_NAME)
-    .replace('{agreed_count}', ""+userAgreedCount).replace('{link}', permalink)
+export const getDeactivatedArg = (group: IGroup, permalink: string): ChatPostMessageArguments => {
+  const { channelId, agreedUserArr, forceDeactivateUserId } = group
+  const strDeactivatedByForce = STR_DEACTIVATED_NOTI_N
+    .replace('{user}', `<@${forceDeactivateUserId}>`)
+    .replace('{app_name}', CONST_APP_NAME)
+    .replace('{agreed_count}', ''+agreedUserArr.length)
+    .replace('{link}', permalink)
 
   return {
     channel: channelId,

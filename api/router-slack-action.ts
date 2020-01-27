@@ -140,7 +140,7 @@ router.all('/', async (req, res, next) => {
 
       : action === ACTION_APP_USE_AGREEMENT            ? await to(agreeAppActivation(web, group, user.id, response_url))
       : action === ACTION_APP_FORCE_ACTIVATE           ? await to(forceAppActivate(web, group, user.id, response_url))
-      : action === ACTION_SHOW_DEACTIVATE_WARNING      ? await to(showDeactivateWarning(web, trigger_id, channel.id, channel.name, response_url, group))
+      : action === ACTION_SHOW_DEACTIVATE_WARNING      ? await to(showDeactivateWarning(web, trigger_id, group))
 
       : [new Error('Unkown action: ' + action)]
 
