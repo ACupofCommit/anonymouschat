@@ -105,26 +105,28 @@ export const forceAppActivate = async (web: WebClient, group: IGroup, forceActiv
   await web.chat.postMessage(getActivatedArg(group.channelId, forceActivateUserId, permalink))
 }
 
-export const forceAppDeactivate = async (web: WebClient, group: IGroup, payload) => {
-  const pm: IPMDeactivateWarningView = JSON.parse(payload.view.private_metadata)
-  if (!isPMDeactivateWarningView(pm)) throw new Error('pm is not IPMDeactivateWarningView')
-
+export const forceAppDeactivate = async (web: WebClient, group: IGroup, userId: string) => {
+  const { channelId, agreedUserArr } = group
   const webAccessTokenExpirationTime = getWATETByChanging(false, true, group.webAccessTokenExpirationTime)
-  const updatedGroup = await putGroup({
+  const updatedGroup: IGroup = {
     ...group, agreedUserArr: [],
     isPostingAvailable: false, webAccessTokenExpirationTime,
-    forceDeactivateUserId: payload.user.id, forceActivateUserId: NOT_YET,
-  })
-  const [err, result] = await to(axios.post(pm.response_url, getConfigMsgArg(updatedGroup)))
-  if (err || !isObject(result)) throw err || new Error('Failed to update config message')
-
+    forceDeactivateUserId: userId, forceActivateUserId: NOT_YET,
+  }
+  const updatedConfigMsgArg = { ...getConfigMsgArg(updatedGroup), ts: group.activationMsgTs }
   const permalink = await getConfigMsgPermalink(web, group)
-  await web.chat.postMessage(getDeactivatedArg(group.channelId, payload.user.id, group.agreedUserArr.length, permalink))
+  if (!permalink) throw new Error('Can not get config msg permalink in forceAppDeactivate()')
+
+  // TODO: 아래 3개의 작업이 원자성을 가져야 한다.
+  await web.chat.postMessage(getDeactivatedArg(channelId, userId, agreedUserArr.length, permalink))
+  await web.chat.update(updatedConfigMsgArg)
+  await putGroup(updatedGroup)
 }
 
-export const showDeactivateWarning = async (web: WebClient, triggerId: string, channelId: string, channelName: string, response_url: string, group : IGroup) => {
-  const pm: IPMDeactivateWarningView = { channelId, channelName, response_url, agreedUserCount : group.agreedUserArr.length }
-  const arg = getAppDeactivateWarningViewsArg(triggerId, pm)
+export const showDeactivateWarning = async (web: WebClient, triggerId: string, group: IGroup) => {
+  const { channelId, channelName } = group
+  const pm: IPMDeactivateWarningView = { channelId, channelName }
+  const arg = getAppDeactivateWarningViewsArg(triggerId, group.agreedUserArr.length, pm)
   await web.views.open(arg)
 }
 

@@ -44,8 +44,6 @@ export interface IFaceImoji {
 export interface IPMDeactivateWarningView {
   channelId: string
   channelName: string
-  response_url: string
-  agreedUserCount: number
 }
 
 export const isPMDeletionView = (o: any): o is IPMDeletionView => {
@@ -74,7 +72,5 @@ export const isPMDeactivateWarningView = (o: any): o is IPMDeactivateWarningView
   if (!isNotNullObject(o)) return false
   if (!isNotEmptyString(o.channelId)) return false
   if (!isNotEmptyString(o.channelName)) return false
-  if (!isNotEmptyString(o.response_url)) return false
-  if (typeof o.agreedUserCount !== 'number') return false
   return true
 }
