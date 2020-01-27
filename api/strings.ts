@@ -32,12 +32,11 @@ export const STR_HOW_TO_POST = '이제 `%s` 명령어 또는 ＊Daily web url＊
 export const STR_YOU_AREADY_AGREED = "이미 동의 하셨습니다"
 export const STR_FORCE_ACTIVATE = `즉시 활성화`
 export const STR_FORCE_DEACTIVATE = `즉시 비활성화`
-export const STR_DEACTIVATE_WARNING_MSG = "앱 사용이 중단되고 사용자 동의 기록이 `리셋`됩니다. \n또한 이 내용이 버튼을 누른 유저의 실명과 함께 채널에 공유됩니다. \n\n정말 *%s* 을 `비활성화` 하시겠습니까?"
-export const STR_DEACTIVATE_WARNING_MSG_N = "앱 사용이 중단되고 사용자 *%d명의* 동의 기록이 `리셋`됩니다. \n또한 이 내용이 버튼을 누른 유저의 실명과 함께 채널에 공유됩니다. \n\n정말 *%s* 을 `비활성화` 하시겠습니까?"
+
 export const STR_DEACTIVATE_BUTTON = "비활성화"
-export const STR_DEACTIVATED_NOTI = "{user} 님이 {app_name} 사용을 `비활성화`하여 유저 동의 정보가 `리셋` 되었습니다.\n*다시 사용하려면 아래 컨피그 메시지를 확인하세요:*\n{link}"
-export const STR_DEACTIVATED_NOTI_N = "{user} 님이 {app_name} 사용을 `비활성화`하여 {agreed_count}명의 유저 동의 정보가 `리셋` 되었습니다.\n*다시 사용하려면 아래 컨피그 메시지를 확인하세요:*\n{link}"
-export const STR_ACTIVATED_NOTI = "{user} 님이 {app_name} 사용을 `즉시 활성화`하였습니다.\n*아래 컨피그 메시지를 참고하세요:*\n{link}"
+export const STR_DEACTIVATE_WARNING_MSG_N = "이 채널에서 *%s* 사용이 중단되고 *%d명의* 사용자 동의 기록이 *리셋* 됩니다. \n또한 이 내용은 당신의 실명과 함께 채널에 공유됩니다. \n\n정말 비활성화할까요?"
+export const STR_DEACTIVATED_NOTI_N = "{user}님이 ＊{app_name}＊ 사용을 ＊중단＊시켰습니다. ＊{agreed_count}명＊의 유저 동의 기록이 *리셋* 되었습니다.\n다시 사용하려면 아래 ＊컨피그 메시지＊를 확인하세요:\n{link}"
+export const STR_ACTIVATED_NOTI = "{user}님이 ＊{app_name}＊ 사용을 ＊승인＊하였습니다.\n*아래 컨피그 메시지를 참고하세요:*\n{link}"
 
 // app install, permission
 export const STR_DENIED_APP = `Slack app 사용 승인을 거절하였습니다`
