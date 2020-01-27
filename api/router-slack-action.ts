@@ -101,7 +101,7 @@ router.all('/', async (req, res, next) => {
         action === ACTION_SUBMISSION_VOICE             ? await to(createVoiceFromSlack(web, payload))
       : action === ACTION_SUBMISSION_REPLY             ? await to(createReplyFromSlack(web, payload, group))
       : action === ACTION_SUBMISSION_DELETE            ? await to(deleteVoiceOrReply(web, payload))
-      : action === ACTION_APP_FORCE_DEACTIVATE         ? await to(forceAppDeactivate(group, payload))
+      : action === ACTION_APP_FORCE_DEACTIVATE         ? await to(forceAppDeactivate(web, group, payload))
 
       : [new Error('Unkown action: ' + action)]
 
@@ -139,7 +139,7 @@ router.all('/', async (req, res, next) => {
       : action === ACTION_VOTE_REPORT                  ? await to(reportVoiceOrReply(web, payload))
 
       : action === ACTION_APP_USE_AGREEMENT            ? await to(agreeAppActivation(web, group, user.id, response_url))
-      : action === ACTION_APP_FORCE_ACTIVATE           ? await to(forceAppActivate(group, user.id, response_url))
+      : action === ACTION_APP_FORCE_ACTIVATE           ? await to(forceAppActivate(web, group, user.id, response_url))
       : action === ACTION_SHOW_DEACTIVATE_WARNING      ? await to(showDeactivateWarning(web, trigger_id, channel.id, channel.name, response_url, group))
 
       : [new Error('Unkown action: ' + action)]

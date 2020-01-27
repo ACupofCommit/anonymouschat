@@ -1,9 +1,9 @@
-import { Option, InputBlock, ViewsOpenArguments, SectionBlock } from '@slack/web-api'
+import { Option, InputBlock, ViewsOpenArguments, SectionBlock, ChatPostMessageArguments } from '@slack/web-api'
 import sillyname from 'sillyname'
 import { IFaceImoji, IPMDeletionView, IPMDeactivateWarningView } from '../../types/type-common'
 import { getFaceImojiList, getRawPassword } from '../../common/common-util'
 import { INPUT_FACE_IMOJI, INPUT_NAME_NICKNAME, nickname_min_length, nickname_max_length, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, password_min_length, password_max_length, ACTION_SUBMISSION_DELETE, NOT_YET, CONST_APP_NAME, ACTION_APP_FORCE_DEACTIVATE } from '../constant'
-import { STR_DIALOG_FACE_IMOJI, STR_DIALOG_FACE_IMOJI_PLACEHOLDER, STR_DIALOG_NICKNAME_PLACEHOLDER, STR_DIALOG_NICKNAME_TITLE, STR_DIALOG_PASSWORD_PLACEHOLDER, STR_DIALOG_PASSWORD_TITLE, STR_DIALOG_PASSWORD_HINT, STR_VIEW_TITLE_REPLY_DELETION, STR_VIEW_TITLE_VOICE_DELETION, STR_VIEW_DELETE, STR_VIEW_CANCEL, STR_REPORTED_MESSAGE, STR_DELETED_MESSAGE, STR_THIS_VOICE_ID, STR_DEACTIVATE_WARNING_MSG, STR_DEACTIVATE_BUTTON, STR_DEACTIVATE_WARNING_MSG_N } from '../strings'
+import { STR_DIALOG_FACE_IMOJI, STR_DIALOG_FACE_IMOJI_PLACEHOLDER, STR_DIALOG_NICKNAME_PLACEHOLDER, STR_DIALOG_NICKNAME_TITLE, STR_DIALOG_PASSWORD_PLACEHOLDER, STR_DIALOG_PASSWORD_TITLE, STR_DIALOG_PASSWORD_HINT, STR_VIEW_TITLE_REPLY_DELETION, STR_VIEW_TITLE_VOICE_DELETION, STR_VIEW_DELETE, STR_VIEW_CANCEL, STR_REPORTED_MESSAGE, STR_DELETED_MESSAGE, STR_THIS_VOICE_ID, STR_DEACTIVATE_WARNING_MSG, STR_DEACTIVATE_BUTTON, STR_DEACTIVATE_WARNING_MSG_N, STR_DEACTIVATED_NOTI, STR_DEACTIVATED_NOTI_N, STR_ACTIVATED_NOTI } from '../strings'
 import { IVoice, isVoice } from '../../types/type-voice'
 import { IReply } from '../../types/type-reply'
 import { isReplyByTsThreadTs } from '../util'
@@ -162,5 +162,34 @@ export const getAppDeactivateWarningViewsArg = (trigger_id: string, pm: IPMDeact
         }
       ]
     }
+  }
+}
+
+export const getActivatedArg = (channelId: string, forceDeactivateUserId: string, permalink: string): ChatPostMessageArguments => {
+  const strActivatedByForce = STR_ACTIVATED_NOTI.replace('{user}', `<@${forceDeactivateUserId}>`)
+    .replace('{app_name}', CONST_APP_NAME).replace('{link}', permalink)
+
+  return {
+    channel: channelId,
+    as_user: false,
+    text: '',
+    blocks: [
+      { type: "section", text: { type: "mrkdwn", text: strActivatedByForce }},
+    ],
+  }
+}
+
+export const getDeactivatedArg = (channelId: string, forceDeactivateUserId: string, userAgreedCount: number, permalink: string): ChatPostMessageArguments => {
+  const strDeactivatedByForce = (userAgreedCount > 0 ? STR_DEACTIVATED_NOTI_N : STR_DEACTIVATED_NOTI)
+    .replace('{user}', `<@${forceDeactivateUserId}>`).replace('{app_name}', CONST_APP_NAME)
+    .replace('{agreed_count}', ""+userAgreedCount).replace('{link}', permalink)
+
+  return {
+    channel: channelId,
+    as_user: false,
+    text: '',
+    blocks: [
+      { type: "section", text: { type: "mrkdwn", text: strDeactivatedByForce }},
+    ],
   }
 }

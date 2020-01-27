@@ -18,7 +18,7 @@ import { putVoice, getVoice, deleteVoice } from '../model/model-voice'
 import { putGroup, getGroup, updateBatchGroup, getGroupKeysArrByAccessToken } from '../model/model-group'
 import { getGroupId, getVoiceId, getReplyId, IMyBlockActionPayload, IMyViewSubmissionPayload, isMyViewSubmissionPayload } from '../model/model-common'
 import { IPMDeletionView, IChatGetPermalinkResponse, IPMDeactivateWarningView, isPMDeactivateWarningView } from '../../types/type-common'
-import { getDeletionViewOpenArg, getErrorMsgBlockInView, getAppDeactivateWarningViewsArg } from './argument-common'
+import { getDeletionViewOpenArg, getErrorMsgBlockInView, getAppDeactivateWarningViewsArg, getDeactivatedArg, getActivatedArg } from './argument-common'
 import { STR_NOT_MATCHED_PASSWORD } from '../strings'
 import { isReplyByTsThreadTs } from '../util'
 
@@ -91,17 +91,21 @@ export const agreeAppActivation = async (web: WebClient, group: IGroup, userId: 
   await axios.post(responseUrl, getConfigMsgArg(updatedGroup))
 }
 
-export const forceAppActivate = async (group: IGroup, forceActivateUserId: string, responseUrl: string) => {
+export const forceAppActivate = async (web: WebClient, group: IGroup, forceActivateUserId: string, responseUrl: string) => {
   const webAccessTokenExpirationTime = getWATETByChanging(true, false, group.webAccessTokenExpirationTime)
   const updatedGroup = await putGroup({
     ...group,
     isPostingAvailable: true, webAccessTokenExpirationTime,
     forceActivateUserId, forceDeactivateUserId: NOT_YET,
   })
-  await axios.post(responseUrl, getConfigMsgArg(updatedGroup))
+  const [err, result] = await to(axios.post(responseUrl, getConfigMsgArg(updatedGroup)))
+  if (err || !isObject(result)) throw err || new Error('Failed to update config message')
+
+  const permalink = await getConfigMsgPermalink(web, group)
+  await web.chat.postMessage(getActivatedArg(group.channelId, forceActivateUserId, permalink))
 }
 
-export const forceAppDeactivate = async (group: IGroup, payload) => {
+export const forceAppDeactivate = async (web: WebClient, group: IGroup, payload) => {
   const pm: IPMDeactivateWarningView = JSON.parse(payload.view.private_metadata)
   if (!isPMDeactivateWarningView(pm)) throw new Error('pm is not IPMDeactivateWarningView')
 
@@ -111,7 +115,11 @@ export const forceAppDeactivate = async (group: IGroup, payload) => {
     isPostingAvailable: false, webAccessTokenExpirationTime,
     forceDeactivateUserId: payload.user.id, forceActivateUserId: NOT_YET,
   })
-  await axios.post(pm.response_url, getConfigMsgArg(updatedGroup))
+  const [err, result] = await to(axios.post(pm.response_url, getConfigMsgArg(updatedGroup)))
+  if (err || !isObject(result)) throw err || new Error('Failed to update config message')
+
+  const permalink = await getConfigMsgPermalink(web, group)
+  await web.chat.postMessage(getDeactivatedArg(group.channelId, payload.user.id, group.agreedUserArr.length, permalink))
 }
 
 export const showDeactivateWarning = async (web: WebClient, triggerId: string, channelId: string, channelName: string, response_url: string, group : IGroup) => {
