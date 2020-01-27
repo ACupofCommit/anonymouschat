@@ -34,9 +34,9 @@ export const STR_FORCE_ACTIVATE = `즉시 활성화`
 export const STR_FORCE_DEACTIVATE = `즉시 비활성화`
 
 export const STR_DEACTIVATE_BUTTON = "비활성화"
-export const STR_DEACTIVATE_WARNING_MSG_N = "이 채널에서 *%s* 사용이 중단되고 *%d명의* 사용자 동의 기록이 *리셋* 됩니다. \n또한 이 내용은 당신의 실명과 함께 채널에 공유됩니다. \n\n정말 비활성화할까요?"
-export const STR_DEACTIVATED_NOTI_N = "{user}님이 ＊{app_name}＊ 사용을 ＊중단＊시켰습니다. ＊{agreed_count}명＊의 유저 동의 기록이 *리셋* 되었습니다.\n다시 사용하려면 아래 ＊컨피그 메시지＊를 확인하세요:\n{link}"
-export const STR_ACTIVATED_NOTI = "{user}님이 ＊{app_name}＊ 사용을 ＊승인＊하였습니다.\n*아래 컨피그 메시지를 참고하세요:*\n{link}"
+export const STR_DEACTIVATE_WARNING_MSG_N = "이 채널에서 *%s* 사용이 중단되고 *%d명의* 사용자 동의 기록이 *리셋* 됩니다. 또한 이 내용은 당신의 실명과 함께 채널에 공유됩니다. \n\n정말 비활성화할까요?"
+export const STR_DEACTIVATED_NOTI_N = "{user}님이 ＊{app_name}＊ 사용을 ＊중단＊시켰습니다. ＊{agreed_count}명＊의 유저 동의 기록이 *리셋* 되었습니다. 다시 사용하려면 아래 ＊컨피그 메시지＊를 확인하세요:\n{link}"
+export const STR_ACTIVATED_NOTI = "{user}님이 ＊{app_name}＊ 사용을 ＊승인＊하였습니다. 아래 ＊컨피그 메시지＊를 참고하세요: {link}"
 
 // app install, permission
 export const STR_DENIED_APP = `Slack app 사용 승인을 거절하였습니다`
