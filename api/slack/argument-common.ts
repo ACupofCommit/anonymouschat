@@ -184,12 +184,11 @@ export const getActivatedArg = (channelId: string, forceDeactivateUserId: string
   }
 }
 
-export const getDeactivatedArg = (group: IGroup, permalink: string): ChatPostMessageArguments => {
-  const { channelId, agreedUserArr, forceDeactivateUserId } = group
+export const getDeactivatedArg = (channelId: string, forceDeactivateUserId: string, agreedUserArrCount: number, permalink: string): ChatPostMessageArguments => {
   const strDeactivatedByForce = STR_DEACTIVATED_NOTI_N
     .replace('{user}', `<@${forceDeactivateUserId}>`)
     .replace('{app_name}', CONST_APP_NAME)
-    .replace('{agreed_count}', ''+agreedUserArr.length)
+    .replace('{agreed_count}', ''+agreedUserArrCount)
     .replace('{link}', permalink)
 
   return {

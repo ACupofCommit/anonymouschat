@@ -105,22 +105,20 @@ export const forceAppActivate = async (web: WebClient, group: IGroup, forceActiv
   await web.chat.postMessage(getActivatedArg(group.channelId, forceActivateUserId, permalink))
 }
 
-export const forceAppDeactivate = async (web: WebClient, group: IGroup, payload) => {
-  const pm: IPMDeactivateWarningView = JSON.parse(payload.view.private_metadata)
-  if (!isPMDeactivateWarningView(pm)) throw new Error('pm is not IPMDeactivateWarningView')
-
+export const forceAppDeactivate = async (web: WebClient, group: IGroup, userId: string) => {
+  const { channelId, agreedUserArr } = group
   const webAccessTokenExpirationTime = getWATETByChanging(false, true, group.webAccessTokenExpirationTime)
   const updatedGroup: IGroup = {
     ...group, agreedUserArr: [],
     isPostingAvailable: false, webAccessTokenExpirationTime,
-    forceDeactivateUserId: payload.user.id, forceActivateUserId: NOT_YET,
+    forceDeactivateUserId: userId, forceActivateUserId: NOT_YET,
   }
   const updatedConfigMsgArg = { ...getConfigMsgArg(updatedGroup), ts: group.activationMsgTs }
   const permalink = await getConfigMsgPermalink(web, group)
   if (!permalink) throw new Error('Can not get config msg permalink in forceAppDeactivate()')
 
   // TODO: 아래 3개의 작업이 원자성을 가져야 한다.
-  await web.chat.postMessage(getDeactivatedArg(updatedGroup, permalink))
+  await web.chat.postMessage(getDeactivatedArg(channelId, userId, agreedUserArr.length, permalink))
   await web.chat.update(updatedConfigMsgArg)
   await putGroup(updatedGroup)
 }
