@@ -5,16 +5,16 @@ import { includes } from 'lodash'
 
 import { WebClient } from '@slack/web-api'
 import { createLogger } from './logger'
-import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_USERREPLY_LIKE, ACTION_VOTE_USERREPLY_DISLIKE, ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_OPEN_DIALOG_DELETE_VOICE, ACTION_OPEN_DIALOG_DELETE_REPLY, ACTION_OPEN_DIALOG_DELETE_USERREPLY, ACTION_OPEN_VIEW_DELETE, ACTION_APP_USE_AGREEMENT, ACTION_APP_FORCE_ACTIVATE, ACTION_APP_FORCE_DEACTIVATE, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_DIALOG_VOICE, ACTION_VOTE_REPORT, ACTION_SUBMISSION_VOICE, ACTION_SUBMISSION_REPLY, ACTION_SUBMISSION_DELETE, ACTION_ON_MORE_OPEN_VIEW_REPLY } from './constant'
+import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_USERREPLY_LIKE, ACTION_VOTE_USERREPLY_DISLIKE, ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_OPEN_DIALOG_DELETE_VOICE, ACTION_OPEN_DIALOG_DELETE_REPLY, ACTION_OPEN_DIALOG_DELETE_USERREPLY, ACTION_OPEN_VIEW_DELETE, ACTION_APP_USE_AGREEMENT, ACTION_APP_FORCE_ACTIVATE, ACTION_APP_FORCE_DEACTIVATE, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_DIALOG_VOICE, ACTION_VOTE_REPORT, ACTION_SUBMISSION_VOICE, ACTION_SUBMISSION_REPLY, ACTION_SUBMISSION_DELETE, ACTION_ON_MORE_OPEN_VIEW_REPLY, ACTION_SHOW_DEACTIVATE_WARNING } from './constant'
 import { isMyBlockActionPayload, isMyViewSubmissionPayload, isMoreActionPayload } from './model/model-common'
 import { getOrCreateGetGroup } from './model/model-group'
 import { isGroup } from '../types/type-group'
 import { getBEHRError } from '../common/common-util'
-import { getConfigMsgPermalink, sendHelpMessage, postAgreementMesssage, reportVoiceOrReply, agreeAppActivation, forceAppActivate, forceAppDeactivate, deleteVoiceOrReply, openViewToDelete } from './slack/core-common'
+import { getConfigMsgPermalink, sendHelpMessage, postAgreementMesssage, reportVoiceOrReply, agreeAppActivation, forceAppActivate, forceAppDeactivate, deleteVoiceOrReply, openViewToDelete, showDeactivateWarning } from './slack/core-common'
 import { parseWOThrow } from './util'
 import { IPMNewVoiceView, isPMNewVoiceView } from '../types/type-voice'
 import { IPMNewReplyView, isPMCreateReplyView } from '../types/type-reply'
-import { IPMDeletionView, isPMDeletionView } from '../types/type-common'
+import { IPMDeletionView, isPMDeletionView, IPMDeactivateWarningView, isPMDeactivateWarningView } from '../types/type-common'
 import { openViewToPostVoice, createVoiceFromSlack, voteSlackVoice } from './slack/core-voice'
 import { createReplyFromSlack, openViewToPostReply, voteSlackReply } from './slack/core-reply'
 
@@ -29,6 +29,7 @@ const getAction = (payload: any) => {
         payload.view.callback_id === ACTION_SUBMISSION_VOICE ? ACTION_SUBMISSION_VOICE
       : payload.view.callback_id === ACTION_SUBMISSION_REPLY ? ACTION_SUBMISSION_REPLY
       : payload.view.callback_id === ACTION_SUBMISSION_DELETE ? ACTION_SUBMISSION_DELETE
+      : payload.view.callback_id === ACTION_APP_FORCE_DEACTIVATE ? ACTION_APP_FORCE_DEACTIVATE
       : '')
 
     : payload.type === 'block_actions' ? (
@@ -48,7 +49,7 @@ const getAction = (payload: any) => {
 
       : payload.actions[0].value     === ACTION_APP_USE_AGREEMENT ? ACTION_APP_USE_AGREEMENT
       : payload.actions[0].value     === ACTION_APP_FORCE_ACTIVATE ? ACTION_APP_FORCE_ACTIVATE
-      : payload.actions[0].value     === ACTION_APP_FORCE_DEACTIVATE ? ACTION_APP_FORCE_DEACTIVATE
+      : payload.actions[0].value     === ACTION_SHOW_DEACTIVATE_WARNING ? ACTION_SHOW_DEACTIVATE_WARNING
       : payload.actions[0].action_id === ACTION_OPEN_DIALOG_REPLY ? ACTION_OPEN_DIALOG_REPLY
       : payload.actions[0].action_id === ACTION_OPEN_DIALOG_VOICE ? ACTION_OPEN_DIALOG_VOICE
       : payload.actions[0].value     === ACTION_OPEN_DIALOG_VOICE ? ACTION_OPEN_DIALOG_VOICE
@@ -74,7 +75,7 @@ const getAction = (payload: any) => {
   return comportableActionMap[action] ? comportableActionMap[action] : action
 }
 
-type TParsedPM = IPMNewVoiceView | IPMNewReplyView | IPMDeletionView
+type TParsedPM = IPMNewVoiceView | IPMNewReplyView | IPMDeletionView | IPMDeactivateWarningView
 const router = Router()
 router.use(bodyParser.urlencoded({ extended: true }))
 router.all('/', async (req, res, next) => {
@@ -89,6 +90,7 @@ router.all('/', async (req, res, next) => {
     if (action === ACTION_SUBMISSION_VOICE && !isPMNewVoiceView(pm)) return next('Wrong PM')
     if (action === ACTION_SUBMISSION_REPLY && !isPMCreateReplyView(pm)) return next('Wrong PM')
     if (action === ACTION_SUBMISSION_DELETE && !isPMDeletionView(pm)) return next('Wrong PM')
+    if (action === ACTION_APP_FORCE_DEACTIVATE && !isPMDeactivateWarningView(pm)) return next('Wrong PM')
 
     const { channelId, channelName } = pm
     const [err2,group] = await to(getOrCreateGetGroup(channelId, team.id, channelName, team.enterprise_id))
@@ -99,6 +101,8 @@ router.all('/', async (req, res, next) => {
         action === ACTION_SUBMISSION_VOICE             ? await to(createVoiceFromSlack(web, payload))
       : action === ACTION_SUBMISSION_REPLY             ? await to(createReplyFromSlack(web, payload, group))
       : action === ACTION_SUBMISSION_DELETE            ? await to(deleteVoiceOrReply(web, payload))
+      : action === ACTION_APP_FORCE_DEACTIVATE         ? await to(forceAppDeactivate(web, group, payload.user.id))
+
       : [new Error('Unkown action: ' + action)]
 
     if(err3) return next(err3)
@@ -135,8 +139,8 @@ router.all('/', async (req, res, next) => {
       : action === ACTION_VOTE_REPORT                  ? await to(reportVoiceOrReply(web, payload))
 
       : action === ACTION_APP_USE_AGREEMENT            ? await to(agreeAppActivation(web, group, user.id, response_url))
-      : action === ACTION_APP_FORCE_ACTIVATE           ? await to(forceAppActivate(group, user.id, response_url))
-      : action === ACTION_APP_FORCE_DEACTIVATE         ? await to(forceAppDeactivate(group, user.id, response_url))
+      : action === ACTION_APP_FORCE_ACTIVATE           ? await to(forceAppActivate(web, group, user.id, response_url))
+      : action === ACTION_SHOW_DEACTIVATE_WARNING      ? await to(showDeactivateWarning(web, trigger_id, group))
 
       : [new Error('Unkown action: ' + action)]
 

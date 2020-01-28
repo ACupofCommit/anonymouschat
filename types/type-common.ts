@@ -41,6 +41,11 @@ export interface IFaceImoji {
   label: string
 }
 
+export interface IPMDeactivateWarningView {
+  channelId: string
+  channelName: string
+}
+
 export const isPMDeletionView = (o: any): o is IPMDeletionView => {
   if (!isNotNullObject(o)) return false
   if (!isNotEmptyString(o.channelId)) return false
@@ -60,5 +65,12 @@ export const isMySlashCommandRequest = (o: any): o is ISlashCommandPayload => {
   // user가 typing하는 부분. 빈 문자가 올 수도 있음
   if (typeof o.text !== 'string') return false
 
+  return true
+}
+
+export const isPMDeactivateWarningView = (o: any): o is IPMDeactivateWarningView => {
+  if (!isNotNullObject(o)) return false
+  if (!isNotEmptyString(o.channelId)) return false
+  if (!isNotEmptyString(o.channelName)) return false
   return true
 }

@@ -17,8 +17,8 @@ import { getSlackATArrByTeamId, deleteSlackAT } from '../model/model-slackAT'
 import { putVoice, getVoice, deleteVoice } from '../model/model-voice'
 import { putGroup, getGroup, updateBatchGroup, getGroupKeysArrByAccessToken } from '../model/model-group'
 import { getGroupId, getVoiceId, getReplyId, IMyBlockActionPayload, IMyViewSubmissionPayload, isMyViewSubmissionPayload } from '../model/model-common'
-import { IPMDeletionView, IChatGetPermalinkResponse } from '../../types/type-common'
-import { getDeletionViewOpenArg, getErrorMsgBlockInView } from './argument-common'
+import { IPMDeletionView, IChatGetPermalinkResponse, IPMDeactivateWarningView, isPMDeactivateWarningView } from '../../types/type-common'
+import { getDeletionViewOpenArg, getErrorMsgBlockInView, getAppDeactivateWarningViewsArg, getDeactivatedArg, getActivatedArg } from './argument-common'
 import { STR_NOT_MATCHED_PASSWORD } from '../strings'
 import { isReplyByTsThreadTs } from '../util'
 
@@ -91,24 +91,43 @@ export const agreeAppActivation = async (web: WebClient, group: IGroup, userId: 
   await axios.post(responseUrl, getConfigMsgArg(updatedGroup))
 }
 
-export const forceAppActivate = async (group: IGroup, forceActivateUserId: string, responseUrl: string) => {
+export const forceAppActivate = async (web: WebClient, group: IGroup, forceActivateUserId: string, responseUrl: string) => {
   const webAccessTokenExpirationTime = getWATETByChanging(true, false, group.webAccessTokenExpirationTime)
   const updatedGroup = await putGroup({
     ...group,
     isPostingAvailable: true, webAccessTokenExpirationTime,
     forceActivateUserId, forceDeactivateUserId: NOT_YET,
   })
-  await axios.post(responseUrl, getConfigMsgArg(updatedGroup))
+  const [err, result] = await to(axios.post(responseUrl, getConfigMsgArg(updatedGroup)))
+  if (err || !isObject(result)) throw err || new Error('Failed to update config message')
+
+  const permalink = await getConfigMsgPermalink(web, group)
+  await web.chat.postMessage(getActivatedArg(group.channelId, forceActivateUserId, permalink))
 }
 
-export const forceAppDeactivate = async (group: IGroup, forceDeactivateUserId: string, responseUrl: string) => {
+export const forceAppDeactivate = async (web: WebClient, group: IGroup, userId: string) => {
+  const { channelId, agreedUserArr } = group
   const webAccessTokenExpirationTime = getWATETByChanging(false, true, group.webAccessTokenExpirationTime)
-  const updatedGroup = await putGroup({
+  const updatedGroup: IGroup = {
     ...group, agreedUserArr: [],
     isPostingAvailable: false, webAccessTokenExpirationTime,
-    forceDeactivateUserId, forceActivateUserId: NOT_YET,
-  })
-  await axios.post(responseUrl, getConfigMsgArg(updatedGroup))
+    forceDeactivateUserId: userId, forceActivateUserId: NOT_YET,
+  }
+  const updatedConfigMsgArg = { ...getConfigMsgArg(updatedGroup), ts: group.activationMsgTs }
+  const permalink = await getConfigMsgPermalink(web, group)
+  if (!permalink) throw new Error('Can not get config msg permalink in forceAppDeactivate()')
+
+  // TODO: 아래 3개의 작업이 원자성을 가져야 한다.
+  await web.chat.postMessage(getDeactivatedArg(channelId, userId, agreedUserArr.length, permalink))
+  await web.chat.update(updatedConfigMsgArg)
+  await putGroup(updatedGroup)
+}
+
+export const showDeactivateWarning = async (web: WebClient, triggerId: string, group: IGroup) => {
+  const { channelId, channelName } = group
+  const pm: IPMDeactivateWarningView = { channelId, channelName }
+  const arg = getAppDeactivateWarningViewsArg(triggerId, group.agreedUserArr.length, pm)
+  await web.views.open(arg)
 }
 
 /*
