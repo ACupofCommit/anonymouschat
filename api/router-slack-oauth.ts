@@ -7,7 +7,7 @@ import { createLogger } from './logger';
 import { STR_DENIED_APP, STR_ALLOWED_APP } from './strings';
 import { getBEHRError } from '../common/common-util';
 import { createSlackAT } from './model/model-slackAT';
-import { upsertTeam } from './model/model-team';
+import { newTeam, putTeam } from './model/model-team';
 import { CONST_SLASH_COMMAND } from './constant';
 
 const logger = createLogger('oauth')
@@ -71,7 +71,8 @@ router.get('/', async (req, res, next) => {
   const [err2, slackAT] = await to(createSlackAT(team_id, user_id, access_token, scope))
   if (err2 || !slackAT) return next(getBEHRError(err2, 'createSlackAT'))
 
-  const [err3] = await to(upsertTeam(team_id, team_name, enterprise_id))
+  const team = newTeam(team_id, team_name, enterprise_id)
+  const [err3] = await to(putTeam(team))
   if (err3) return next(err3)
 
   const strAllowedApp = STR_ALLOWED_APP.replace('%s', CONST_SLASH_COMMAND)
