@@ -2,7 +2,8 @@ import { CreateTableInput } from 'aws-sdk/clients/dynamodb'
 import to from 'await-to-js'
 import { getDD } from '../api/util'
 import { TABLENAME_VOICE, TABLENAME_REPLY, TABLENAME_AT, TABLENAME_TEAM } from '../api/constant'
-import { scheme as paramsGroup } from '../api/model/model-group'
+import { scheme as paramGroup } from '../api/model/model-group'
+import { scheme as paramTeam } from '../api/model/model-team'
 
 const paramVoice: CreateTableInput = {
   BillingMode: 'PAY_PER_REQUEST',
@@ -79,28 +80,12 @@ const paramAT: CreateTableInput = {
   }],
 }
 
-const paramTeam: CreateTableInput = {
-  AttributeDefinitions: [
-    { AttributeName: 'gridId', AttributeType: 'S' },
-    { AttributeName: 'teamId', AttributeType: 'S' },
-  ],
-  KeySchema: [
-    { AttributeName: 'gridId', KeyType: 'HASH' },
-    { AttributeName: 'teamId', KeyType: 'RANGE' },
-  ],
-  BillingMode: 'PAY_PER_REQUEST',
-  TableName: TABLENAME_TEAM,
-  StreamSpecification: {
-    StreamEnabled: false,
-  },
-}
-
 const run = async () => {
   const ddb = getDD()
 
-  const [errGroup, dataGroupV2] = await to(ddb.createTable(paramsGroup).promise())
+  const [errGroup, dataGroupV2] = await to(ddb.createTable(paramGroup).promise())
   if (errGroup) console.log("Error", errGroup)
-  else console.log("Table Created: " + paramsGroup.TableName)
+  else console.log("Table Created: " + paramGroup.TableName)
 
   const [err2, data2] = await to(ddb.createTable(paramVoice).promise())
   if (err2) console.log("Error", err2)

@@ -9,6 +9,7 @@ module.exports = api => {
         isTSX: true,
         allExtensions: true,
       }],
+      "@babel/react",
     ],
     plugins: [
       'babel-plugin-rewire-ts',

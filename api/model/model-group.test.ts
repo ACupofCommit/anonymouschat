@@ -11,7 +11,7 @@ const TableName = scheme.TableName + '-jest'
 beforeAll( async () => {
   const modifiedScheme: CreateTableInput = { ...scheme, TableName }
   await dd.createTable(modifiedScheme).promise()
-  console.log('createdTable')
+  console.log('createdTable: ' + TableName)
 
   rewired.__set__('TableName', TableName)
   rewired.__set__('ddc', ddc)
@@ -43,5 +43,5 @@ test("getExpiredGroupKeysArrByTeamId", async () => {
 afterAll(async () => {
   __rewire_reset_all__()
   await dd.deleteTable({ TableName }).promise()
-  console.log('deletedTable')
+  console.log('deletedTable:' + TableName)
 })

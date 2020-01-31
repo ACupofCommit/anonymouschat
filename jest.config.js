@@ -1,7 +1,13 @@
 module.exports = {
   coverageDirectory: "coverage",
   coveragePathIgnorePatterns: [ "/node_modules/" ],
-  collectCoverageFrom: [ 'src/**/*.ts', 'src/**/*.tsx' ],
+  collectCoverageFrom: [
+    'common/**/*.ts',
+    'components/**/*.ts',
+    'pages/**/*.tsx',
+    'types/**/*.ts',
+    'api/**/*.ts',
+  ],
 
   // preset: 'ts-jest',
 

@@ -1,6 +1,7 @@
 # Anonymouslack
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/aluc-io/anonymouslack/tsc-build)](https://github.com/aluc-io/anonymouslack/actions)
+[![Coverage Status](https://coveralls.io/repos/github/aluc-io/anonymouslack/badge.svg)](https://coveralls.io/github/aluc-io/anonymouslack)
 [![Docker Pulls](https://img.shields.io/docker/pulls/alucio/anonymouslack)](https://hub.docker.com/repository/docker/alucio/anonymouslack/general)
 
 Share your mind anonymously on Slack.
@@ -100,7 +101,7 @@ development tool and debugging tool.
 ## 4. Operation
 
 ### Run production server
-To run server as container use `dokcer-compose.prod.yml`
+To run server as container use `bin/docker-compose.prod.yml`
 
 ### Refresh webAccessToken
 To refresh `webAccessToken`, make the `cronjob` file:
@@ -119,7 +120,7 @@ $ crontab cronjob
 $ crontab -l
 ```
 
-> unregiter: `$ crontab -r`
+> unregister: `$ crontab -r`
 
 ## 5. License
 
