@@ -1,7 +1,7 @@
 # Anonymouslack
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/aluc-io/anonymouslack/tsc-build)](https://github.com/aluc-io/anonymouslack/actions)
-[![Coverage Status](https://coveralls.io/repos/github/aluc-io/anonymouslack/badge.svg)](https://coveralls.io/github/aluc-io/anonymouslack)
+[![Coverage Status](https://coveralls.io/repos/github/aluc-io/anonymouslack/badge.svg?branch=refs/heads/master)](https://coveralls.io/github/aluc-io/anonymouslack)
 [![Docker Pulls](https://img.shields.io/docker/pulls/alucio/anonymouslack)](https://hub.docker.com/repository/docker/alucio/anonymouslack/general)
 
 Share your mind anonymously on Slack.
