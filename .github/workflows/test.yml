@@ -1,16 +1,10 @@
 name: test
 on: [push]
 jobs:
-  build:
+  jest:
     runs-on: ubuntu-latest
     env:
       CI: true
-      AWS_ACCESS_KEY_ID: AKXXXXXXXXXXXXXXXXGQ
-      AWS_SECRET_ACCESS_KEY: +IxxxxxxxxxxxxxxxxxxK5              # For AWS dynamodb
-      AWS_DEFAULT_REGION: us-west-1                              # For AWS dynamodb
-      AWS_REGION: $AWS_DEFAULT_REGION                            # Only for local dynamodb
-      DYNAMO_ENDPOINT: http://localhost:8000/                    # Only for local dynamodb
-      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js 10.x
@@ -19,10 +13,18 @@ jobs:
           node-version: 10.x
       - name: run dynamodb
         run: docker-compose -f bin/docker-compose.dynamodb.yml up -d
-      - name: test
+      - uses: actions/cache@v1
+        id: cache
+        with:
+          path: node_modules
+          key: v1-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+      - name: yarn install
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: yarn test
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         run: |
-          ls -al
-          yarn install --frozen-lockfile
           yarn test
           cat coverage/lcov.info | npx coveralls
 

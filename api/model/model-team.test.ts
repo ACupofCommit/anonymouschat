@@ -3,8 +3,8 @@ import { CreateTableInput } from 'aws-sdk/clients/dynamodb'
 import { getDDC, getDD } from '../util'
 const rewired = require('./model-team')
 
-const ddc = getDDC('us-west-2', 'AKXXXXXXXXXXXXXXXXF5', 'LQxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxVV', 'http://localhost:8000/')
-const dd = getDD('us-west-2', 'AKXXXXXXXXXXXXXXXXF5', 'LQxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxVV', 'http://localhost:8000/')
+const ddc = getDDC(void 0, 'xx', 'xxx', 'http://localhost:8000/')
+const dd = getDD(void 0, 'xx', 'xxx', 'http://localhost:8000/')
 const TableName = scheme.TableName + '-jest'
 
 beforeAll(async () => {
