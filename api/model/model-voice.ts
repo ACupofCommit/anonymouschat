@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 import { isArray, every } from 'lodash'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import { DocumentClient, CreateTableInput } from 'aws-sdk/clients/dynamodb'
 
 import { getGroupIdFromVoiceId, getVoiceId } from './model-common'
 import { createLogger } from '../logger'
@@ -12,6 +12,32 @@ import { TABLENAME_VOICE } from '../constant'
 const TableName = TABLENAME_VOICE
 const ddc = getDDC()
 const logger = createLogger('MODEL_VOICE')
+
+export const scheme: CreateTableInput = {
+  TableName,
+  BillingMode: 'PAY_PER_REQUEST',
+  AttributeDefinitions: [
+    { AttributeName: 'voiceId', AttributeType: 'S' },
+    { AttributeName: 'groupId', AttributeType: 'S' },
+    { AttributeName: 'platformId', AttributeType: 'S' },
+  ],
+  KeySchema: [
+    { AttributeName: 'groupId', KeyType: 'HASH' },
+    { AttributeName: 'voiceId', KeyType: 'RANGE' },
+  ],
+  LocalSecondaryIndexes: [{
+    Projection: { ProjectionType: 'KEYS_ONLY' },
+    IndexName: 'IndexGroupIdPlatformId', // slack message ts
+    KeySchema: [
+      { AttributeName: 'groupId', KeyType: 'HASH' },
+      { AttributeName: 'platformId', KeyType: 'RANGE' },
+    ],
+  }],
+  StreamSpecification: {
+    StreamEnabled: false
+  },
+}
+
 
 export const newVoice = (p: IParamNewVoice): IVoice => {
   const { platformId, nickname, content, groupId, rawPassword, faceImoji } = p

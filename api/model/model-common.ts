@@ -1,8 +1,12 @@
-
 import { NOT_GRID } from "../constant"
 import { BlockActionPayload, Team, Channel, Container, User, View } from "../../types/BlockActionPayload"
 import { ViewSubmissionPayload } from "../../types/ViewSubmissionPayload"
 import { isNotNullObject, isNotEmptyString } from "../../common/common-util"
+import { parseVoiceId, parseReplyId } from "../../types/type-common"
+
+export const getGroupId = (channelId: string, teamId: string, gridId: string=NOT_GRID) => {
+  return `${gridId}-${teamId}-${channelId}`
+}
 
 /**
  * voiceId 생성 규칙에 따라 voiceId를 생성하여 반환
@@ -18,16 +22,13 @@ export const getReplyId = (voiceId: string, ts: string) => {
 }
 
 export const getVoiceIdFromReplyId = (replyId: string) => {
-  const [gridId, teamId, channelId, voiceTS] = replyId.split('-')
+  const {gridId, teamId, channelId, voiceTS} = parseReplyId(replyId)
   const groupId = getGroupId(channelId, teamId, gridId)
   return getVoiceId(groupId, voiceTS)
 }
-export const getGroupId = (channelId: string, teamId: string, gridId: string=NOT_GRID) => {
-  return `${gridId}-${teamId}-${channelId}`
-}
 
 export const getGroupIdFromVoiceId = (voiceId: string) => {
-  const [gridId, teamId, channelId] = voiceId.split('-')
+  const {gridId, teamId, channelId} = parseVoiceId(voiceId)
   return getGroupId(channelId, teamId, gridId)
 }
 

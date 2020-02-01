@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import { DocumentClient, CreateTableInput } from 'aws-sdk/clients/dynamodb'
 
 import { createLogger } from '../logger'
 import { getVoiceIdFromReplyId, getReplyId, getVoiceId } from './model-common'
@@ -10,6 +10,33 @@ import { TABLENAME_REPLY } from '../constant'
 const TableName = TABLENAME_REPLY
 const ddc = getDDC()
 const logger = createLogger('reply')
+
+export const scheme: CreateTableInput = {
+  AttributeDefinitions: [
+    { AttributeName: 'replyId', AttributeType: 'S' },
+    { AttributeName: 'voiceId', AttributeType: 'S' },
+    { AttributeName: 'groupId', AttributeType: 'S' },
+    { AttributeName: 'platformId', AttributeType: 'S' },
+  ],
+  KeySchema: [
+    { AttributeName: 'voiceId', KeyType: 'HASH' },
+    { AttributeName: 'replyId', KeyType: 'RANGE' },
+  ],
+  GlobalSecondaryIndexes: [{
+    Projection: { ProjectionType: 'KEYS_ONLY' },
+    IndexName: 'IndexGroupIdPlatformId',
+    KeySchema: [
+      { AttributeName: 'groupId', KeyType: 'HASH' },
+      { AttributeName: 'platformId', KeyType: 'RANGE' },
+    ],
+  }],
+  BillingMode: 'PAY_PER_REQUEST',
+  TableName: TABLENAME_REPLY,
+  StreamSpecification: {
+    StreamEnabled: false
+  },
+}
+
 
 export const newReply = (p: IParamNewReply): IReply => {
   const { platformId, threadTs, groupId, nickname, content, rawPassword, faceImoji } = p

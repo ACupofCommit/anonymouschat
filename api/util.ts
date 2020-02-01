@@ -3,21 +3,21 @@ import urljoin from 'url-join'
 
 const ANONYMOUSLACK_WEB_ENDPOINT = process.env.ANONYMOUSLACK_WEB_ENDPOINT || '/'
 export const getDD = (_region?: string, accessKeyId?: string, secretAccessKey?: string, _endpoint?: string) => {
-  const region = _region || process.env.AWS_DEFAULT_REGION
+  const region = _region || process.env.AWS_DEFAULT_REGION || 'us-west-2'
   if (!region) throw new Error('process.env.AWS_DEFAULT_REGION is required')
 
   const endpoint = _endpoint || process.env.DYNAMO_ENDPOINT || getDDEndpoint(region)
-  const httpOptions: AWS.HTTPOptions = { timeout: 5000 }
+  const httpOptions: AWS.HTTPOptions = { timeout: 3000 }
   const dd = new AWS.DynamoDB({apiVersion: '2012-08-10', region, endpoint, accessKeyId, secretAccessKey, httpOptions })
   return dd
 }
 
 export const getDDC = (_region?: string, accessKeyId?: string, secretAccessKey?: string, _endpoint?: string) => {
-  const region = _region || process.env.AWS_DEFAULT_REGION
+  const region = _region || process.env.AWS_DEFAULT_REGION || 'us-west-2'
   if (!region) throw new Error('process.env.AWS_DEFAULT_REGION is required')
 
   const endpoint = _endpoint || process.env.DYNAMO_ENDPOINT || getDDEndpoint(region)
-  const httpOptions: AWS.HTTPOptions = { timeout: 5000 }
+  const httpOptions: AWS.HTTPOptions = { timeout: 3000 }
   const ddc = new AWS.DynamoDB.DocumentClient({ region, endpoint, accessKeyId, secretAccessKey, httpOptions })
   return ddc
 }
