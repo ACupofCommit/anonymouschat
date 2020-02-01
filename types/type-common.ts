@@ -74,3 +74,15 @@ export const isPMDeactivateWarningView = (o: any): o is IPMDeactivateWarningView
   if (!isNotEmptyString(o.channelName)) return false
   return true
 }
+
+export const parseVoiceId = (voiceId: string) => {
+  const [gridId, teamId, channelId] = voiceId.split('-')
+  if (!gridId || !teamId || !channelId) throw new Error('Wrong voiceId format')
+  return { gridId, teamId, channelId }
+}
+
+export const parseReplyId = (replyId: string) => {
+  const [gridId, teamId, channelId, voiceTS] = replyId.split('-')
+  if (!gridId || !teamId || !channelId || !voiceTS) throw new Error('Wrong replyId format')
+  return { gridId, teamId, channelId, voiceTS }
+}

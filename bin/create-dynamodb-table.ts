@@ -1,60 +1,11 @@
 import { CreateTableInput } from 'aws-sdk/clients/dynamodb'
 import to from 'await-to-js'
 import { getDD } from '../api/util'
-import { TABLENAME_VOICE, TABLENAME_REPLY, TABLENAME_AT, TABLENAME_TEAM } from '../api/constant'
+import { TABLENAME_AT } from '../api/constant'
 import { scheme as paramGroup } from '../api/model/model-group'
 import { scheme as paramTeam } from '../api/model/model-team'
-
-const paramVoice: CreateTableInput = {
-  BillingMode: 'PAY_PER_REQUEST',
-  TableName: TABLENAME_VOICE,
-  AttributeDefinitions: [
-    { AttributeName: 'voiceId', AttributeType: 'S' },
-    { AttributeName: 'groupId', AttributeType: 'S' },
-    { AttributeName: 'platformId', AttributeType: 'S' },
-  ],
-  KeySchema: [
-    { AttributeName: 'groupId', KeyType: 'HASH' },
-    { AttributeName: 'voiceId', KeyType: 'RANGE' },
-  ],
-  LocalSecondaryIndexes: [{
-    Projection: { ProjectionType: 'KEYS_ONLY' },
-    IndexName: 'IndexGroupIdPlatformId', // slack message ts
-    KeySchema: [
-      { AttributeName: 'groupId', KeyType: 'HASH' },
-      { AttributeName: 'platformId', KeyType: 'RANGE' },
-    ],
-  }],
-  StreamSpecification: {
-    StreamEnabled: false
-  },
-}
-
-const paramReply: CreateTableInput = {
-  AttributeDefinitions: [
-    { AttributeName: 'replyId', AttributeType: 'S' },
-    { AttributeName: 'voiceId', AttributeType: 'S' },
-    { AttributeName: 'groupId', AttributeType: 'S' },
-    { AttributeName: 'platformId', AttributeType: 'S' },
-  ],
-  KeySchema: [
-    { AttributeName: 'voiceId', KeyType: 'HASH' },
-    { AttributeName: 'replyId', KeyType: 'RANGE' },
-  ],
-  GlobalSecondaryIndexes: [{
-    Projection: { ProjectionType: 'KEYS_ONLY' },
-    IndexName: 'IndexGroupIdPlatformId',
-    KeySchema: [
-      { AttributeName: 'groupId', KeyType: 'HASH' },
-      { AttributeName: 'platformId', KeyType: 'RANGE' },
-    ],
-  }],
-  BillingMode: 'PAY_PER_REQUEST',
-  TableName: TABLENAME_REPLY,
-  StreamSpecification: {
-    StreamEnabled: false
-  },
-}
+import { scheme as paramVoice } from '../api/model/model-voice'
+import { scheme as paramReply } from '../api/model/model-reply'
 
 const paramAT: CreateTableInput = {
   AttributeDefinitions: [
