@@ -1,7 +1,10 @@
-import getConfig from 'next/config'
 import { CSSProperties } from 'react'
 import { NextPage } from 'next'
-const { publicRuntimeConfig } = getConfig()
+
+const env = {
+  ANONYMOUSLACK_API_BASE_URL: process.env.ANONYMOUSLACK_API_BASE_URL,
+  GIT_REVISION: process.env.GIT_REVISION || 'maybe-local-dev-server',
+}
 
 const styleGreenLight: CSSProperties = {
   backgroundColor: '#2fff2f',
@@ -22,7 +25,7 @@ const Index: NextPage = () => (
     <div style={{fontSize: 20}}>publicRuntimeConfig:</div>
     <div style={{height: 10}}/>
     <pre>
-      { JSON.stringify(publicRuntimeConfig, null, 2) }
+      { JSON.stringify(env, null, 2) }
     </pre>
   </>
 )

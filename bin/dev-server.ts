@@ -1,4 +1,5 @@
 import url from 'url'
+import next from 'next'
 import express from 'express'
 import morgan from 'morgan'
 import urlJoin from 'url-join'
@@ -7,11 +8,8 @@ import routerSlackAction from '../api/router-slack-action'
 import routerSlackCommand from '../api/router-slack-command'
 import routerSlackOauth from '../api/router-slack-oauth'
 
-import NextServer from '../node_modules/next/dist/next-server/server/next-server'
-
 const port = parseInt(process.env.PORT || "3000", 10) || 3000
-const dev = process.env.NODE_ENV !== 'production'
-const app = new NextServer({ dev })
+const app = next({ dev: true })
 const handle = app.getRequestHandler()
 
 const handleByNextJs = (req,res) => {

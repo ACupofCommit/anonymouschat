@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "nodemon ./bin/server.ts --exec babel-node -- --config-file ./bin/babel.config.js --extensions .ts",
-    "build": "next build",
+    "build": "next build && webpack --config webpack.config.customserver.js",
     "start": "babel-node --config-file ./bin/babel.config.prod.js --extensions .ts bin/server.ts",
     "tsc": "tsc --project tsconfig.json",
     "test": "jest --coverage",
@@ -46,10 +46,14 @@
     "@types/node": "^13.1.7",
     "@types/react": "^16.9.17",
     "@types/url-join": "^4.0.0",
+    "babel-loader": "^8.0.6",
     "babel-plugin-rewire-ts": "^1.3.3",
     "coveralls": "^3.0.9",
     "jest": "^25.1.0",
     "nodemon": "^2.0.2",
-    "typescript": "^3.7.4"
+    "typescript": "^3.7.4",
+    "webpack": "^4.41.5",
+    "webpack-bundle-analyzer": "^3.6.0",
+    "webpack-cli": "^3.3.10"
   }
 }
