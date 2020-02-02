@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { isArray, every } from 'lodash'
+import { isArray, every } from 'lodash-es'
 import { DocumentClient, CreateTableInput } from 'aws-sdk/clients/dynamodb'
 
 import { getGroupIdFromVoiceId, getVoiceId } from './model-common'

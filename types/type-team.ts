@@ -1,4 +1,4 @@
-import { isArray, every } from "lodash"
+import { isArray, every } from 'lodash-es'
 import { isNotNullObject, isNotEmptyString } from "../common/common-util"
 
 export interface ITeam {

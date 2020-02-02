@@ -1,4 +1,4 @@
-import { includes, values } from "lodash"
+import { includes, values } from 'lodash-es'
 
 export const isEnumCommand = (command: any): command is EnumCommand => {
   return includes(values(EnumCommand), command)

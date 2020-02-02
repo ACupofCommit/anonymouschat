@@ -1,4 +1,4 @@
-import { compact } from 'lodash'
+import { compact } from 'lodash-es'
 import { ChatPostMessageArguments, Action, Button, ViewsOpenArguments } from '@slack/web-api'
 
 import { ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_VOTE_REPORT, NOT_YET, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_VIEW_DELETE, ACTION_SUBMISSION_VOICE, CONST_APP_NAME } from '../constant'

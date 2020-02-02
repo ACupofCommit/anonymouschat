@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import to from 'await-to-js'
 import bodyParser from 'body-parser'
-import { find, values } from 'lodash'
+import { find, values } from 'lodash-es'
 import { WebClient } from '@slack/web-api'
 
 import { getOrCreateGetGroup } from './model/model-group'

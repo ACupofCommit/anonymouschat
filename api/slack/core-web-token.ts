@@ -1,4 +1,4 @@
-import { flatten } from "lodash"
+import { flatten } from 'lodash-es'
 import { WebClient } from "@slack/web-api"
 import { getConfigMsgArg } from "./argument-config"
 import { getMSFromHours } from "../../common/common-util"

@@ -1,8 +1,7 @@
-import { every } from 'lodash';
+import { every, isArray } from 'lodash-es';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import { createLogger } from '../logger';
-import { isArray } from 'util';
 import { getDDC } from '../util';
 import { TABLENAME_AT } from '../constant';
 

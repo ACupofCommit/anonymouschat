@@ -1,4 +1,4 @@
-import { every, isArray, isString, isBoolean } from "lodash"
+import { every, isArray, isString, isBoolean } from 'lodash-es'
 import { isNotNullObject, isNotEmptyString } from "../common/common-util"
 
 export interface IReply {

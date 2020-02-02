@@ -1,4 +1,4 @@
-import { isArray, every } from "lodash"
+import { isArray, every } from 'lodash-es'
 
 export interface IGroupKeys {
   teamId: string

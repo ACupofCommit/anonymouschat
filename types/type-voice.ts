@@ -1,4 +1,4 @@
-import { isArray, every, isString, isBoolean } from "lodash"
+import { isArray, every, isString, isBoolean } from 'lodash-es'
 import { isNotEmptyString, isNotNullObject } from "../common/common-util"
 
 export interface IVoice {

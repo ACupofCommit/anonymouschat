@@ -1,4 +1,4 @@
-import { keys, includes } from "lodash"
+import { keys, includes } from 'lodash-es'
 
 enum EnumLogLevel {
   error=0,

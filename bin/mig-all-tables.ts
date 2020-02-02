@@ -1,5 +1,5 @@
 import { getDDC, getDDEndpoint, delay } from '../api/util'
-import { isArray } from 'lodash'
+import { isArray } from 'lodash-es'
 
 const fakeDDC = {
   put: (p: any) => {

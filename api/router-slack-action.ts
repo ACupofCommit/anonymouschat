@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import to from 'await-to-js'
 import bodyParser from 'body-parser'
-import { includes } from 'lodash'
+import { includes } from 'lodash-es'
 
 import { WebClient } from '@slack/web-api'
 import { createLogger } from './logger'

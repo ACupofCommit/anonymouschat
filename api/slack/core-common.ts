@@ -1,6 +1,6 @@
 import axios from 'axios'
 import to from 'await-to-js'
-import { isObject } from "lodash"
+import { isObject } from 'lodash-es'
 import { WebClient, WebAPICallError, ChatGetPermalinkArguments, View } from "@slack/web-api"
 
 import { NOT_YET, ACTIVATION_QUORUM, INPUT_NAME_PASSWORD } from '../constant'
