@@ -28,8 +28,7 @@ import { getRawPassword } from '../common/common-util'
 
 const postVoice = async (paramNewVoiceFromWeb: IParamNewVoiceFromWeb, webAccessToken: string) => {
   if (!isParamNewVoiceFromWeb(paramNewVoiceFromWeb)) {
-    alert('필드를 모두 채워주세요')
-    throw new Error('NOT_READY_PARAM_YET')
+    return alert('필드를 모두 채워주세요')
   }
 
   const data = { paramNewVoiceFromWeb, webAccessToken }
@@ -41,13 +40,12 @@ const postVoice = async (paramNewVoiceFromWeb: IParamNewVoiceFromWeb, webAccessT
 
 const postReply = async (paramNewReplyFromWeb: IParamNewReplyFromWeb, webAccessToken: string) => {
   if (!isParamNewReplyFromWeb(paramNewReplyFromWeb)) {
-    alert('필드를 모두 채워주세요')
-    throw new Error('NOT_READY_PARAM_YET')
+    return alert('필드를 모두 채워주세요')
   }
 
   const data = { paramNewReplyFromWeb, webAccessToken }
   const [err, res] = await to(axiosInstance.post('/reply', data))
-  if (err) return err
+  if (err) throw err
 
   alert("익명 댓글을 작성하였습니다.")
 }
