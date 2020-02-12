@@ -28,7 +28,7 @@ import { getRawPassword } from '../common/common-util'
 
 const postVoice = async (paramNewVoiceFromWeb: IParamNewVoiceFromWeb, webAccessToken: string) => {
   if (!isParamNewVoiceFromWeb(paramNewVoiceFromWeb)) {
-    return alert('필드를 모두 채워주세요')
+    throw new Error('NOT_ALLOW_EMPTY_FIELDS')
   }
 
   const data = { paramNewVoiceFromWeb, webAccessToken }
@@ -40,7 +40,7 @@ const postVoice = async (paramNewVoiceFromWeb: IParamNewVoiceFromWeb, webAccessT
 
 const postReply = async (paramNewReplyFromWeb: IParamNewReplyFromWeb, webAccessToken: string) => {
   if (!isParamNewReplyFromWeb(paramNewReplyFromWeb)) {
-    return alert('필드를 모두 채워주세요')
+    throw new Error('NOT_ALLOW_EMPTY_FIELDS')
   }
 
   const data = { paramNewReplyFromWeb, webAccessToken }
@@ -160,6 +160,10 @@ const MainForm: FC<IPropsMainForm> = (props) => {
       : [new Error('UNKNOWN_TAB_ID')]
 
     if (err) {
+      if (err?.message === 'NOT_ALLOW_EMPTY_FIELDS') {
+        return alert('필드를 모두 채워주세요')
+      }
+
       const errorMessage = ((err.response || {}).data || {}).errorMessage
       if (errorMessage) return alert(errorMessage)
       if (err.message) return alert(err.message)
