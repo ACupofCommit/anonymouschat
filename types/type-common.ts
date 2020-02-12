@@ -86,3 +86,9 @@ export const parseReplyId = (replyId: string) => {
   if (!gridId || !teamId || !channelId || !voiceTS) throw new Error('Wrong replyId format')
   return { gridId, teamId, channelId, voiceTS }
 }
+
+export const parseGroupId = (groupId: string) => {
+  const [gridId, teamId, channelId] = groupId.split('-')
+  if (!gridId || !teamId || !channelId) throw new Error('Wrong groupId format')
+  return { gridId, teamId, channelId }
+}

@@ -42,7 +42,7 @@ $ yarn install
 
 ```shell
 $ docker run -p 8000:8000 -d amazon/dynamodb-local
-$ npx babel-node --config-file ./bin/babel.config.js --extensions ".ts" -- bin/create-local-dynamodb-table.ts
+$ npx babel-node --config-file ./bin/babel.config.js --extensions ".ts" -- bin/create-dynamodb-table.ts
 ## When you use the dynamodb-local, you may want dynamodb-admin the dynamodb Web GUI.
 $ npx dynamodb-admin
 ```

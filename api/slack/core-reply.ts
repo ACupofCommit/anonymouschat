@@ -3,11 +3,14 @@ import { WebClient } from "@slack/web-api"
 import { IParamNewReply, IReply, IPMNewReplyView, isPMCreateReplyView } from "../../types/type-reply"
 import { newReply, putReply, getReply } from "../model/model-reply"
 import { getReplyArg, getNewReplyViewsOpen } from "./argument-reply"
-import { getVoiceId, getReplyId, IMyBlockActionPayload, getGroupId, IMyViewSubmissionPayload, IMoreActionPayload, isMoreActionPayload } from "../model/model-common"
+import { getVoiceId, getReplyId, IMyBlockActionPayload, getGroupId, IMyViewSubmissionPayload, IMoreActionPayload, isMoreActionPayload, getGroupIdFromVoiceId } from "../model/model-common"
 import { hashAndtoggle, isNotEmptyString } from "../../common/common-util"
 import { IGroup } from "../../types/type-group"
 import { INPUT_NAME_NICKNAME, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, INPUT_FACE_IMOJI, NOT_YET } from "../constant"
 import { getTheradTs } from '../util'
+import { getPermalink } from './core-common'
+import { parseGroupId } from '../../types/type-common'
+import { getVoice } from '../model/model-voice'
 
 export const createReplyFromSlack = async (web: WebClient, payload: IMyViewSubmissionPayload, group: IGroup) => {
   const { view } = payload
@@ -28,12 +31,19 @@ export const createReplyFromSlack = async (web: WebClient, payload: IMyViewSubmi
 
 export const postAndPutReply = async (web: WebClient, param: IParamNewReply) => {
   const { threadTs, groupId } = param
+  const voiceId = getVoiceId(groupId, threadTs)
+  const voice = await getVoice(voiceId)
+  if (!voice) throw new Error('Not found first message of thread might be deleted')
+
+  const { channelId } = parseGroupId(groupId)
+  const permalink = await getPermalink(web, channelId, threadTs)
+  if (!permalink) throw new Error('First message of thread might be deleted')
+
   const reply = newReply(param)
   const replyArg = getReplyArg(reply, threadTs)
   const result = await web.chat.postMessage(replyArg)
   if (!isNotEmptyString(result?.ts)) throw new Error('Wrong result.ts')
 
-  const voiceId = getVoiceId(groupId, threadTs)
   const replyId = getReplyId(voiceId, result.ts)
   await putReply({ ...reply, replyId, platformId: result.ts })
 }

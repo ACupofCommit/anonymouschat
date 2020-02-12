@@ -54,6 +54,7 @@ export const newVoice = (p: IParamNewVoice): IVoice => {
 export const getVoice = async (voiceId: string): Promise<IVoice> => {
   const Key = { voiceId, groupId: getGroupIdFromVoiceId(voiceId) }
   const r = await ddc.get({ TableName, Key }).promise()
+  // TODO: voice가 없을 땐 null을 리턴하자
   if (!isVoice(r.Item)) throw new Error('can not get voice by voiceId: ' + voiceId)
 
   return r.Item

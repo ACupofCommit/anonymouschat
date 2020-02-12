@@ -197,7 +197,12 @@ export const getConfigMsgPermalink = async (web: WebClient, group: IGroup) => {
   if (group.activationMsgTs === NOT_YET) return null
 
   const { channelId, activationMsgTs } = group
-  const opt: ChatGetPermalinkArguments = { channel: channelId, message_ts: activationMsgTs }
+  const result = await getPermalink(web, channelId, activationMsgTs)
+  return result
+}
+
+export const getPermalink = async (web: WebClient, channelId: string, msgTs: string) => {
+  const opt: ChatGetPermalinkArguments = { channel: channelId, message_ts: msgTs }
   const [err1, r] = await to<IChatGetPermalinkResponse, WebAPICallError>(web.chat.getPermalink(opt))
   if (err1 && err1.code === 'slack_webapi_platform_error' && err1.data && err1.data.error === 'message_not_found') {
     // 활성화 메시지가 삭제된 상황
