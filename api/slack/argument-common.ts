@@ -11,12 +11,20 @@ import { IGroup } from '../../types/type-group'
 
 const ANONYMOUSLACK_ENV = process.env.ANONYMOUSLACK_ENV
 
+const getReportedMessageContent = (likeCount: number, dislikeCount: number) => {
+  return `:rotating_light: ${STR_REPORTED_MESSAGE} | :thumbsup: ${likeCount} | :thumbsdown: ${dislikeCount} |`
+}
+
+const getDeletedMessageContent = (likeCount: number, dislikeCount: number) => {
+  return `:x: ${STR_DELETED_MESSAGE} | :thumbsup: ${likeCount} | :thumbsdown: ${dislikeCount} |`
+}
+
 export const getContent = (obj: IVoice | IReply) => {
   const { isHiddenByReport, isDeleted, content, userLikeArr, userDislikeArr } = obj
 
   let modifiedContent =
-    isHiddenByReport ? STR_REPORTED_MESSAGE.replace('{likeCount}', '' + userLikeArr.length).replace('{dislikeCount}', '' + userDislikeArr.length)
-    : isDeleted        ? STR_DELETED_MESSAGE.replace('{likeCount}', '' + userLikeArr.length).replace('{dislikeCount}', '' + userDislikeArr.length)
+    isHiddenByReport ? getReportedMessageContent(userLikeArr.length, userDislikeArr.length)
+    : isDeleted        ? getDeletedMessageContent(userLikeArr.length, userDislikeArr.length)
     : content
 
   if (isVoice(obj) && obj.platformId !== NOT_YET && !isHiddenByReport && !isDeleted) {
