@@ -1,5 +1,5 @@
 import { compact } from 'lodash'
-import { ChatPostMessageArguments, Action, Button, ViewsOpenArguments } from '@slack/web-api'
+import { ChatPostMessageArguments, KnownBlock, Action, Button, ViewsOpenArguments } from '@slack/web-api'
 
 import { ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_VOTE_REPORT, NOT_YET, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_VIEW_DELETE, ACTION_SUBMISSION_VOICE, CONST_APP_NAME } from '../constant'
 import { STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_REPLY_AS_ANON, STR_DELETE, STR_DIALOG_MESSAGES_TITLE, STR_DIALOG_VOICE_PLACEHOLDER } from '../strings'
@@ -19,9 +19,9 @@ export const getVoiceArg = (voice: IVoice): ChatPostMessageArguments => {
     as_user: false,
     text: '',
     username: nickname,
-    blocks: [
+    blocks: compact<KnownBlock>([
       { type: "section", text: { type: "mrkdwn", text: content }},
-      {
+      !isHiddenByReport && !voice.isDeleted && {
         "type": "actions",
         "elements": compact<Action | Button>([
           {
@@ -53,7 +53,7 @@ export const getVoiceArg = (voice: IVoice): ChatPostMessageArguments => {
           }
         ])
       },
-    ],
+    ]),
   }
 }
 

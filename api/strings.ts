@@ -1,6 +1,6 @@
 // posted message
-export const STR_DELETED_MESSAGE = "~삭제된 메시지~"
-export const STR_REPORTED_MESSAGE = "~신고된 메시지~"
+export const STR_DELETED_MESSAGE = "~:thumbsup:{likeCount} :thumbsdown:{dislikeCount} | 삭제된 메시지~"
+export const STR_REPORTED_MESSAGE = "~:thumbsup:{likeCount} :thumbsdown:{dislikeCount} | 신고된 메시지~"
 
 // maybe dialog
 export const STR_DIALOG_VOICE_PLACEHOLDER = "익명으로 의견 드립니다. 찬/반 의견 피드백 부탁드립니다. 이번 제품 디자인 관련해서..."

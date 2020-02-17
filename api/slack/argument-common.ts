@@ -12,14 +12,14 @@ import { IGroup } from '../../types/type-group'
 const ANONYMOUSLACK_ENV = process.env.ANONYMOUSLACK_ENV
 
 export const getContent = (obj: IVoice | IReply) => {
-  const { isHiddenByReport, isDeleted, content } = obj
+  const { isHiddenByReport, isDeleted, content, userLikeArr, userDislikeArr } = obj
 
   let modifiedContent =
-    isHiddenByReport ? STR_REPORTED_MESSAGE
-    : isDeleted        ? STR_DELETED_MESSAGE
+    isHiddenByReport ? STR_REPORTED_MESSAGE.replace('{likeCount}', '' + userLikeArr.length).replace('{dislikeCount}', '' + userDislikeArr.length)
+    : isDeleted        ? STR_DELETED_MESSAGE.replace('{likeCount}', '' + userLikeArr.length).replace('{dislikeCount}', '' + userDislikeArr.length)
     : content
 
-  if (isVoice(obj) && obj.platformId !== NOT_YET) {
+  if (isVoice(obj) && obj.platformId !== NOT_YET && !isHiddenByReport && !isDeleted) {
     modifiedContent = modifiedContent + '\n\n' + STR_THIS_VOICE_ID.replace('%s', obj.platformId)
   }
 
