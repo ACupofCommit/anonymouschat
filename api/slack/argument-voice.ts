@@ -40,13 +40,13 @@ export const getVoiceArg = (voice: IVoice): ChatPostMessageArguments => {
             "text": { "type": "plain_text", "text": STR_REPLY_AS_ANON, "emoji": true },
             "style": "primary",
           },
-          !isHiddenByReport && !voice.isDeleted && {
+          {
             action_id: ACTION_OPEN_VIEW_DELETE,
             "type": "button",
             "text": { "type": "plain_text", "text": STR_DELETE, "emoji": true },
             "style": "danger",
           },
-          !isHiddenByReport && !voice.isDeleted && {
+          {
             action_id: ACTION_VOTE_REPORT,
             "type": "button",
             "text": { "type": "plain_text", "text": strCountReport, "emoji": true },
