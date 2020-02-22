@@ -7,19 +7,24 @@ import { STR_DIALOG_FACE_IMOJI, STR_DIALOG_FACE_IMOJI_PLACEHOLDER, STR_DIALOG_NI
 import { IVoice, isVoice } from '../../types/type-voice'
 import { IReply } from '../../types/type-reply'
 import { isReplyByTsThreadTs } from '../util'
-import { IGroup } from '../../types/type-group'
 
 const ANONYMOUSLACK_ENV = process.env.ANONYMOUSLACK_ENV
 
+const getHiddenMsgInfo = (type: 'REPORTED' | 'DELETED', likeCount: number, dislikeCount: number) => {
+  const msg = type === 'REPORTED' ? STR_REPORTED_MESSAGE : STR_DELETED_MESSAGE
+  const imoji = type === 'REPORTED' ? ':rotating_light:' : ':x:'
+  return `${imoji} ${msg} | :thumbsup: ${likeCount} | :thumbsdown: ${dislikeCount} |`
+}
+
 export const getContent = (obj: IVoice | IReply) => {
-  const { isHiddenByReport, isDeleted, content } = obj
+  const { isHiddenByReport, isDeleted, content, userLikeArr, userDislikeArr } = obj
 
   let modifiedContent =
-    isHiddenByReport ? STR_REPORTED_MESSAGE
-    : isDeleted        ? STR_DELETED_MESSAGE
+      isHiddenByReport ? getHiddenMsgInfo('REPORTED', userLikeArr.length, userDislikeArr.length)
+    : isDeleted        ? getHiddenMsgInfo('DELETED', userLikeArr.length, userDislikeArr.length)
     : content
 
-  if (isVoice(obj) && obj.platformId !== NOT_YET) {
+  if (isVoice(obj) && obj.platformId !== NOT_YET && !isHiddenByReport && !isDeleted) {
     modifiedContent = modifiedContent + '\n\n' + STR_THIS_VOICE_ID.replace('%s', obj.platformId)
   }
 

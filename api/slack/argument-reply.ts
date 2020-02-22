@@ -1,5 +1,5 @@
 import { compact } from 'lodash'
-import { DialogOpenArguments, ChatPostMessageArguments, Action, Button, ViewsOpenArguments } from '@slack/web-api'
+import { DialogOpenArguments, ChatPostMessageArguments, KnownBlock, Action, Button, ViewsOpenArguments } from '@slack/web-api'
 
 import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_REPORT, password_min_length, password_max_length, ACTION_SUBMISSION_REPLY, ACTION_OPEN_DIALOG_DELETE_REPLY, CONST_APP_NAME } from '../constant'
 import { STR_DIALOG_PASSWORD_TITLE, STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_LABEL_CONTENT, STR_PLACEHOLDER_CONTENT_FOR_REPLY, STR_DELETE, STR_MESSAGE_DELETION } from '../strings'
@@ -39,9 +39,9 @@ export const getReplyArg = (reply: IReply, thread_ts?: string): ChatPostMessageA
     thread_ts,   // 새로운 reply 에만 필요
     icon_emoji: reply.faceImoji,
     username: reply.nickname,
-    blocks: [
+    blocks: compact<KnownBlock>([
       { type: "section", text: { type: "mrkdwn", text: getContent(reply) }},
-      {
+      !isHiddenByReport && !reply.isDeleted && {
         "type": "actions",
         "elements": compact<Action | Button>([
           {
@@ -67,7 +67,7 @@ export const getReplyArg = (reply: IReply, thread_ts?: string): ChatPostMessageA
           }
         ])
       }
-    ]
+    ])
   }
 }
 
