@@ -3,7 +3,9 @@ export const STR_DELETED_MESSAGE = "삭제된 메시지"
 export const STR_REPORTED_MESSAGE = "신고된 메시지"
 
 // maybe dialog
-export const STR_DIALOG_VOICE_PLACEHOLDER = "익명으로 의견 드립니다. 찬/반 의견 피드백 부탁드립니다. 이번 제품 디자인 관련해서..."
+export const STR_DIALOG_VOICE_PLACEHOLDER = "사소한 질문도 늘 밝은 미소로 친절히 설명해주시는 OO팀 OO님, 감사합니다 :) 덕분에 이번..."
+export const STR_PLACEHOLDER_CONTENT_FOR_REPLY = "멋진 의견이네요~ 동의합니다. 특히..."
+
 export const STR_DIALOG_FACE_IMOJI = "프로필 이미지"
 export const STR_DIALOG_FACE_IMOJI_PLACEHOLDER = "프로필 이미지를 선택해주세요"
 export const STR_DIALOG_NICKNAME_TITLE = "닉네임"
@@ -12,7 +14,6 @@ export const STR_DIALOG_MESSAGES_TITLE = "메세지"
 export const STR_DIALOG_PASSWORD_TITLE = "패스워드"
 export const STR_LABEL_CONTENT = "댓글"
 export const STR_LABEL_PASSWORD = "패스워드"
-export const STR_PLACEHOLDER_CONTENT_FOR_REPLY = "저는 ㅇㅇ님 의견에 반대합니다. 제 생각엔..."
 export const STR_THIS_VOICE_ID = "MessageID: `%s`"
 export const STR_DIALOG_PASSWORD_PLACEHOLDER = "삭제 시 사용할 Password 를 입력하세요"
 export const STR_DIALOG_PASSWORD_HINT = "Password 는 메시지 삭제시 필요합니다."
