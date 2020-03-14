@@ -1,7 +1,7 @@
 import { compact } from 'lodash'
-import { DialogOpenArguments, ChatPostMessageArguments, KnownBlock, Action, Button, ViewsOpenArguments } from '@slack/web-api'
+import { DialogOpenArguments, ChatPostMessageArguments, KnownBlock, ViewsOpenArguments, Option } from '@slack/web-api'
 
-import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_REPORT, password_min_length, password_max_length, ACTION_SUBMISSION_REPLY, ACTION_OPEN_DIALOG_DELETE_REPLY, CONST_APP_NAME } from '../constant'
+import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_REPORT, password_min_length, password_max_length, ACTION_SUBMISSION_REPLY, ACTION_OPEN_DIALOG_DELETE_REPLY, CONST_APP_NAME, ACTION_OPEN_REPLY_OVERFLOW } from '../constant'
 import { STR_DIALOG_PASSWORD_TITLE, STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_LABEL_CONTENT, STR_PLACEHOLDER_CONTENT_FOR_REPLY, STR_DELETE, STR_MESSAGE_DELETION } from '../strings'
 import { IReply, IPMNewReplyView } from '../../types/type-reply'
 import { getInputFaceImojiBlock, getInputNicknameBlock, getInputContentBlock, getInputPasswordBlock, getContent } from './argument-common'
@@ -40,32 +40,35 @@ export const getReplyArg = (reply: IReply, thread_ts?: string): ChatPostMessageA
     icon_emoji: reply.faceImoji,
     username: reply.nickname,
     blocks: compact<KnownBlock>([
-      { type: "section", text: { type: "mrkdwn", text: getContent(reply) }},
+      (isHiddenByReport || reply.isDeleted) && {
+        type: "section",
+        text: { type: "mrkdwn", text: getContent(reply) },
+      },
       !isHiddenByReport && !reply.isDeleted && {
-        "type": "actions",
-        "elements": compact<Action | Button>([
-          {
-            action_id: ACTION_VOTE_REPLY_LIKE,
-            "type": "button",
-            "text": { "type": "plain_text", "text": strCountLike, "emoji": true },
-          },
-          {
-            action_id: ACTION_VOTE_REPLY_DISLIKE,
-            "type": "button",
-            "text": { "type": "plain_text", "text": strCountDislike, "emoji": true },
-          },
-          !isHiddenByReport && !reply.isDeleted && {
-            action_id: ACTION_OPEN_DIALOG_DELETE_REPLY,
-            "type": "button",
-            "text": { "type": "plain_text", "text": STR_DELETE, "emoji": true },
-            "style": "danger",
-          },
-          !isHiddenByReport && !reply.isDeleted && {
-            action_id: ACTION_VOTE_REPORT,
-            "type": "button",
-            "text": { "type": "plain_text", "text": strCountReport, "emoji": true },
-          }
-        ])
+        type: "section",
+        text: { type: "mrkdwn", text: getContent(reply) },
+        accessory: {
+          "type": "overflow",
+          action_id: ACTION_OPEN_REPLY_OVERFLOW,
+          "options": compact<Option> ([
+            {
+              "text": { "type": "plain_text", "text": strCountLike, "emoji": true },
+              "value": ACTION_VOTE_REPLY_LIKE
+            },
+            {
+              "text": { "type": "plain_text", "text": strCountDislike, "emoji": true },
+              "value": ACTION_VOTE_REPLY_DISLIKE
+            },
+            {
+              "text": { "type": "plain_text", "text": STR_DELETE, "emoji": true },
+              "value": ACTION_OPEN_DIALOG_DELETE_REPLY
+            },
+            {
+              "text": { "type": "plain_text", "text": strCountReport, "emoji": true },
+              "value": ACTION_VOTE_REPORT
+            }
+          ])
+        }
       }
     ])
   }

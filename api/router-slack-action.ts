@@ -5,7 +5,7 @@ import { includes } from 'lodash'
 
 import { WebClient } from '@slack/web-api'
 import { createLogger } from './logger'
-import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_USERREPLY_LIKE, ACTION_VOTE_USERREPLY_DISLIKE, ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_OPEN_DIALOG_DELETE_VOICE, ACTION_OPEN_DIALOG_DELETE_REPLY, ACTION_OPEN_DIALOG_DELETE_USERREPLY, ACTION_OPEN_VIEW_DELETE, ACTION_APP_USE_AGREEMENT, ACTION_APP_FORCE_ACTIVATE, ACTION_APP_FORCE_DEACTIVATE, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_DIALOG_VOICE, ACTION_VOTE_REPORT, ACTION_SUBMISSION_VOICE, ACTION_SUBMISSION_REPLY, ACTION_SUBMISSION_DELETE, ACTION_ON_MORE_OPEN_VIEW_REPLY, ACTION_SHOW_DEACTIVATE_WARNING } from './constant'
+import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_USERREPLY_LIKE, ACTION_VOTE_USERREPLY_DISLIKE, ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_OPEN_DIALOG_DELETE_VOICE, ACTION_OPEN_DIALOG_DELETE_REPLY, ACTION_OPEN_DIALOG_DELETE_USERREPLY, ACTION_OPEN_VIEW_DELETE, ACTION_APP_USE_AGREEMENT, ACTION_APP_FORCE_ACTIVATE, ACTION_APP_FORCE_DEACTIVATE, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_DIALOG_VOICE, ACTION_VOTE_REPORT, ACTION_SUBMISSION_VOICE, ACTION_SUBMISSION_REPLY, ACTION_SUBMISSION_DELETE, ACTION_ON_MORE_OPEN_VIEW_REPLY, ACTION_SHOW_DEACTIVATE_WARNING, ACTION_OPEN_VOICE_OVERFLOW, ACTION_OPEN_REPLY_OVERFLOW } from './constant'
 import { isMyBlockActionPayload, isMyViewSubmissionPayload, isMoreActionPayload } from './model/model-common'
 import { getOrCreateGetGroup } from './model/model-group'
 import { isGroup } from '../types/type-group'
@@ -21,7 +21,7 @@ import { createReplyFromSlack, openViewToPostReply, voteSlackReply } from './sla
 const logger = createLogger('action')
 
 const getAction = (payload: any) => {
-  // logger.debug("payload : "+ JSON.stringify(payload))
+  logger.debug("payload : "+ JSON.stringify(payload))
   const action = (
       payload.callback_id === ACTION_ON_MORE_OPEN_VIEW_REPLY ? ACTION_ON_MORE_OPEN_VIEW_REPLY
 
@@ -33,7 +33,23 @@ const getAction = (payload: any) => {
       : '')
 
     : payload.type === 'block_actions' ? (
-        payload.actions[0].action_id === ACTION_VOTE_REPLY_LIKE ? ACTION_VOTE_REPLY_LIKE
+
+      payload.actions[0].action_id === ACTION_OPEN_VOICE_OVERFLOW ? (
+        payload.actions[0].selected_option.value === ACTION_VOTE_VOICE_LIKE ? ACTION_VOTE_VOICE_LIKE
+        : payload.actions[0].selected_option.value === ACTION_VOTE_VOICE_DISLIKE ? ACTION_VOTE_VOICE_DISLIKE
+        : payload.actions[0].selected_option.value === ACTION_OPEN_DIALOG_REPLY ? ACTION_OPEN_DIALOG_REPLY
+        : payload.actions[0].selected_option.value === ACTION_OPEN_VIEW_DELETE ? ACTION_OPEN_VIEW_DELETE
+        : payload.actions[0].selected_option.value === ACTION_VOTE_REPORT ? ACTION_VOTE_REPORT
+      : '')
+
+      : payload.actions[0].action_id === ACTION_OPEN_REPLY_OVERFLOW ? (
+        payload.actions[0].selected_option.value === ACTION_VOTE_REPLY_LIKE ? ACTION_VOTE_REPLY_LIKE
+        : payload.actions[0].selected_option.value === ACTION_VOTE_REPLY_DISLIKE ? ACTION_VOTE_REPLY_DISLIKE
+        : payload.actions[0].selected_option.value === ACTION_OPEN_DIALOG_DELETE_REPLY ? ACTION_OPEN_DIALOG_DELETE_REPLY
+        : payload.actions[0].selected_option.value === ACTION_VOTE_REPORT ? ACTION_VOTE_REPORT
+      : '')
+
+      : payload.actions[0].action_id === ACTION_VOTE_REPLY_LIKE ? ACTION_VOTE_REPLY_LIKE
       : payload.actions[0].action_id === ACTION_VOTE_REPLY_DISLIKE ? ACTION_VOTE_REPLY_DISLIKE
 
       : payload.actions[0].action_id === ACTION_VOTE_USERREPLY_LIKE ? ACTION_VOTE_USERREPLY_LIKE
