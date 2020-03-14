@@ -165,7 +165,7 @@ router.all('/', async (req, res, next) => {
       return err ? next(err) : res.status(200).end()
     }
 
-    if (action !== 'ACTION_ON_MORE_OPEN_VIEW_REPLY') {
+    if (action !== ACTION_ON_MORE_OPEN_VIEW_REPLY) {
       return next(new Error('Unknown action from More Action' + action))
     }
     const [err2] = await to(openViewToPostReply(web, payload))
