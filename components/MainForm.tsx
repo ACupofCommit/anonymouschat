@@ -25,6 +25,7 @@ import { isParamNewReplyFromWeb, IParamNewReplyFromWeb } from '../types/type-rep
 import { IFaceImoji } from '../types/type-common'
 import { axiosInstance } from '../web/web-core'
 import { getRawPassword } from '../common/common-util'
+import { STR_DIALOG_VOICE_PLACEHOLDER, STR_PLACEHOLDER_CONTENT_FOR_REPLY } from '../api/strings'
 
 const postVoice = async (paramNewVoiceFromWeb: IParamNewVoiceFromWeb, webAccessToken: string) => {
   if (!isParamNewVoiceFromWeb(paramNewVoiceFromWeb)) {
@@ -259,7 +260,7 @@ const MainForm: FC<IPropsMainForm> = (props) => {
               label="메시지"
               multiline
               rows="4"
-              placeholder="익명으로 의견 드립니다..."
+              placeholder={tabId === 'TAB_NEW_MSG' ? STR_DIALOG_VOICE_PLACEHOLDER : STR_PLACEHOLDER_CONTENT_FOR_REPLY}
               fullWidth
               value={content}
               onChange={e => setContent(e.target.value)}
