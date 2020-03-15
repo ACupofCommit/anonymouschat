@@ -21,7 +21,7 @@ import { createReplyFromSlack, openViewToPostReply, voteSlackReply } from './sla
 const logger = createLogger('action')
 
 const getAction = (payload: any) => {
-  logger.debug("payload : "+ JSON.stringify(payload))
+  // logger.debug("payload : "+ JSON.stringify(payload))
   const action = (
       payload.callback_id === ACTION_ON_MORE_OPEN_VIEW_REPLY ? ACTION_ON_MORE_OPEN_VIEW_REPLY
 

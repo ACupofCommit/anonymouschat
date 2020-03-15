@@ -10,23 +10,24 @@ import { isReplyByTsThreadTs } from '../util'
 
 const ANONYMOUSLACK_ENV = process.env.ANONYMOUSLACK_ENV
 
-const getHiddenMsgInfo = (type: 'REPORTED' | 'DELETED', likeCount: number, dislikeCount: number) => {
+const getHiddenContent = (type: 'REPORTED' | 'DELETED') => {
   const msg = type === 'REPORTED' ? STR_REPORTED_MESSAGE : STR_DELETED_MESSAGE
   const imoji = type === 'REPORTED' ? ':rotating_light:' : ':x:'
-  return `${imoji} ${msg} | :thumbsup: ${likeCount} | :thumbsdown: ${dislikeCount} |`
+  return `${imoji} ${msg}`
+}
+
+export const getVoteCountMsg = (obj: IVoice | IReply) => {
+  const { userLikeArr, userDislikeArr, userReportArr } = obj
+  return `| :thumbsup: ${userLikeArr.length} | :thumbsdown: ${userDislikeArr.length} | :rotating_light: ${userReportArr.length} |`
 }
 
 export const getContent = (obj: IVoice | IReply) => {
   const { isHiddenByReport, isDeleted, content, userLikeArr, userDislikeArr } = obj
 
   let modifiedContent =
-      isHiddenByReport ? getHiddenMsgInfo('REPORTED', userLikeArr.length, userDislikeArr.length)
-    : isDeleted        ? getHiddenMsgInfo('DELETED', userLikeArr.length, userDislikeArr.length)
+      isHiddenByReport ? getHiddenContent('REPORTED')
+    : isDeleted        ? getHiddenContent('DELETED')
     : content
-
-  if (isVoice(obj) && obj.platformId !== NOT_YET && !isHiddenByReport && !isDeleted) {
-    modifiedContent = modifiedContent + '\n\n' + STR_THIS_VOICE_ID.replace('%s', obj.platformId)
-  }
 
   if (ANONYMOUSLACK_ENV !== 'production') {
     modifiedContent = `
@@ -38,6 +39,13 @@ ${modifiedContent}
   return modifiedContent
 }
 
+export const getMessageIdMsg = (obj: IVoice | IReply) => {
+  const { isHiddenByReport, isDeleted } = obj
+  if (isVoice(obj) && obj.platformId !== NOT_YET && !isHiddenByReport && !isDeleted) {
+    return STR_THIS_VOICE_ID.replace('%s', obj.platformId) + '\n'
+  }
+  return null;
+}
 
 const getEmojiOption = (f: IFaceImoji): Option => {
   return {
