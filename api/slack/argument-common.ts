@@ -22,7 +22,7 @@ export const getVoteCountMsg = (obj: IVoice | IReply) => {
 }
 
 export const getContent = (obj: IVoice | IReply) => {
-  const { isHiddenByReport, isDeleted, content, userLikeArr, userDislikeArr } = obj
+  const { isHiddenByReport, isDeleted, content } = obj
 
   let modifiedContent =
       isHiddenByReport ? getHiddenContent('REPORTED')
