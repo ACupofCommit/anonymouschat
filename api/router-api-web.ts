@@ -7,7 +7,7 @@ import { isParamNewReplyFromWeb, IParamNewReply } from '../types/type-reply'
 import { ERROR_INVALID_PARAMETER, NOT_YET } from './constant'
 import { getGroupByWebAccessToken, isWebTokenValid } from './model/model-group'
 import { isGroup } from '../types/type-group'
-import { checkAndConvertUrlTsToDotTs } from './util'
+import { checkAndConvertUrlTsToDotTs, isPTs, isDotTs } from './util'
 import { getGroupId } from './model/model-common'
 import { isParamNewVoiceFromWeb, IParamNewVoice } from '../types/type-voice'
 import { postAndPutReply } from './slack/core-reply'
@@ -37,11 +37,14 @@ router.post('/reply', async (req, res, next) => {
   }
 
   const { threadTs } = paramNewReplyFromWeb
-  const modifiedThreadTs = checkAndConvertUrlTsToDotTs(threadTs)
+  if (!isPTs(threadTs) && !isDotTs(threadTs)) {
+    return res.status(500).send({ ok: false, errorMessage: 'Wrong TS' })
+  }
 
+  const dotTs = isPTs(threadTs) ? checkAndConvertUrlTsToDotTs(threadTs) : threadTs
   const web = new WebClient(group.accessToken)
   const groupId = getGroupId(group.channelId, group.teamId, group.gridId)
-  const param: IParamNewReply = { ...paramNewReplyFromWeb, platformId: NOT_YET, groupId, threadTs: modifiedThreadTs }
+  const param: IParamNewReply = { ...paramNewReplyFromWeb, platformId: NOT_YET, groupId, threadTs: dotTs }
 
   const [err2] = await to(postAndPutReply(web, param))
   if ((err2 || {}).message === 'REPLY_LIMIT_RECENT24H') {

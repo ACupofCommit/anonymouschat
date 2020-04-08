@@ -1,3 +1,5 @@
+import url from 'url'
+import querystring from 'querystring'
 import axios from 'axios'
 import to from 'await-to-js'
 import { isObject } from "lodash"
@@ -11,7 +13,7 @@ import { createLogger } from '../logger'
 import { IVoice, isVoice } from '../../types/type-voice'
 import { IReply } from '../../types/type-reply'
 import { putReply, getReply, deleteReply } from '../model/model-reply'
-import { hashAndtoggle, sha256Hash, getMSFromHours } from '../../common/common-util'
+import { hashAndtoggle, sha256Hash, getMSFromHours, isNotEmptyString } from '../../common/common-util'
 import { IGroup } from '../../types/type-group'
 import { getSlackATArrByTeamId, deleteSlackAT } from '../model/model-slackAT'
 import { putVoice, getVoice, deleteVoice } from '../model/model-voice'
@@ -20,7 +22,7 @@ import { getGroupId, getVoiceId, getReplyId, IMyBlockActionPayload, IMyViewSubmi
 import { IPMDeletionView, IChatGetPermalinkResponse, IPMDeactivateWarningView, isPMDeactivateWarningView } from '../../types/type-common'
 import { getDeletionViewOpenArg, getErrorMsgBlockInView, getAppDeactivateWarningViewsArg, getDeactivatedArg, getActivatedArg } from './argument-common'
 import { STR_NOT_MATCHED_PASSWORD } from '../strings'
-import { isReplyByTsThreadTs } from '../util'
+import { isReplyByTsThreadTs, checkAndConvertUrlTsToDotTs } from '../util'
 
 const logger = createLogger('core')
 
@@ -209,6 +211,20 @@ export const getPermalink = async (web: WebClient, channelId: string, msgTs: str
     return null
   }
   return (r && r.permalink) ? r.permalink : null
+}
+
+export const isFirstThreadMsgByPermalink = (permalink: string) => {
+  if (!isNotEmptyString(permalink)) throw new Error('permalink should be not empty string')
+  const { query, pathname } = url.parse(permalink)
+  const { thread_ts } = querystring.parse(query)
+
+  const [,,,ts] = pathname.split('/')
+  if (!ts) return false
+
+  if (!thread_ts) return true
+
+  const dotTs = checkAndConvertUrlTsToDotTs(ts)
+  return thread_ts === dotTs
 }
 
 export const openViewToDelete = async (web: WebClient, payload: IMyBlockActionPayload) => {

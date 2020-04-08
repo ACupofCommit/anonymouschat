@@ -1,5 +1,6 @@
 import AWS from 'aws-sdk'
 import urljoin from 'url-join'
+import { createLogger } from './logger'
 
 const ANONYMOUSLACK_WEB_ENDPOINT = process.env.ANONYMOUSLACK_WEB_ENDPOINT || '/'
 export const getDD = (_region?: string, accessKeyId?: string, secretAccessKey?: string, _endpoint?: string) => {
@@ -59,7 +60,7 @@ export const parseWOThrow = <T>(str: string): T | null => {
  * '1578812299.006600' 형식의 dot 표현 형식으로 변환
  */
 export const checkAndConvertUrlTsToDotTs = (ts: string) => {
-  if (!/^p\d+?$/.test(ts)) return ts
+  if (!isPTs(ts)) throw new Error('Wrong pXXXX ts format')
 
   const modifiedThreadTs = [
     ts.substr(1, ts.length-6-1),
@@ -67,6 +68,9 @@ export const checkAndConvertUrlTsToDotTs = (ts: string) => {
   ].join('.')
   return modifiedThreadTs
 }
+
+export const isPTs = (ts: string) => /^p\d+?$/.test(ts)
+export const isDotTs = (ts: string) => /^\d+?\.\d+?$/.test(ts)
 
 export const getTheradTs = (ts: string, threadTs: string) => {
   if (!threadTs) return ts

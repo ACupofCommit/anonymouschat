@@ -8,7 +8,7 @@ import { hashAndtoggle, isNotEmptyString } from "../../common/common-util"
 import { IGroup } from "../../types/type-group"
 import { INPUT_NAME_NICKNAME, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, INPUT_FACE_IMOJI, NOT_YET } from "../constant"
 import { getTheradTs } from '../util'
-import { getPermalink } from './core-common'
+import { getPermalink, isFirstThreadMsgByPermalink } from './core-common'
 import { parseGroupId } from '../../types/type-common'
 import { getVoice } from '../model/model-voice'
 
@@ -31,14 +31,12 @@ export const createReplyFromSlack = async (web: WebClient, payload: IMyViewSubmi
 
 export const postAndPutReply = async (web: WebClient, param: IParamNewReply) => {
   const { threadTs, groupId } = param
-  const voiceId = getVoiceId(groupId, threadTs)
-  const voice = await getVoice(voiceId)
-  if (!voice) throw new Error('Not found first message of thread might be deleted')
-
   const { channelId } = parseGroupId(groupId)
   const permalink = await getPermalink(web, channelId, threadTs)
-  if (!permalink) throw new Error('First message of thread might be deleted')
+  if (!permalink) throw new Error('Wrong messageID. Or Message might be deleted')
 
+  if (!isFirstThreadMsgByPermalink(permalink)) throw new Error('Reply only can be added to first thread')
+  const voiceId = getVoiceId(groupId, threadTs)
   const reply = newReply(param)
   const replyArg = getReplyArg(reply, threadTs)
   const result = await web.chat.postMessage(replyArg)
