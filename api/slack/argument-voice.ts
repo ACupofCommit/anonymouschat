@@ -1,10 +1,10 @@
 import { compact } from 'lodash'
-import { ChatPostMessageArguments, KnownBlock, Action, Button, ViewsOpenArguments } from '@slack/web-api'
+import { ChatPostMessageArguments, KnownBlock, ViewsOpenArguments, Option, Action, Button } from '@slack/web-api'
 
-import { ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_VOTE_REPORT, NOT_YET, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_VIEW_DELETE, ACTION_SUBMISSION_VOICE, CONST_APP_NAME } from '../constant'
+import { ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_VOTE_REPORT, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_VIEW_DELETE, ACTION_SUBMISSION_VOICE, CONST_APP_NAME, ACTION_OPEN_VOICE_OVERFLOW } from '../constant'
 import { STR_LIKE, STR_DISLIKE, STR_REPORT, STR_REPORT_N, STR_REPLY_AS_ANON, STR_DELETE, STR_DIALOG_MESSAGES_TITLE, STR_DIALOG_VOICE_PLACEHOLDER } from '../strings'
 import { IVoice, IPMNewVoiceView } from '../../types/type-voice'
-import { getInputFaceImojiBlock, getInputNicknameBlock, getInputContentBlock, getInputPasswordBlock, getContent } from './argument-common'
+import { getInputFaceImojiBlock, getInputNicknameBlock, getInputContentBlock, getInputPasswordBlock, getContent, getVoteCountMsg, getMessageIdMsg } from './argument-common'
 
 export const getVoiceArg = (voice: IVoice): ChatPostMessageArguments => {
   const { nickname, faceImoji, userLikeArr, userDislikeArr, userReportArr, isHiddenByReport } = voice
@@ -20,36 +20,51 @@ export const getVoiceArg = (voice: IVoice): ChatPostMessageArguments => {
     text: '',
     username: nickname,
     blocks: compact<KnownBlock>([
-      { type: "section", text: { type: "mrkdwn", text: content }},
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: content },
+      },
+      !isHiddenByReport && !voice.isDeleted ? {
+        type: "section",
+        text: { type: "mrkdwn", text: getMessageIdMsg(voice) + getVoteCountMsg(voice) },
+        accessory: {
+          "type": "overflow",
+          action_id: ACTION_OPEN_VOICE_OVERFLOW,
+          "options": compact<Option> ([
+            {
+              "text": { "type": "plain_text", "text": strCountLike, "emoji": true },
+              "value": ACTION_VOTE_VOICE_LIKE
+            },
+            {
+              "text": { "type": "plain_text", "text": strCountDislike, "emoji": true },
+              "value": ACTION_VOTE_VOICE_DISLIKE
+            },
+            {
+              "text": { "type": "plain_text", "text": strCountReport, "emoji": true },
+              "value": ACTION_VOTE_REPORT
+            },
+            {
+              "text": { "type": "plain_text", "text": STR_DELETE, "emoji": true },
+              "value": ACTION_OPEN_VIEW_DELETE
+            },
+            {
+              "text": { "type": "plain_text", "text": STR_REPLY_AS_ANON, "emoji": true },
+              "value": ACTION_OPEN_DIALOG_REPLY
+            },
+          ])
+        }
+      } : {
+        type: "section",
+        text: { type: "mrkdwn", text: getVoteCountMsg(voice) },
+      },
       !isHiddenByReport && !voice.isDeleted && {
         "type": "actions",
         "elements": compact<Action | Button>([
-          {
-            action_id: ACTION_VOTE_VOICE_LIKE,
-            "type": "button",
-            "text": { "type": "plain_text", "text": strCountLike, "emoji": true },
-          },
-          {
-            action_id: ACTION_VOTE_VOICE_DISLIKE,
-            "type": "button",
-            "text": { "type": "plain_text", "text": strCountDislike, "emoji": true },
-          },
           {
             action_id: ACTION_OPEN_DIALOG_REPLY,
             "type": "button",
             "text": { "type": "plain_text", "text": STR_REPLY_AS_ANON, "emoji": true },
             "style": "primary",
-          },
-          {
-            action_id: ACTION_OPEN_VIEW_DELETE,
-            "type": "button",
-            "text": { "type": "plain_text", "text": STR_DELETE, "emoji": true },
-            "style": "danger",
-          },
-          {
-            action_id: ACTION_VOTE_REPORT,
-            "type": "button",
-            "text": { "type": "plain_text", "text": strCountReport, "emoji": true },
           }
         ])
       },
