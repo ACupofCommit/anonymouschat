@@ -167,10 +167,9 @@ const MainForm: FC<IPropsMainForm> = (props) => {
 
       const errorMessage = ((err.response || {}).data || {}).errorMessage
       if (errorMessage) return alert(errorMessage)
-      if (err.message) return alert(err.message)
 
+      console.error(err)
       alert('알 수 없는 에러')
-      return console.error(err)
     }
 
     setContent("")

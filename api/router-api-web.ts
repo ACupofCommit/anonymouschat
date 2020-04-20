@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, Response } from 'express'
 import to from 'await-to-js'
 import bodyParser from 'body-parser'
 import { WebClient } from '@slack/web-api'
@@ -21,25 +21,45 @@ const router = Router()
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(bodyParser.json())
 
-router.post('/reply', async (req, res, next) => {
-  const { webAccessToken, paramNewReplyFromWeb } = req.body
-  if (!isParamNewReplyFromWeb(paramNewReplyFromWeb)) {
-    const msg = { code: ERROR_INVALID_PARAMETER, message: 'Invalid parameter' }
-    return res.status(400).send(msg)
+const sendError = (res: Response, error: string | Error) => {
+  if (error instanceof Error) {
+    return res.status(500).send({ ok: false, error: error.message })
   }
 
+  const statusCode =
+      error === 'NEED_USERS_AGREEMENT' ? 401
+    : error === 'EXPIRED_WEB_ACCEESS_TOKEN' ? 403
+    : error === ERROR_INVALID_PARAMETER ? 400
+    : error === 'WRONG_TS' ? 400
+    : error === 'REPLY_LIMIT_RECENT24H' ? 429
+    : 500
+
+  const errorMessage =
+      error === 'NEED_USERS_AGREEMENT' ? '해당 채널 멤버들의 앱 사용 동의가 필요합니다'
+    : error === 'EXPIRED_WEB_ACCEESS_TOKEN' ? 'webAccessToken이 유효하지 않습니다'
+    : error === ERROR_INVALID_PARAMETER ? 'Invalid parameter'
+    : error === 'WRONG_TS' ? 'Wrong TS'
+    : error === 'REPLY_LIMIT_RECENT24H' ? '최근 24시간 동안 너무 많은 글을 작성하였습니다'
+    : '알 수 없는 에러: ' + error
+
+  res.status(statusCode).send({ ok: false, errorMessage })
+}
+
+router.post('/reply', async (req, res, next) => {
+  const { webAccessToken, paramNewReplyFromWeb } = req.body
+  if (!isParamNewReplyFromWeb(paramNewReplyFromWeb)) return sendError(res, ERROR_INVALID_PARAMETER)
+
   const [err,group] = await to(getGroupByWebAccessToken(webAccessToken))
-  if (err || !isGroup(group)) return next(err || new Error('group is not IGroup'))
+  if (err) return sendError(res, err)
+  if (!group) return sendError(res, 'CAN_NOT_GET_GROUP')
+  if (!group.isPostingAvailable) return sendError(res, 'NEED_USERS_AGREEMENT')
 
   if (!isWebTokenValid(webAccessToken, group.webAccessTokenExpirationTime)) {
-    // double check
-    return res.status(400).send({ ok: false, error: 'INVALID_WEB_ACCEESS_TOKEN' })
+    return sendError(res, 'EXPIRED_WEB_ACCEESS_TOKEN')
   }
 
   const { threadTs } = paramNewReplyFromWeb
-  if (!isPTs(threadTs) && !isDotTs(threadTs)) {
-    return res.status(500).send({ ok: false, errorMessage: 'Wrong TS' })
-  }
+  if (!isPTs(threadTs) && !isDotTs(threadTs)) return sendError(res, 'WRONG_TS')
 
   const dotTs = isPTs(threadTs) ? checkAndConvertUrlTsToDotTs(threadTs) : threadTs
   const web = new WebClient(group.accessToken)
@@ -47,39 +67,29 @@ router.post('/reply', async (req, res, next) => {
   const param: IParamNewReply = { ...paramNewReplyFromWeb, platformId: NOT_YET, groupId, threadTs: dotTs }
 
   const [err2] = await to(postAndPutReply(web, param))
-  if ((err2 || {}).message === 'REPLY_LIMIT_RECENT24H') {
-    return res.status(500).send({ ok: false, errorMessage: err2.message })
-  }
-
-  if (err2) return res.status(500).send({ ok: false, errorMessage: err2.message })
+  if (err2) return sendError(res, 'REPLY_LIMIT_RECENT24H')
 
   res.send({ ok: true })
 })
 
 router.post('/voice', async (req, res, next) => {
   const { webAccessToken, paramNewVoiceFromWeb } = req.body
-  if (!isParamNewVoiceFromWeb(paramNewVoiceFromWeb)) {
-    const msg = { code: ERROR_INVALID_PARAMETER, message: 'Invalid parameter' }
-    return res.status(400).send(msg)
-  }
+  if (!isParamNewVoiceFromWeb(paramNewVoiceFromWeb)) return sendError(res, ERROR_INVALID_PARAMETER)
 
   const [err,group] = await to(getGroupByWebAccessToken(webAccessToken))
-  if (err || !isGroup(group)) return next(err || new Error('group is not IGroup'))
+  if (err) return sendError(res, err)
+  if (!group) return sendError(res, 'CAN_NOT_GET_GROUP')
+  if (!group.isPostingAvailable) return sendError(res, 'NEED_USERS_AGREEMENT')
 
   if (!isWebTokenValid(webAccessToken, group.webAccessTokenExpirationTime)) {
-    // double check
-    return res.status(400).send({ ok: false, error: 'EXPIRED_WEB_ACCEESS_TOKEN' })
+    return sendError(res, 'EXPIRED_WEB_ACCEESS_TOKEN')
   }
 
   const web = new WebClient(group.accessToken)
   const groupId = getGroupId(group.channelId, group.teamId, group.gridId)
   const param: IParamNewVoice = { ...paramNewVoiceFromWeb, groupId, platformId: NOT_YET }
   const [err2] = await to(postAndPutSlackVoice(web, param))
-  if ((err2 || {}).message === 'REPLY_LIMIT_RECENT24H') {
-    return res.status(500).send({ ok: false, errorMessage: err2.message })
-  }
-
-  if (err2) return res.status(500).send({ ok: false, errorMessage: err2.message })
+  if (err2) return sendError(res, 'REPLY_LIMIT_RECENT24H')
 
   res.send({ ok: true })
 })
