@@ -13,9 +13,7 @@ describe("core-common", () => {
     const notFirstThread = isFirstThreadMsgByPermalink('https://ghostbusters.slack.com/archives/C1H9RESGL/p135854651700023?thread_ts=1358546515.000008&cid=C1H9RESGL')
     expect(notFirstThread).toBe(false)
 
-    const wrongThread = isFirstThreadMsgByPermalink('wrong')
-    expect(wrongThread).toBe(false)
-
+    expect(() => isFirstThreadMsgByPermalink('wrong')).toThrowError()
     expect(() => isFirstThreadMsgByPermalink('')).toThrowError()
     expect(() => isFirstThreadMsgByPermalink(null)).toThrowError()
   })
