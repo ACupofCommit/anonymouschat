@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router, RequestHandler } from 'express'
 import to from 'await-to-js'
 import bodyParser from 'body-parser'
 import { includes } from 'lodash'
@@ -6,10 +6,9 @@ import { includes } from 'lodash'
 import { WebClient } from '@slack/web-api'
 import { createLogger } from './logger'
 import { ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, ACTION_VOTE_USERREPLY_LIKE, ACTION_VOTE_USERREPLY_DISLIKE, ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_OPEN_DIALOG_DELETE_VOICE, ACTION_OPEN_DIALOG_DELETE_REPLY, ACTION_OPEN_DIALOG_DELETE_USERREPLY, ACTION_OPEN_VIEW_DELETE, ACTION_APP_USE_AGREEMENT, ACTION_APP_FORCE_ACTIVATE, ACTION_APP_FORCE_DEACTIVATE, ACTION_OPEN_DIALOG_REPLY, ACTION_OPEN_DIALOG_VOICE, ACTION_VOTE_REPORT, ACTION_SUBMISSION_VOICE, ACTION_SUBMISSION_REPLY, ACTION_SUBMISSION_DELETE, ACTION_ON_MORE_OPEN_VIEW_REPLY, ACTION_SHOW_DEACTIVATE_WARNING } from './constant'
-import { isMyBlockActionPayload, isMyViewSubmissionPayload, isMoreActionPayload } from './model/model-common'
+import { isMyBlockActionPayload, isMyViewSubmissionPayload, isMoreActionPayload, IMyViewSubmissionPayload, IMyBlockActionPayload, IMoreActionPayload } from './model/model-common'
 import { getOrCreateGetGroup } from './model/model-group'
-import { isGroup } from '../types/type-group'
-import { getBEHRError } from '../common/common-util'
+import { IGroup } from '../types/type-group'
 import { getConfigMsgPermalink, sendHelpMessage, postAgreementMesssage, reportVoiceOrReply, agreeAppActivation, forceAppActivate, forceAppDeactivate, deleteVoiceOrReply, openViewToDelete, showDeactivateWarning } from './slack/core-common'
 import { parseWOThrow } from './util'
 import { IPMNewVoiceView, isPMNewVoiceView } from '../types/type-voice'
@@ -76,103 +75,100 @@ const getAction = (payload: any) => {
 }
 
 type TParsedPM = IPMNewVoiceView | IPMNewReplyView | IPMDeletionView | IPMDeactivateWarningView
-const router = Router()
-router.use(bodyParser.urlencoded({ extended: true }))
-router.all('/', async (req, res, next) => {
+
+const postingActions = [ACTION_OPEN_DIALOG_VOICE, ACTION_OPEN_DIALOG_REPLY, ACTION_ON_MORE_OPEN_VIEW_REPLY]
+const needUsersAgreement = (group: IGroup, action: string) => {
+  const isPostingAction = includes(postingActions, action)
+  return !group.isPostingAvailable && isPostingAction
+}
+
+const sendHelpOrAgreementMsg = async (web: WebClient, group: IGroup, userId: string) => {
+  const permalink = await getConfigMsgPermalink(web, group)
+  !! permalink
+    ? await sendHelpMessage(web, group, userId, permalink)
+    : await postAgreementMesssage(web, group)
+}
+
+const handleViewSubmissionAction = async (payload: IMyViewSubmissionPayload, action: string) => {
+  const { team, view } = payload
+  const pm = parseWOThrow<TParsedPM>(view.private_metadata)
+  if (!pm) throw new Error('PM is null')
+  if (action === ACTION_SUBMISSION_VOICE && !isPMNewVoiceView(pm)) throw new Error('Wrong PM')
+  if (action === ACTION_SUBMISSION_REPLY && !isPMCreateReplyView(pm)) throw new Error('Wrong PM')
+  if (action === ACTION_SUBMISSION_DELETE && !isPMDeletionView(pm)) throw new Error('Wrong PM')
+  if (action === ACTION_APP_FORCE_DEACTIVATE && !isPMDeactivateWarningView(pm)) throw new Error('Wrong PM')
+
+  const { channelId, channelName } = pm
+  const group = await getOrCreateGetGroup(channelId, team.id, channelName, team.enterprise_id)
+
+  const web = new WebClient(group.accessToken)
+  const r =
+      action === ACTION_SUBMISSION_VOICE             ? await createVoiceFromSlack(web, payload)
+    : action === ACTION_SUBMISSION_REPLY             ? await createReplyFromSlack(web, payload, group)
+    : action === ACTION_SUBMISSION_DELETE            ? await deleteVoiceOrReply(web, payload)
+    : action === ACTION_APP_FORCE_DEACTIVATE         ? await forceAppDeactivate(web, group, payload.user.id)
+    : new Error('Unkown action: ' + action)
+
+  if (r instanceof Error) throw r
+
+  // view update시 r을 확인하여 응답 해야하기 때문에 r을 리턴
+  return r
+}
+
+const handleBlockAction = async (payload: IMyBlockActionPayload, action: string) => {
+  const { team, channel, user, response_url, trigger_id } = payload
+  const group = await getOrCreateGetGroup(channel.id, team.id, channel.name, team.enterprise_id)
+  const web = new WebClient(group.accessToken)
+  if (needUsersAgreement(group, action)) return sendHelpOrAgreementMsg(web, group, user.id)
+
+  const r =
+      action === ACTION_OPEN_DIALOG_VOICE       ? await openViewToPostVoice(web, trigger_id, channel.id, channel.name)
+    : action === ACTION_OPEN_DIALOG_REPLY       ? await openViewToPostReply(web, payload)
+    : action === ACTION_ON_MORE_OPEN_VIEW_REPLY ? await openViewToPostReply(web, payload)
+    : action === ACTION_OPEN_VIEW_DELETE        ? await openViewToDelete(web, payload)
+
+    : action === ACTION_VOTE_VOICE_LIKE         ? await voteSlackVoice(payload,'LIKE')
+    : action === ACTION_VOTE_VOICE_DISLIKE      ? await voteSlackVoice(payload,'DISLIKE')
+    : action === ACTION_VOTE_REPLY_LIKE         ? await voteSlackReply(payload,'LIKE')
+    : action === ACTION_VOTE_REPLY_DISLIKE      ? await voteSlackReply(payload,'DISLIKE')
+    : action === ACTION_VOTE_REPORT             ? await reportVoiceOrReply(web, payload)
+
+    : action === ACTION_APP_USE_AGREEMENT       ? await agreeAppActivation(web, group, user.id, response_url)
+    : action === ACTION_APP_FORCE_ACTIVATE      ? await forceAppActivate(web, group, user.id, response_url)
+    : action === ACTION_SHOW_DEACTIVATE_WARNING ? await showDeactivateWarning(web, trigger_id, group)
+    : new Error('Unkown action: ' + action)
+
+  if (r instanceof Error) throw r
+}
+
+const handleMoreAction = async (payload: IMoreActionPayload, action: string) => {
+  const { team, channel, user } = payload
+  const group = await getOrCreateGetGroup(channel.id, team.id, channel.name, team.enterprise_id)
+
+  const web = new WebClient(group.accessToken)
+  if (needUsersAgreement(group, action)) return sendHelpOrAgreementMsg(web, group, user.id)
+  if (action !== ACTION_ON_MORE_OPEN_VIEW_REPLY) throw new Error('Unknown action from MoreAction:' + action)
+  await openViewToPostReply(web, payload)
+}
+
+const handler: RequestHandler = async (req, res, next) => {
   const payload = JSON.parse(req.body.payload)
   const action = getAction(payload)
   logger.debug("action:" + action)
 
-  if (isMyViewSubmissionPayload(payload)) {
-    const { team, view } = payload
-    const pm = parseWOThrow<TParsedPM>(view.private_metadata)
-    if (!pm) return next('PM is null')
-    if (action === ACTION_SUBMISSION_VOICE && !isPMNewVoiceView(pm)) return next('Wrong PM')
-    if (action === ACTION_SUBMISSION_REPLY && !isPMCreateReplyView(pm)) return next('Wrong PM')
-    if (action === ACTION_SUBMISSION_DELETE && !isPMDeletionView(pm)) return next('Wrong PM')
-    if (action === ACTION_APP_FORCE_DEACTIVATE && !isPMDeactivateWarningView(pm)) return next('Wrong PM')
+  const [err, r] =
+      isMyViewSubmissionPayload(payload) ? await to(handleViewSubmissionAction(payload, action))
+    : isMyBlockActionPayload(payload)    ? await to(handleBlockAction(payload, action))
+    : isMoreActionPayload(payload)       ? await to(handleMoreAction(payload, action))
+    : [new Error('Can not handle payload')]
 
-    const { channelId, channelName } = pm
-    const [err2,group] = await to(getOrCreateGetGroup(channelId, team.id, channelName, team.enterprise_id))
-    if (!isGroup(group)) return next(getBEHRError(err2, 'Wrong getOrCreateGetGroup()'))
-
-    const web = new WebClient(group.accessToken)
-    const [err3, r] =
-        action === ACTION_SUBMISSION_VOICE             ? await to(createVoiceFromSlack(web, payload))
-      : action === ACTION_SUBMISSION_REPLY             ? await to(createReplyFromSlack(web, payload, group))
-      : action === ACTION_SUBMISSION_DELETE            ? await to(deleteVoiceOrReply(web, payload))
-      : action === ACTION_APP_FORCE_DEACTIVATE         ? await to(forceAppDeactivate(web, group, payload.user.id))
-
-      : [new Error('Unkown action: ' + action)]
-
-    if(err3) return next(err3)
-    if(r && r.response_action === 'update') return res.send(r)
-  }
-
-  if (isMyBlockActionPayload(payload)) {
-    const { team, channel, user, response_url, trigger_id } = payload
-    const [err,group] = await to(getOrCreateGetGroup(channel.id, team.id, channel.name, team.enterprise_id))
-    if (!isGroup(group)) return next(getBEHRError(err, 'Wrong getOrCreateGetGroup()'))
-
-    const web = new WebClient(group.accessToken)
-    // slack posting action은 추후 구현 예정
-    const isPostingAction = includes([ACTION_OPEN_DIALOG_VOICE, ACTION_OPEN_DIALOG_REPLY], action)
-    if (!group.isPostingAvailable && isPostingAction) {
-      const permalink = await getConfigMsgPermalink(web, group)
-      const [err] = !! permalink
-        ? await to(sendHelpMessage(web, group, user.id, permalink))
-        : await to(postAgreementMesssage(web, group))
-
-      return err ? next(err) : res.status(200).end()
-    }
-
-    const [err2] =
-        action === ACTION_OPEN_DIALOG_VOICE            ? await to(openViewToPostVoice(web, trigger_id, channel.id, channel.name))
-      : action === ACTION_OPEN_DIALOG_REPLY            ? await to(openViewToPostReply(web, payload))
-      : action === ACTION_ON_MORE_OPEN_VIEW_REPLY      ? await to(openViewToPostReply(web, payload))
-      : action === ACTION_OPEN_VIEW_DELETE             ? await to(openViewToDelete(web, payload))
-
-      : action === ACTION_VOTE_VOICE_LIKE              ? await to(voteSlackVoice(payload,'LIKE'))
-      : action === ACTION_VOTE_VOICE_DISLIKE           ? await to(voteSlackVoice(payload,'DISLIKE'))
-      : action === ACTION_VOTE_REPLY_LIKE              ? await to(voteSlackReply(payload,'LIKE'))
-      : action === ACTION_VOTE_REPLY_DISLIKE           ? await to(voteSlackReply(payload,'DISLIKE'))
-      : action === ACTION_VOTE_REPORT                  ? await to(reportVoiceOrReply(web, payload))
-
-      : action === ACTION_APP_USE_AGREEMENT            ? await to(agreeAppActivation(web, group, user.id, response_url))
-      : action === ACTION_APP_FORCE_ACTIVATE           ? await to(forceAppActivate(web, group, user.id, response_url))
-      : action === ACTION_SHOW_DEACTIVATE_WARNING      ? await to(showDeactivateWarning(web, trigger_id, group))
-
-      : [new Error('Unkown action: ' + action)]
-
-    if(err2) return next(err2)
-  }
-
-  if (isMoreActionPayload(payload)) {
-    const { team, channel, user } = payload
-    const [err,group] = await to(getOrCreateGetGroup(channel.id, team.id, channel.name, team.enterprise_id))
-    if (!isGroup(group)) return next(getBEHRError(err, 'Wrong getOrCreateGetGroup()'))
-
-    const web = new WebClient(group.accessToken)
-    // slack posting action은 추후 구현 예정
-    // TODO: 위에와 반복됨
-    const isPostingAction = includes([ACTION_OPEN_DIALOG_VOICE, ACTION_OPEN_DIALOG_REPLY], action)
-    if (!group.isPostingAvailable && isPostingAction) {
-      const permalink = await getConfigMsgPermalink(web, group)
-      const [err] = !! permalink
-        ? await to(sendHelpMessage(web, group, user.id, permalink))
-        : await to(postAgreementMesssage(web, group))
-
-      return err ? next(err) : res.status(200).end()
-    }
-
-    if (action !== ACTION_ON_MORE_OPEN_VIEW_REPLY) {
-      return next(new Error('Unknown action from More Action' + action))
-    }
-    const [err2] = await to(openViewToPostReply(web, payload))
-    if(err2) return next(err2)
-  }
-
+  if (err) return next(err)
+  if (r && r.response_action === 'update') return res.send(r)
   res.status(200).end()
-})
+}
+
+const router = Router()
+router.use(bodyParser.urlencoded({ extended: true }))
+router.all('/', handler)
 
 export default router
