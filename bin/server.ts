@@ -19,7 +19,6 @@ const handleByNextJs = (req,res) => {
 }
 
 app.prepare().then(() => {
-
   const server = express()
 
   server.use(morgan('combined'))
@@ -28,6 +27,8 @@ app.prepare().then(() => {
   server.use((req, res, next) => {
     if (process.env.ANONYMOUSLACK_REDIRECT_HTTP_TO_HTTPS !== 'true') return next()
     if (req.headers["x-forwarded-proto"] === 'https') return next()
+    if (!req.headers.host) return next(new Error('headers.host is required'))
+
     res.redirect(urlJoin('https:', req.headers.host, req.originalUrl))
   })
 

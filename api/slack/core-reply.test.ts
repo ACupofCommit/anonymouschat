@@ -49,6 +49,8 @@ describe("core-reply", () => {
     rewired.__set__('getPermalink', getPermalink)
 
     const [err] = await to(postAndPutReply(web, baseParam))
+    if (!err) return expect(err).toBeFalsy()
+
     expect(err.message).toBe('Reply only can be added to first thread')
     expect(getPermalink.callCount).toBe(1)
     expect(web.chat.postMessage.callCount).toBe(0)
@@ -60,6 +62,8 @@ describe("core-reply", () => {
     rewired.__set__('getPermalink', getPermalink)
 
     const [err] = await to(postAndPutReply(web, baseParam))
+    if (!err) return expect(err).toBeFalsy()
+
     expect(err.message).toBe('Wrong messageID. Or Message might be deleted')
     expect(getPermalink.callCount).toBe(1)
     expect(web.chat.postMessage.callCount).toBe(0)

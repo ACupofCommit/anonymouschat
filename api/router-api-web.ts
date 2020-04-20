@@ -7,7 +7,7 @@ import { isParamNewReplyFromWeb, IParamNewReply } from '../types/type-reply'
 import { ERROR_INVALID_PARAMETER, NOT_YET } from './constant'
 import { getGroupByWebAccessToken, isWebTokenValid } from './model/model-group'
 import { isGroup } from '../types/type-group'
-import { checkAndConvertUrlTsToDotTs, isPTs, isDotTs } from './util'
+import { checkAndConvertPTsToDotTs, isPTs, isDotTs } from './util'
 import { getGroupId } from './model/model-common'
 import { isParamNewVoiceFromWeb, IParamNewVoice } from '../types/type-voice'
 import { postAndPutReply } from './slack/core-reply'
@@ -32,6 +32,7 @@ const sendError = (res: Response, error: string | Error) => {
     : error === ERROR_INVALID_PARAMETER ? 400
     : error === 'WRONG_TS' ? 400
     : error === 'REPLY_LIMIT_RECENT24H' ? 429
+    : error === 'VOICE_LIMIT_RECENT24H' ? 429
     : 500
 
   const errorMessage =
@@ -40,6 +41,7 @@ const sendError = (res: Response, error: string | Error) => {
     : error === ERROR_INVALID_PARAMETER ? 'Invalid parameter'
     : error === 'WRONG_TS' ? 'Wrong TS'
     : error === 'REPLY_LIMIT_RECENT24H' ? '최근 24시간 동안 너무 많은 글을 작성하였습니다'
+    : error === 'VOICE_LIMIT_RECENT24H' ? '최근 24시간 동안 너무 많은 글을 작성하였습니다'
     : '알 수 없는 에러: ' + error
 
   res.status(statusCode).send({ ok: false, errorMessage })
@@ -61,7 +63,7 @@ router.post('/reply', async (req, res, next) => {
   const { threadTs } = paramNewReplyFromWeb
   if (!isPTs(threadTs) && !isDotTs(threadTs)) return sendError(res, 'WRONG_TS')
 
-  const dotTs = isPTs(threadTs) ? checkAndConvertUrlTsToDotTs(threadTs) : threadTs
+  const dotTs = isPTs(threadTs) ? checkAndConvertPTsToDotTs(threadTs) : threadTs
   const web = new WebClient(group.accessToken)
   const groupId = getGroupId(group.channelId, group.teamId, group.gridId)
   const param: IParamNewReply = { ...paramNewReplyFromWeb, platformId: NOT_YET, groupId, threadTs: dotTs }
@@ -89,7 +91,7 @@ router.post('/voice', async (req, res, next) => {
   const groupId = getGroupId(group.channelId, group.teamId, group.gridId)
   const param: IParamNewVoice = { ...paramNewVoiceFromWeb, groupId, platformId: NOT_YET }
   const [err2] = await to(postAndPutSlackVoice(web, param))
-  if (err2) return sendError(res, 'REPLY_LIMIT_RECENT24H')
+  if (err2) return sendError(res, err2)
 
   res.send({ ok: true })
 })
@@ -97,7 +99,8 @@ router.post('/voice', async (req, res, next) => {
 router.post('/get-group', async (req, res, next) => {
   const { webAccessToken } = req.body
   const [err,group] = await to(getGroupByWebAccessToken(webAccessToken))
-  if (err || !isGroup(group)) return next(err || new Error('group is not IGroup'))
+  if (err) return sendError(res, err)
+  if (!group) return sendError(res, 'CAN_NOT_GET_GROUP')
 
   res.send({ ok: true, channelId: group.channelId, channelName: group.channelName })
 })

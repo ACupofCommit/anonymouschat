@@ -11,6 +11,8 @@ const fakeDDC = {
 const REAL_RUN = process.env.ANONYMOUSLACK_MIG_REAL_RUN === 'true'
 
 const FROM_REGION = process.env.ANONYMOUSLACK_MIG_FROM_REGION
+if (!FROM_REGION) throw new Error('FROM_REGION is required')
+
 const FROM_ACCESS_KEY = process.env.ANONYMOUSLACK_MIG_FROM_ACCESS_KEY
 const FROM_SECRET_KEY = process.env.ANONYMOUSLACK_MIG_FROM_SECRET_KEY
 const FROM_TABLENAME_TEAM = process.env.ANONYMOUSLACK_MIG_FROM_TABLENAME_TEAM
@@ -21,6 +23,8 @@ const FROM_TABLENAME_REPLY = process.env.ANONYMOUSLACK_MIG_FROM_TABLENAME_REPLY
 const FROM_DYNAMODB_ENDPOINT = process.env.ANONYMOUSLACK_MIG_FROM_DYNAMODB_ENDPOINT || getDDEndpoint(FROM_REGION)
 
 const TO_REGION = process.env.ANONYMOUSLACK_MIG_TO_REGION
+if (!TO_REGION) throw new Error('TO_REGION is required')
+
 const TO_ACCESS_KEY = process.env.ANONYMOUSLACK_MIG_TO_ACCESS_KEY
 const TO_SECRET_KEY = process.env.ANONYMOUSLACK_MIG_TO_SECRET_KEY
 const TO_TABLENAME_TEAM = process.env.ANONYMOUSLACK_MIG_TO_TABLENAME_TEAM
@@ -83,7 +87,7 @@ const run = async () => {
     await migTable(FROM_TABLENAME_TEAM, TO_TABLENAME_TEAM)
   }
 
-  if (FROM_TABLENAME_AT && FROM_TABLENAME_AT) {
+  if (FROM_TABLENAME_AT && TO_TABLENAME_AT) {
     console.log('---------------- runMigrate AT')
     await migTable(FROM_TABLENAME_AT, TO_TABLENAME_AT)
   }

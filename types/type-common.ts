@@ -5,7 +5,7 @@ export interface ISlashCommandPayload {
   team_id: string
   team_domain?: string;
   channel_id: string
-  channel_name?: string;
+  channel_name: string;
   user_id: string
   user_name?: string;
   response_url: string
@@ -43,7 +43,7 @@ export interface IFaceImoji {
 
 export interface IPMDeactivateWarningView {
   channelId: string
-  channelName: string
+  channelName?: string
 }
 
 export const isPMDeletionView = (o: any): o is IPMDeletionView => {

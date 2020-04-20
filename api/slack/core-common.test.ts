@@ -17,7 +17,6 @@ describe("core-common", () => {
     expect(wrongThread).toBe(false)
 
     expect(() => isFirstThreadMsgByPermalink('')).toThrowError()
-    expect(() => isFirstThreadMsgByPermalink(null)).toThrowError()
   })
 })
 

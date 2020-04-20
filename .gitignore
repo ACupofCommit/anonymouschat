@@ -10,3 +10,5 @@ docker-compose.*.yml
 !docker-compose.dynamodb.yml
 
 /coverage/
+
+.DS_Store

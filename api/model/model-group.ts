@@ -62,7 +62,7 @@ export const scheme: CreateTableInput = {
 /**
  * 그룹을 찾아 리턴하고, 없으면 새로운 그룹 생성 후 리턴
  */
-export const getOrCreateGetGroup = async (channelId: string, teamId: string, channelName: string, gridId: string=NOT_GRID) => {
+export const getOrCreateGetGroup = async (channelId: string, teamId: string, channelName: string=NOT_YET, gridId: string=NOT_GRID) => {
   const [, group] = await to(getGroup(channelId))
   if (isGroup(group) && group.channelName === channelName && group.gridId && gridId) {
     return group

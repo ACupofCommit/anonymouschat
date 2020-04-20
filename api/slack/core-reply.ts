@@ -3,14 +3,13 @@ import { WebClient } from "@slack/web-api"
 import { IParamNewReply, IReply, IPMNewReplyView, isPMCreateReplyView } from "../../types/type-reply"
 import { newReply, putReply, getReply } from "../model/model-reply"
 import { getReplyArg, getNewReplyViewsOpen } from "./argument-reply"
-import { getVoiceId, getReplyId, IMyBlockActionPayload, getGroupId, IMyViewSubmissionPayload, IMoreActionPayload, isMoreActionPayload, getGroupIdFromVoiceId } from "../model/model-common"
+import { getVoiceId, getReplyId, IMyBlockActionPayload, getGroupId, IMyViewSubmissionPayload, IMoreActionPayload, isMoreActionPayload } from "../model/model-common"
 import { hashAndtoggle, isNotEmptyString } from "../../common/common-util"
 import { IGroup } from "../../types/type-group"
 import { INPUT_NAME_NICKNAME, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, INPUT_FACE_IMOJI, NOT_YET } from "../constant"
 import { getTheradTs } from '../util'
 import { getPermalink, isFirstThreadMsgByPermalink } from './core-common'
 import { parseGroupId } from '../../types/type-common'
-import { getVoice } from '../model/model-voice'
 
 export const createReplyFromSlack = async (web: WebClient, payload: IMyViewSubmissionPayload, group: IGroup) => {
   const { view } = payload
@@ -40,7 +39,7 @@ export const postAndPutReply = async (web: WebClient, param: IParamNewReply) => 
   const reply = newReply(param)
   const replyArg = getReplyArg(reply, threadTs)
   const result = await web.chat.postMessage(replyArg)
-  if (!isNotEmptyString(result?.ts)) throw new Error('Wrong result.ts')
+  if (!isNotEmptyString(result?.ts)) throw new Error('WRONG_TS')
 
   const replyId = getReplyId(voiceId, result.ts)
   await putReply({ ...reply, replyId, platformId: result.ts })
@@ -66,7 +65,7 @@ export const voteSlackReply = async (payload: IMyBlockActionPayload, type: 'LIKE
 export const openViewToPostReply = async (web: WebClient, payload: IMyBlockActionPayload | IMoreActionPayload) => {
   const channelId = payload.channel.id
   const channelName = payload.channel.name
-  const { trigger_id, channel } = payload
+  const { trigger_id } = payload
   const threadTs = isMoreActionPayload(payload)
     ? getTheradTs(payload.message_ts, payload.message.thread_ts)
     : getTheradTs(payload.container.message_ts, payload.container.thread_ts)

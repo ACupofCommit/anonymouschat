@@ -16,11 +16,11 @@ const REAL_RUN = process.env.ANONYMOUSLACK_DB_MIG_REAL_RUN === 'true'
 const REGION = process.env.AWS_DEFAULT_REGION
 const ACCESS_KEY = process.env.AWS_ACCESS_KEY_ID
 const SECRET_KEY = process.env.AWS_SECRET_ACCESS_KEY
-const DYNAMODB_ENDPOINT = process.env.DYNAMODB_ENDPOINT || getDDEndpoint(REGION)
+const DYNAMODB_ENDPOINT = process.env.DYNAMODB_ENDPOINT || getDDEndpoint(REGION || '')
 
 const TABLENAME = TABLENAME_GROUP
-const ddcFrom = getDDC(REGION, ACCESS_KEY, SECRET_KEY, DYNAMODB_ENDPOINT)
-const ddcTo = REAL_RUN
+const ddcRead = getDDC(REGION, ACCESS_KEY, SECRET_KEY, DYNAMODB_ENDPOINT)
+const ddcWrite = REAL_RUN
   ? getDDC(REGION, ACCESS_KEY, SECRET_KEY, DYNAMODB_ENDPOINT)
   : fakeDDC
 
@@ -30,7 +30,7 @@ const updateDB = async () => {
   let groupArr: IGroup[] = []
   let params: DocumentClient.ScanInput = { TableName: TABLENAME, Limit }
   while(true) {
-    const result = await ddcFrom.scan(params).promise()
+    const result = await ddcRead.scan(params).promise()
     if (!isGroupArr(result.Items)) throw new Error('Items is not GroupArr')
 
     groupArr = [...groupArr, ...result.Items]
@@ -46,8 +46,9 @@ const updateDB = async () => {
     // if (group.isPostingAvailable) return
     if (group.webAccessTokenExpirationTime < 0) return
 
+    // update webAccessTokenExpirationTime to -1
     const Item = { ...group, webAccessTokenExpirationTime: -1 }
-    return ddcTo.put({ TableName: TABLENAME, Item }).promise()
+    return ddcWrite.put({ TableName: TABLENAME, Item }).promise()
   })
 
   await Promise.all(pArr)

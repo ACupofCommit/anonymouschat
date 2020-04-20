@@ -59,7 +59,7 @@ export const parseWOThrow = <T>(str: string): T | null => {
  * 'p1578812299006600' 이런 형식의 url에 사용되는 ts 값을
  * '1578812299.006600' 형식의 dot 표현 형식으로 변환
  */
-export const checkAndConvertUrlTsToDotTs = (ts: string) => {
+export const checkAndConvertPTsToDotTs = (ts: string) => {
   if (!isPTs(ts)) throw new Error('Wrong pXXXX ts format')
 
   const modifiedThreadTs = [
@@ -72,7 +72,7 @@ export const checkAndConvertUrlTsToDotTs = (ts: string) => {
 export const isPTs = (ts: string) => /^p\d+?$/.test(ts)
 export const isDotTs = (ts: string) => /^\d+?\.\d+?$/.test(ts)
 
-export const getTheradTs = (ts: string, threadTs: string) => {
+export const getTheradTs = (ts: string, threadTs?: string) => {
   if (!threadTs) return ts
   return threadTs === ts ? ts : threadTs
 }

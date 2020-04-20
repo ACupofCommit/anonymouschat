@@ -19,10 +19,10 @@ import { getSlackATArrByTeamId, deleteSlackAT } from '../model/model-slackAT'
 import { putVoice, getVoice, deleteVoice } from '../model/model-voice'
 import { putGroup, getGroup, updateBatchGroup, getGroupKeysArrByAccessToken } from '../model/model-group'
 import { getGroupId, getVoiceId, getReplyId, IMyBlockActionPayload, IMyViewSubmissionPayload, isMyViewSubmissionPayload } from '../model/model-common'
-import { IPMDeletionView, IChatGetPermalinkResponse, IPMDeactivateWarningView, isPMDeactivateWarningView } from '../../types/type-common'
+import { IPMDeletionView, IChatGetPermalinkResponse, IPMDeactivateWarningView } from '../../types/type-common'
 import { getDeletionViewOpenArg, getErrorMsgBlockInView, getAppDeactivateWarningViewsArg, getDeactivatedArg, getActivatedArg } from './argument-common'
 import { STR_NOT_MATCHED_PASSWORD } from '../strings'
-import { isReplyByTsThreadTs, checkAndConvertUrlTsToDotTs } from '../util'
+import { isReplyByTsThreadTs, checkAndConvertPTsToDotTs } from '../util'
 
 const logger = createLogger('core')
 
@@ -104,6 +104,8 @@ export const forceAppActivate = async (web: WebClient, group: IGroup, forceActiv
   if (err || !isObject(result)) throw err || new Error('Failed to update config message')
 
   const permalink = await getConfigMsgPermalink(web, group)
+  if (!permalink) return await postAgreementMesssage(web, group)
+
   await web.chat.postMessage(getActivatedArg(group.channelId, forceActivateUserId, permalink))
 }
 
@@ -214,16 +216,17 @@ export const getPermalink = async (web: WebClient, channelId: string, msgTs: str
 }
 
 export const isFirstThreadMsgByPermalink = (permalink: string) => {
+  // Examples:
+  // https://xxx.slack.com/archives/GSUGXRUHW/p1587275816000600
+  // https://xxx.slack.com/archives/GK00563DF/p1564297652000100?thread_ts=1559371420.001100&cid=GK00563DF
+
   if (!isNotEmptyString(permalink)) throw new Error('permalink should be not empty string')
   const { query, pathname } = url.parse(permalink)
-  const { thread_ts } = querystring.parse(query)
-
-  const [,,,ts] = pathname.split('/')
-  if (!ts) return false
-
+  const [,,,ts] = (pathname || '').split('/')
+  const dotTs = checkAndConvertPTsToDotTs(ts)
+  const { thread_ts } = querystring.parse(query || '')
   if (!thread_ts) return true
 
-  const dotTs = checkAndConvertUrlTsToDotTs(ts)
   return thread_ts === dotTs
 }
 
