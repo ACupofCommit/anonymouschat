@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@material-ui/core": "^4.8.3",
-    "@material-ui/icons": "^4.5.1",
+    "@material-ui/icons": "^4.11.2",
     "@slack/web-api": "^5.7.0",
     "await-to-js": "^2.1.1",
     "aws-sdk": "^2.604.0",
