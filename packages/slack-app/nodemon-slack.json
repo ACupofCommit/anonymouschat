@@ -1,0 +1,5 @@
+{
+  "exec": "ts-node src/handler-socket-mode.ts",
+  "watch": ["./**/*.ts","../universal/dist/**/*"],
+  "ext": "ts"
+}
