@@ -1,6 +1,6 @@
 {
   "name": "@anonymouslack/nextjs",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev --port 3003",
@@ -9,7 +9,7 @@
     "tfbuild": "tf-next build"
   },
   "dependencies": {
-    "@anonymouslack/universal": "^0.1.1",
+    "@anonymouslack/universal": "^2.0.0",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "await-to-js": "^3.0.0",

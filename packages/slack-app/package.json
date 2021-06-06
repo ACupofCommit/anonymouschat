@@ -1,6 +1,6 @@
 {
   "name": "@anonymouslack/slack-app",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "Anonymouslack slack-app",
   "scripts": {
     "dev": "nodemon --config nodemon-slack.json",
@@ -8,7 +8,7 @@
     "deploy": "sls deploy --verbose"
   },
   "dependencies": {
-    "@anonymouslack/universal": "^0.1.0",
+    "@anonymouslack/universal": "^2.0.0",
     "@slack/bolt": "^3.3.0",
     "@slack/web-api": "^6.1.0",
     "@tsoa/runtime": "^3.5.2",

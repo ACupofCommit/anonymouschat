@@ -1,6 +1,6 @@
 {
   "name": "@anonymouslack/api",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "Anonymouslack api",
   "scripts": {
     "dev": "concurrently yarn:sls:offline yarn:tsoa:watch",
@@ -11,7 +11,7 @@
     "deploy": "yarn tsoa && sls deploy --verbose"
   },
   "dependencies": {
-    "@anonymouslack/universal": "^0.1.0",
+    "@anonymouslack/universal": "^2.0.0",
     "@slack/bolt": "^3.3.0",
     "@slack/web-api": "^6.1.0",
     "@tsoa/runtime": "^3.5.2",

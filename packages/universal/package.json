@@ -1,8 +1,8 @@
 {
   "name": "@anonymouslack/universal",
-  "version": "0.1.1",
+  "version": "2.0.0",
   "private": false,
-  "description": "Anonymouslack slack-app",
+  "description": "Anonymouslack universal",
   "scripts": {
     "build": "tsc",
     "clean": "rimraf dist",
