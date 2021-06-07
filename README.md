@@ -1,129 +1,30 @@
 # Anonymouslack
+Slack app to help you communicate anonymously.
 
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/aluc-io/anonymouslack/tsc-build)](https://github.com/aluc-io/anonymouslack/actions)
-[![Coverage Status](https://coveralls.io/repos/github/aluc-io/anonymouslack/badge.svg?branch=refs/heads/master)](https://coveralls.io/github/aluc-io/anonymouslack)
-[![Docker Pulls](https://img.shields.io/docker/pulls/alucio/anonymouslack)](https://hub.docker.com/repository/docker/alucio/anonymouslack/general)
+## Development
+It consists of some packages below.
+- **slack-app**: Slack app based on [bolt-js][bolt-js].
+- **api**: API server based on [TSOA](tsoa).
+- **web**: Message writing web page based on [nextjs](nextjs) for complete anonymity.
+- **universal**: Code that is used universally across multiple packages.
 
-Share your mind anonymously on Slack.
 
-## 1. Set your environment variables
-
+**Environments**:
 ```
-export AWS_ACCESS_KEY_ID=AKXXXXXXXXXXXXXXXXGQ                    # For AWS dynamodb
-export AWS_SECRET_ACCESS_KEY=+IxxxxxxxxxxxxxxxxxxK5              # For AWS dynamodb
-export AWS_DEFAULT_REGION=us-west-1                              # For AWS dynamodb
-export AWS_REGION=$AWS_DEFAULT_REGION                            # Only for local dynamodb
-export DYNAMO_ENDPOINT=http://localhost:8000/                    # Only for local dynamodb
-
-export ANONYMOUSLACK_WEB_ENDPOINT=http://localhost:3000/         # Or use your production url
-export ANONYMOUSLACK_API_BASE_URL=http://localhost:3000/api/web  # Or use your production url
-export ANONYMOUSLACK_CLIENT_ID=5100000000000000000000003         # From Basic Information
-export ANONYMOUSLACK_CLIENT_SECRET=9b...x0i                      # From Basic Information
-export ANONYMOUSLACK_SHARABLE_URL='https://....'                 # From Manage Distribution
-export ANONYMOUSLACK_MANAGER_SLACK_ID=WXXXXXXX0                  # From Your Slack Profile
-export ANONYMOUSLACK_TABLENAME_PREFIX=Anonymouslack-test         # Dynamodb table name prefix
-export ANONYMOUSLACK_ENV=test                                    # 'production' or others
-export ANONYMOUSLACK_SLASH_COMMAND=/anonymouslack-test           # Slack slash command you want
-export ANONYMOUSLACK_APP_NAME=Anonymouslack-test                 # Slack app name you want
-export ANONYMOUSLACK_REDIRECT_HTTP_TO_HTTPS=false                # if true, http request is redirected to https
-export ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD=secret               # For daily web token. default: secret
-export ANONYMOUSLACK_LOGLEVEL=debug                              # loglevel
+// TODO
 ```
 
-## 2. Development
-
-### Install dependencies
-
-```shell
-$ yarn install
+**DynamoDB on local**:
+```
+$ docker run -d -p8000:8000 -p8002:8002 -eAWS_REGION=$AWS_DEFAULT_REGION instructure/dynamo-local-admin
+$ npx lerna run create-dynamodb-tables --scope=slack-app --stream
 ```
 
-### Create dynamodb table in local
-
-```shell
-$ docker run -p 8000:8000 -d amazon/dynamodb-local
-$ npx babel-node --config-file ./bin/babel.config.js --extensions ".ts" -- bin/create-dynamodb-table.ts
-## When you use the dynamodb-local, you may want dynamodb-admin the dynamodb Web GUI.
-$ npx dynamodb-admin
+**Run all packages**:
+```
+$ npx lerna run dev --stream
 ```
 
-### Run dev server
-
-```shell
-$ yarn dev
-```
-
-Open the http://localhost:3000 in your browser,
-check the `Anonymouslack server in on!!` message.
-
-## 3. Setting Slack App.
-To integration test with Slack, **create your new slack app**
-by clicking `Create New App` button in [official Slack API site](https://api.slack.com/apps)
-and then follow below guides.
-
-### Run ngrok to receive requests from Slack
-
-```shell
-$ ngrok http 3000
-```
-
-[ngrok](https://ngrok.com/) is secure introspectable tunnels to localhost webhook
-development tool and debugging tool.
-
-### `Basic Information`
-- App name: `<value of 'ANONYMOUSLACK_APP_NAME'>`
-- Short description: `<Slack App description you want>`
-
-### `Interactive Components`
-
-- Interactivity: `On`
-    - Request URL: `{endpoint-url}/api/slack/action`
-
-- Actions:
-    - Click `Create New Action` button and fill out the form below
-    - Action Name: Reply
-    - Short Description: Reply anonymously
-    - Callback ID: `ACTION_ON_MORE_OPEN_VIEW_REPLY`
-
-### `Slack Commands`
-- Click `Create New Command` button and fill out the form below
-    - Command: `<value of 'ANONYMOUSLACK_SLASH_COMMAND'>`
-    - Request URL: `{endpoint-url}/api/slack/command`
-    - Short Description: `Post message anonymously`
-
-### `OAuth & Permissions`
-- Redirect URLs: `{endpoint-url}/api/slack/oauth`
-- Add belows by `Add an OAuth Scope` button:
-    - `chat:write:bot`: To use chat.postMessage, chat.postEphemeral API
-    - `commands`: To add slash commands and add actions to messages
-    - `channels:write`, `groups:write`,`im:write`,`mpim:write`: To check access_token is available on specific channel
-
-## 4. Operation
-
-### Run production server
-To run server as container use `bin/docker-compose.prod.yml`
-
-### Refresh webAccessToken
-To refresh `webAccessToken`, make the `cronjob` file:
-
-```
-*/3 * * * * curl -X POST https://<endpoint-url>/api/web/refresh-daily-web-token -d '{"password": "<value of ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD>", "hours": 3 }' -H "Content-Type: application/json"
-```
-
-This job try to renew tokens that expire in 3 hours every 3 minutes.
-It Renew maximum (hardcoded)3 group's tokens per team at once.
-
-Register above job in crontab to run every 3 minutes:
-
-```
-$ crontab cronjob
-$ crontab -l
-```
-
-> unregister: `$ crontab -r`
-
-## 5. License
-
-[MIT](http://opensource.org/licenses/MIT)
-
-Copyright (c) 2019-present aluc.io
+[bolt-js]: https://slack.dev/bolt-js
+[tsoa]: https://tsoa-community.github.io/docs/
+[nextjs]: https://nextjs.org/
