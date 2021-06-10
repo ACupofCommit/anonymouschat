@@ -1,5 +1,5 @@
-import { compact } from 'lodash'
-import { ChatPostMessageArguments, ChatPostEphemeralArguments, KnownBlock, ViewsOpenArguments } from '@slack/web-api'
+import { compact, omit } from 'lodash'
+import { ChatPostMessageArguments, ChatPostEphemeralArguments, KnownBlock, ViewsOpenArguments, ViewsUpdateArguments } from '@slack/web-api'
 import { ACTION_APP_USE_AGREEMENT, ACTIVATION_QUORUM, NOT_YET, ACTION_APP_FORCE_ACTIVATE, ACTION_OPEN_DIALOG_VOICE, CONST_SLASH_COMMAND, ACTION_SHOW_DEACTIVATE_WARNING, ACTION_SUBMISSION_INIT, CONST_APP_NAME } from '../models'
 import { STR_AGREEMENT_REQUIRED_DESC, STR_YOU_AREADY_AGREED, STR_AGREEMENT_ACCEPTED, STR_FORCE_ACTIVATE, STR_AGREE, STR_APP_ACTIVATED_BY_FORCE, STR_APP_DEACTIVATED_BY_FORCE, STR_FORCE_DEACTIVATE, STR_POST_VOICE, STR_YOU_HAVE_TO_AGREE_APP_USAGE, STR_HOW_TO_POST, STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION1, STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION2, STR_CONFIG_MSG, STR_QUESTION, STR_SERVER_VERSION } from '../models'
 import { IGroup } from '../types/type-group'
@@ -152,7 +152,7 @@ export const getErrorMsgChannelNotFound = () => {
   ].join('\n')
 }
 
-export const getSelectingChannelToInitialView = (trigger_id: string, pm: any): ViewsOpenArguments => {
+export const getSelectingChannelToInitialView = (trigger_id: string, pm: any, botUserId: string): ViewsOpenArguments => {
   return {
     trigger_id,
     view: {
@@ -186,7 +186,15 @@ export const getSelectingChannelToInitialView = (trigger_id: string, pm: any): V
               include: ['private'],
             },
           },
-        }
+        },
+        {
+          "block_id": "guide_message",
+          "type": "section",
+          "text": {
+            "type": "mrkdwn",
+            "text": `<@${botUserId}>가 선택한 채널에 익명으로 메시지를 전달해줄꺼에요~`,
+          },
+        },
       ]
     }
   }
