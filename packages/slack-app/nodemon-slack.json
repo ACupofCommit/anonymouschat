@@ -1,5 +1,6 @@
 {
   "exec": "ts-node src/handler-socket-mode.ts",
   "watch": ["./**/*.ts","../universal/dist/**/*"],
-  "ext": "ts"
+  "ext": "ts",
+  "delay": 300
 }

@@ -2,8 +2,9 @@ import to from 'await-to-js'
 import { Middleware, SlackActionMiddlewareArgs, SlackShortcutMiddlewareArgs, SlackViewMiddlewareArgs } from "@slack/bolt"
 import { IPMDeactivateWarningView, IPMDeletionView, IPMNewReplyView, IPMNewVoiceView, isWebAPIPlatformError } from '@anonymouslack/universal/dist/types'
 import { CONST_APP_NAME, getOrCreateGetGroup } from '@anonymouslack/universal/dist/models'
-import { agreeAppActivation, forceAppActivate, forceAppDeactivate, getConfigMsgPermalink, getSelectingChannelToInitialView, postAgreementMesssage, sendHelpMessage, showDeactivateWarning } from '@anonymouslack/universal/dist/core'
+import { agreeAppActivation, forceAppActivate, forceAppDeactivate, getConfigMsgPermalink, getSelectingChannelToInitialView, openViewToPostVoice, postAgreementMesssage, showDeactivateWarning, } from '@anonymouslack/universal/dist/core'
 import { parseWOThrow } from '@anonymouslack/universal/dist/utils'
+import { WebAPIPlatformError } from '@slack/web-api'
 
 interface ResponseUrl {
   block_id: string
@@ -18,7 +19,10 @@ export const handleShortcut: Middleware<SlackShortcutMiddlewareArgs> = async ({b
   await ack();
   const {trigger_id} = body
 
-  const viewOpenArg = getSelectingChannelToInitialView(trigger_id, {'hello': 'world'})
+  const bot = await client.auth.test()
+  if (typeof bot.user_id !== 'string') throw new Error('Can not get bot.user_id')
+
+  const viewOpenArg = getSelectingChannelToInitialView(trigger_id, {'hello': 'world'}, bot.user_id)
   await client.views.open(viewOpenArg)
 }
 
@@ -26,27 +30,38 @@ export const handleSubmitInit: Middleware<SlackViewMiddlewareArgs> = async ({bod
   console.log('handleSubmitInit')
   const {user, team} = body
   const responseUrls = (body as any).response_urls as ResponseUrl[]
+  const triggerId = (body as any).trigger_id as string
+
   if (responseUrls.length < 1) {
     return await ack({
       response_action: 'errors',
       errors: {
-        target_channel: '채널을 선택해 주세요',
+        target_channel: `채널을 선택해 주세요.`,
+      },
+    })
+  }
+
+  const {channel_id} = responseUrls[0]
+  console.log('channel_id: ' + channel_id)
+
+  const [err0] = await to<any, WebAPIPlatformError>(client.conversations.info({ channel: channel_id }))
+  if (err0 && !isWebAPIPlatformError(err0)) throw err0
+  if (err0 && err0.data.error !== 'channel_not_found') throw err0
+  if (err0) {
+    return await ack({
+      response_action: 'errors',
+      errors: {
+        target_channel: `↓ 앱 이름을 클릭하여 채널에 앱을 추가한 후 다시 시도해주세요.`,
       },
     })
   }
 
   await ack()
-  const {channel_id} = responseUrls[0]
-  console.log('channel_id: ' + channel_id)
 
   const group = await getOrCreateGetGroup(channel_id, team?.id || '', 'private-channel', team?.enterprise_id)
   const permalink = await getConfigMsgPermalink(client, group)
   if (permalink) {
-    // 채널에 앱이 없으면서 permalink는 있을 때,
-    // 채널에 쓰기를 못하기 때문에
-    // 유저 사이드에서는 아무일도 있어나지 않는 문제가 있음.
-    // TODO: 이때도 DM으로 보내줘야할까?
-    return await sendHelpMessage(client, group, user.id, permalink)
+    return await openViewToPostVoice(client, triggerId, channel_id)
   }
 
   // 컨피그 메시지가 없거나 삭제된 상태. 컨피그 메시지 작성

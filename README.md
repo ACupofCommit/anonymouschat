@@ -22,7 +22,7 @@ $ npx lerna run create-dynamodb-tables --scope=slack-app --stream
 
 **Run all packages**:
 ```
-$ npx lerna run dev --stream
+$ npx lerna run dev --stream --parallel
 ```
 
 [bolt-js]: https://slack.dev/bolt-js
