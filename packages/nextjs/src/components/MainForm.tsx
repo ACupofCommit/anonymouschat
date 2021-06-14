@@ -21,9 +21,9 @@ import Button from '@material-ui/core/Button'
 import { SvgIconProps } from '@material-ui/core/SvgIcon'
 
 import { STR_DIALOG_VOICE_PLACEHOLDER, STR_PLACEHOLDER_CONTENT_FOR_REPLY } from '@anonymouslack/universal/dist/models/strings.model'
-import { isParamNewVoiceFromWeb, IParamNewVoiceFromWeb } from '../types/type-voice'
-import { isParamNewReplyFromWeb, IParamNewReplyFromWeb } from '../types/type-reply'
-import { IFaceImoji } from '../types/type-common'
+import { isParamNewVoiceFromWeb, IParamNewVoiceFromWeb } from '@anonymouslack/universal/dist/types/type-voice'
+import { isParamNewReplyFromWeb, IParamNewReplyFromWeb } from '@anonymouslack/universal/dist/types/type-reply'
+import { IFaceImoji } from '@anonymouslack/universal/dist/types/type-common'
 import { axiosInstance } from '../core/web'
 import { getRawPassword } from '../utils/common.util'
 
