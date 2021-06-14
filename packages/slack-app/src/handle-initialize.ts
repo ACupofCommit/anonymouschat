@@ -1,8 +1,8 @@
 import to from 'await-to-js'
 import { Middleware, SlackActionMiddlewareArgs, SlackShortcutMiddlewareArgs, SlackViewMiddlewareArgs } from "@slack/bolt"
 import { IPMDeactivateWarningView, IPMDeletionView, IPMNewReplyView, IPMNewVoiceView, isWebAPIPlatformError } from '@anonymouslack/universal/dist/types'
-import { CONST_APP_NAME, getOrCreateGetGroup } from '@anonymouslack/universal/dist/models'
-import { agreeAppActivation, forceAppActivate, forceAppDeactivate, getConfigMsgPermalink, getSelectingChannelToInitialView, openViewToPostVoice, postAgreementMesssage, showDeactivateWarning, } from '@anonymouslack/universal/dist/core'
+import { getOrCreateGetGroup } from '@anonymouslack/universal/dist/models'
+import { agreeAppActivation, forceAppActivate, forceAppDeactivate, getConfigMsgPermalink, getSelectingChannelToInitialView, postAgreementMesssage, showDeactivateWarning, getNewVoiceView, sendHelpOrAgreementMsg, } from '@anonymouslack/universal/dist/core'
 import { parseWOThrow } from '@anonymouslack/universal/dist/utils'
 import { WebAPIPlatformError } from '@slack/web-api'
 
@@ -30,7 +30,6 @@ export const handleSubmitInit: Middleware<SlackViewMiddlewareArgs> = async ({bod
   console.log('handleSubmitInit')
   const {user, team} = body
   const responseUrls = (body as any).response_urls as ResponseUrl[]
-  const triggerId = (body as any).trigger_id as string
 
   if (responseUrls.length < 1) {
     return await ack({
@@ -56,32 +55,29 @@ export const handleSubmitInit: Middleware<SlackViewMiddlewareArgs> = async ({bod
     })
   }
 
-  await ack()
-
   const group = await getOrCreateGetGroup(channel_id, team?.id || '', 'private-channel', team?.enterprise_id)
+  if (group.isPostingAvailable) {
+    // 메시지를 작성할 수 있으면 컨피그 메시지 존재 여부 확인 없이
+    // 바로 메시지 작성 view 오픈.
+    // TODO: 컨피그 메시지 접근 할 수 있는 view 제공 필요.
+    return await ack({
+      response_action: 'update',
+      view: getNewVoiceView({ channelId: channel_id }),
+    })
+  }
+
+  // TODO: 컨피그 메시지 접근 할 수 있는 view 가 없을 경우,
+  // isPostingAvailable 을 변경할 수 없으는 문제가 있어
+  // 절대 이 아래 코드가 실행 될 수 없음.
+
+  await ack()
   const permalink = await getConfigMsgPermalink(client, group)
   if (permalink) {
-    return await openViewToPostVoice(client, triggerId, channel_id)
+    return await sendHelpOrAgreementMsg(client, group, user.id)
   }
 
-  // 컨피그 메시지가 없거나 삭제된 상태. 컨피그 메시지 작성
-  const [err] = await to(postAgreementMesssage(client, group))
-  if (
-    isWebAPIPlatformError(err)
-    && (err.data.error === 'channel_not_found' || err.data.error === 'not_in_channel')
-  ) {
-    await client.chat.postMessage({
-      channel: user.id,
-      text: [
-        `:point_up_2: *<#${channel_id}>* 채널에서 ${CONST_APP_NAME} 앱을 사용하라면`,
-        `바로 위 앱 이름을 클릭하여 'Add this app to a channel' 메뉴를 통해`,
-        `*<#${channel_id}>* 채널에 ${CONST_APP_NAME} 앱을 먼저 추가해야합니다.`,
-      ].join('\n'),
-    })
-    return
-  }
-
-  if (err) throw err
+  // 컨피그 메시지가 없거나(최초 실행) 삭제된 상태. 컨피그 메시지 작성
+  await postAgreementMesssage(client, group)
 }
 
 export const handleAgreeAction: Middleware<SlackActionMiddlewareArgs> = async ({
