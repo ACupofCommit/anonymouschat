@@ -1,10 +1,10 @@
-import { Body, Controller, Post, Route } from "@tsoa/runtime"
+import { Body, Controller, Get, Post, Route } from "@tsoa/runtime"
+import { InstallProvider } from '@slack/oauth'
 import { getGroup, TSTError } from "@anonymouslack/universal/dist/models"
-import { ResOK } from "@anonymouslack/universal/dist/types"
+import { ResItem, ResOK } from "@anonymouslack/universal/dist/types"
 import { AdminService } from "../services/admin.service"
 import { getClientByGroup } from "../helpers/api.helper"
-
-const ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD = process.env.ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD
+import { ANONYMOUSLACK_CLIENT_ID, ANONYMOUSLACK_CLIENT_SECRET, ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD } from "../models/envs.model"
 
 type ReqBody = {
   password: string
@@ -32,5 +32,22 @@ export class APIAdminController extends Controller {
     await service.updateAndShareWebAccessToken(client, channelId)
 
     return { ok: true }
+  }
+
+  @Get('get-install-url')
+  public async getInstallUrl(): Promise<ResItem<string>> {
+
+    // initialize the installProvider
+    const installer = new InstallProvider({
+      clientId: ANONYMOUSLACK_CLIENT_ID,
+      clientSecret: ANONYMOUSLACK_CLIENT_SECRET,
+      stateSecret: 'my-state-secret'
+    });
+
+    const url = await installer.generateInstallUrl({
+      scopes: ['chat:write','chat:write.customize','commands'],
+    })
+
+    return { ok: true, item: url }
   }
 }

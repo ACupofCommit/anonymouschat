@@ -86,3 +86,6 @@ const getSlashCommand = (str?: string) => {
 }
 export const CONST_SLASH_COMMAND = getSlashCommand(process.env.ANONYMOUSLACK_SLASH_COMMAND)
 export const CONST_APP_NAME = process.env.ANONYMOUSLACK_APP_NAME || 'Anonymouslack'
+
+// scopes
+// const scopes: ['app_mentions:read','chat:write','chat:write.customize','im:write','commands'],
