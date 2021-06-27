@@ -1,6 +1,6 @@
 import axios from 'axios'
 import to from "await-to-js"
-import { WebClient, View } from "@slack/web-api"
+import { WebClient, View, ViewsUpdateArguments } from "@slack/web-api"
 import { IMyViewSubmissionPayload, getGroupId, IMyBlockActionPayload, getVoiceId } from "../models/model-common"
 import { IPMNewVoiceView, isPMNewVoiceView, IParamNewVoice, IVoice } from "../types/type-voice"
 import { INPUT_NAME_NICKNAME, INPUT_NAME_CONTENT, INPUT_NAME_PASSWORD, INPUT_FACE_IMOJI, NOT_YET, VOICE_LIMIT_RECENT24H } from "../models"

@@ -24,6 +24,8 @@ export const STR_UNKOWN_ERROR = "알 수 없는 에러 발생"
 export const STR_SUCCESS_VOICE_CREATION = "익명 글 작성 성공. 웹 페이지를 새로고침 합니다"
 export const STR_INVALID_URL = "유효하지 않은 url 입니다. url 은 수시로 변경 될 수 있으므로 정확한 url 을 확인하세요."
 
+export const STR_TEXT_FOR_CREATION_VOICE = "익명 메시지가 도착했습니다!"
+
 // agreement
 export const STR_AGREEMENT_REQUIRED_DESC = `슬랙 앱 사용을 위해 최소 %d 명의 동의가 필요합니다.\n익명으로 *동의* 하거나 실명으로 *활성화* 시킬 수 있습니다`
 export const STR_AGREEMENT_ACCEPTED = `%d 명이 동의하여 앱이 활성화 되었습니다.`
