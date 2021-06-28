@@ -17,16 +17,16 @@ export interface APIEnvs {
   AWS_DEFAULT_REGION: string
 }
 
-export const isEnvs = (o: any): o is APIEnvs => {
+export const isAPIEnvs = (o: any): o is APIEnvs => {
   const m = o as APIEnvs
   if (!isNotNullObject(m)) return false
   if (!isNotEmptyString(m.ENV_SLS_STAGE)) return false
   if (!isNotEmptyString(m.ENV_REVISION)) return false
   if (!isNotEmptyString(m.ANONYMOUSLACK_BOT_TOKEN)) return false
   if (!isNotEmptyString(m.ANONYMOUSLACK_SIGNING_SECRET)) return false
+  if (!isNotEmptyString(m.ANONYMOUSLACK_TABLENAME_PREFIX)) return false
   if (!isNotEmptyString(m.ANONYMOUSLACK_CLIENT_ID)) return false
   if (!isNotEmptyString(m.ANONYMOUSLACK_CLIENT_SECRET)) return false
-  if (!isNotEmptyString(m.ANONYMOUSLACK_TABLENAME_PREFIX)) return false
   if (!isNotEmptyString(m.ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD)) return false
   if (!isNotEmptyString(m.ANONYMOUSLACK_WEB_DAILY_URL_ENDPOINT)) return false
   if (!isNotEmptyString(m.ANONYMOUSLACK_STATE_SECRET)) return false

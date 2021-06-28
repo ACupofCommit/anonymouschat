@@ -1,7 +1,7 @@
-import { APIEnvs, isEnvs } from "../types/envs.type"
+import { APIEnvs, isAPIEnvs } from "../types/envs.type"
 
 const envs: APIEnvs = process.env as any
-if (!isEnvs(envs)) {
+if (!isAPIEnvs(envs)) {
   throw new Error('Wrong env')
 }
 
