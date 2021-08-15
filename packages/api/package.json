@@ -4,7 +4,7 @@
   "description": "Anonymouslack api",
   "scripts": {
     "dev": "concurrently yarn:sls:offline yarn:tsoa:watch",
-    "sls:offline": "npx sls offline start",
+    "sls:offline": "npx sls offline start --httpPort=3100 --lambdaPort=3102",
     "tsoa": "ts-node tsoa.ts",
     "tsoa:watch": "npx nodemon --config nodemon-tsoa.json",
     "clean": "rimraf .webpack && rimraf .serverless && rimraf src/swagger.json && rimraf src/routes.ts",

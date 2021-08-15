@@ -19,7 +19,7 @@ provider "aws" {
 
 locals {
   # Your custom domain
-  custom_domain = "anonymouslack.commit2.app"
+  custom_domain = "web.anonymouslack.commit2.app"
 }
 
 data "aws_route53_zone" "selected" {
@@ -81,4 +81,16 @@ output "custom_domain" {
   value = local.custom_domain
 }
 
+locals {
+  name_prefix = "anonymouslack-docsify"
+  name_suffix = "aabbcc"
+}
+
+module "cdn" {
+  source = "github.com/ACupofCommit/terraform-s3-cdn"
+  name_prefix = local.name_prefix
+  name_suffix = local.name_suffix
+  route53_zone_name = "commit2.app"
+  domain            = "anonymouslack.commit2.app"
+}
 

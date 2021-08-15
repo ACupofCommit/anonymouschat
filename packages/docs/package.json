@@ -1,0 +1,13 @@
+{
+  "name": "@anonymouslack/docs",
+  "version": "2.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "docsify serve --port 3050 .",
+    "deploy": "aws s3 cp . s3://$ANONYMOUSLACK_DOCS_S3_BUCKET/ --recursive"
+  },
+  "devDependencies": {
+    "docsify-cli": "^4.4.3"
+  }
+}

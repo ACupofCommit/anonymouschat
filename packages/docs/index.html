@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Anonymouslack</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <script src="//cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+  <nav>
+    <a href="#/">English</a>
+    <a href="#/ko/">한국어</a>
+  </nav>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      search: {
+        // maxAge: 86_400_000, // Expiration time, the default one day
+        maxAge: 600_000, // 10 min
+        paths: 'auto',
+        pathNamespaces: ['/ko'],
+        // depth: 2,
+        hideOtherSidebarContent: false,
+        noData: {
+          '/ko/': '결과가 없습니다!',
+          '/': 'No results!',
+        },
+        placeholder: {
+          '/ko/': '검색',
+          '/': 'Search',
+        },
+      },
+      loadSidebar: true,
+      subMaxLevel: 2,
+      name: '',
+      repo: '',
+      coverpage: true,
+      relativePath: true,
+      vueGlobalOptions: {
+        data() {
+          return {
+            count: 0,
+            message: "hello, world!",
+            installLink: '',
+          }
+        },
+        created() {
+          fetch('https://afb7jqx801.execute-api.us-west-2.amazonaws.com/prod/api/admin/get-install-url')
+            .then(res => res.json())
+            .then(json => { this.installLink = json.item })
+        }
+      },
+    }
+  </script>
+  <!-- Docsify v4 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+</body>
+</html>
