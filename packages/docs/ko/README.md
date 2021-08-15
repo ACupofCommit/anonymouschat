@@ -1,4 +1,4 @@
-# Anonymouslack
+# Anonymouslack :id=home
 **Say your honest opinion anonymously!**
 
 - Anonymouslack은 슬랙 채널에서 익명을 사용할 수 있게 도와줍니다.

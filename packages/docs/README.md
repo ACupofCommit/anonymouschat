@@ -1,4 +1,4 @@
-# Anonymouslack
+# Anonymouslack :id=home
 **Say your honest opinion anonymously!**
 
 - Anonymouslack helps you use anonymity in Slack.
