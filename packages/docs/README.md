@@ -1,13 +1,13 @@
 # Anonymouslack
 **Say your honest opinion anonymously!**
 
-- Anonymouslack은 슬랙 채널에 익명 메시지를 전달할 수 있습니다.
-- 익명으로 쓰레드에 댓글을 남길 수 있습니다.
-- 익명으로 안전하게 의견을 말하세요.
+- Anonymouslack helps you use anonymity in Slack.
+- You can chat by using anonymous messages on channels and threads.
+- For your safety, please use anonymouslack.
 
 ## Installation
 
-1. ↓ `Add to Slack` 버튼을 클릭하여 슬랙 워크스페이스에 설치하세요.
+1. ↓ `Add to Slack` Click this button to install it in your Slack workspace.
 
 <div>
   <a :href="installLink">
@@ -15,7 +15,8 @@
   </a>
 </div>
 
-> 앱 설치 권한이 없다면 워크스페이스 관리자의 승인이 필요합니다.
+> If you do not have permission to install the app,
+  you need approval from the Slack workspace administrator.
 
 ## Usage
 
@@ -23,24 +24,28 @@
 
 ![start](./assets/shortcut.png)
 
-2. 갑작스런 익명 메시지는 동료들이 놀라게 할 수 있습니다. 익명 메시지
-  사용 시작과 동의를 구하는 메시지가 처음 포스팅됩니다.
+2. A sudden anonymous message can scare your co-workers. Your first
+   message will be posted asking members of channel to start using
+   anonymous messages.
 
 ![usage01](./assets/usage01.png)
 
-3. 동의가 완료되면 다시 **Shortcut** 메뉴를 통해 익명 글을 작성 할 수 있습니다.
+3. After agreement process is complete, you can write an anonymous
+   messages through the **Shortcut** menu again.
 
 ![usage02](./assets/usage02.png)
 
-4. 익명의 글에는 익명의 찬성/반대 의견을 표할 수 있고, 쓰레드를 통해
-  익명으로 대화 할 수 있습니다.
+4. You can vote for or against anonymous messages, and report
+   malicious messages. Of course, the use of these features is
+   also guaranteed anonymously.
 
 ![usage03](./assets/usage03.png)
 
-조직의 건강한 소통을 위해 익명 메시지로 안전하게 의견을 전달하세요~
+Operate an anonymous channel for the healthy growth of your organization.
 
 ## Support
 Since this project is open source, [Github Issues](https://github.com/ACupofCommit/anonymouslack/issues)
-is the preferred support channel. However you can directly e-mail me too.
+is the preferred support channel. You can also
+[e-mail me(anonymouslack23@gmail.com)](mailto:anonymouslack23@gmail.com) too.
 
 [Privacy Policy](/privacy) | Copyright © 2021 ACupofCommit
