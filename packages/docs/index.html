@@ -17,14 +17,28 @@
   <div id="app"></div>
   <script>
     window.$docsify = {
-      search: [
-        '/README.md',  // default
-        '/privacy.md',
-      ],
+      search: {
+        // maxAge: 86_400_000, // Expiration time, the default one day
+        maxAge: 600_000, // 10 min
+        paths: 'auto',
+        pathNamespaces: ['/ko'],
+        // depth: 2,
+        hideOtherSidebarContent: false,
+        noData: {
+          '/ko/': '결과가 없습니다!',
+          '/': 'No results!',
+        },
+        placeholder: {
+          '/ko/': '검색',
+          '/': 'Search',
+        },
+      },
+      loadSidebar: true,
+      subMaxLevel: 2,
       name: '',
       repo: '',
       coverpage: true,
-
+      relativePath: true,
       vueGlobalOptions: {
         data() {
           return {
