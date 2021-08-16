@@ -87,5 +87,15 @@ const getSlashCommand = (str?: string) => {
 export const CONST_SLASH_COMMAND = getSlashCommand(process.env.ANONYMOUSLACK_SLASH_COMMAND)
 export const CONST_APP_NAME = process.env.ANONYMOUSLACK_APP_NAME || 'Anonymouslack'
 
-// botTokenScopes
-export const botTokenScopes = ['chat:write','chat:write.customize','commands']
+/**
+ * botTokenScopes. The scopes setting should be the same as the scope below.
+ * You can set it on the "OAuth & Permissions" page in https://api.slack.com/ .
+ */
+export const botTokenScopes = [
+  'chat:write',            // It is used when posting an announcement message or an anonymous message to the channel.
+  'chat:write.customize',  // It is used to post a message with the anonymous Profile icon selected by the user.
+  'commands',              // Run the slack app using the Shortcuts menu.
+  'channels:read',         // It is used when initializing app in public channels.
+  'groups:read',           // It is used when initializing app in private channels.
+  'mpim:read',             // It is used when initializing app in group direct messages.
+]
