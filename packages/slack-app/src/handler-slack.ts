@@ -27,6 +27,23 @@ export const expressReceiver = new ExpressReceiver({
   clientSecret: ANONYMOUSLACK_CLIENT_SECRET,
   stateSecret: ANONYMOUSLACK_STATE_SECRET,
   scopes: botTokenScopes,
+  installerOptions: {
+    callbackOptions: {
+      success: (installation, _options, _req, res) => {
+        const htmlResponse = `
+<html>
+  <body>
+    <h2>Success! The installation(or installation request) of Anonymouslack in the your ${installation.team?.name} workspace is complete.</h2>
+    <h3>Please refer to <a href="https://anonymouslack.commit2.app/#/?id=usage">the Guide page</a> to use the app.</h3>
+  </body>
+</html>
+`.trim()
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(htmlResponse);
+      }
+    }
+  },
+
   installationStore: {
     storeInstallation: async (installation) => {
       console.log('New installation!!')
