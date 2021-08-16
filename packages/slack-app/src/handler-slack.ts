@@ -1,4 +1,4 @@
-import { getToken, setToken } from '@anonymouslack/universal/dist/models'
+import { botTokenScopes, getToken, setToken } from '@anonymouslack/universal/dist/models'
 import { isInstallationV2, KeyType } from '@anonymouslack/universal/dist/types'
 import { App, ExpressReceiver } from '@slack/bolt'
 import serverlessExpress from '@vendia/serverless-express'
@@ -26,7 +26,7 @@ export const expressReceiver = new ExpressReceiver({
   clientId: ANONYMOUSLACK_CLIENT_ID,
   clientSecret: ANONYMOUSLACK_CLIENT_SECRET,
   stateSecret: ANONYMOUSLACK_STATE_SECRET,
-  scopes: ['app_mentions:read','chat:write','chat:write.customize','im:write','commands'],
+  scopes: botTokenScopes,
   installationStore: {
     storeInstallation: async (installation) => {
       console.log('New installation!!')

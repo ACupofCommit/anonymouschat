@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Post, Route } from "@tsoa/runtime"
 import { InstallProvider } from '@slack/oauth'
-import { getGroup, TSTError } from "@anonymouslack/universal/dist/models"
+import { botTokenScopes, getGroup, TSTError } from "@anonymouslack/universal/dist/models"
 import { ResItem, ResOK } from "@anonymouslack/universal/dist/types"
 import { AdminService } from "../services/admin.service"
 import { getClientByGroup } from "../helpers/api.helper"
-import { ANONYMOUSLACK_CLIENT_ID, ANONYMOUSLACK_CLIENT_SECRET, ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD } from "../models/envs.model"
+import { ANONYMOUSLACK_CLIENT_ID, ANONYMOUSLACK_CLIENT_SECRET, ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD, ANONYMOUSLACK_STATE_SECRET } from "../models/envs.model"
 
 type ReqBody = {
   password: string
@@ -41,11 +41,11 @@ export class APIAdminController extends Controller {
     const installer = new InstallProvider({
       clientId: ANONYMOUSLACK_CLIENT_ID,
       clientSecret: ANONYMOUSLACK_CLIENT_SECRET,
-      stateSecret: 'my-state-secret'
+      stateSecret: ANONYMOUSLACK_STATE_SECRET,
     });
 
     const url = await installer.generateInstallUrl({
-      scopes: ['chat:write','chat:write.customize','commands'],
+      scopes: botTokenScopes,
     })
 
     return { ok: true, item: url }
