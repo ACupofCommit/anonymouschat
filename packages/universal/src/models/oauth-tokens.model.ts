@@ -10,7 +10,8 @@ const TableName = TABLENAME_OAUTH_TOKENS
 const logger = createLogger('oauth-tokens.model')
 
 export const setToken = async (key: string, keyType: KeyType, installation: Installation<'v2'>) => {
-  const Item = { key, keyType, installation }
+  const uTime = new Date().toISOString()
+  const Item = { key, keyType, installation, uTime }
   const params: DocumentClient.PutItemInput = { TableName, Item }
   await ddc.put(params).promise()
 }
