@@ -33,6 +33,7 @@ export const UNKNOWN_CHANNEL_NAME = '__UNKOWN_CHANNEL_NAME__'
 
 // Actions
 export const SHORTCUT_START                      = 'SHORTCUT_START'
+export const SHORTCUT_CHANNEL_SETTINGS           = 'SHORTCUT_CHANNEL_SETTINGS'
 export const ACTION_SUBMISSION_INIT              = 'ACTION_SUBMISSION_INIT'
 
 export const ACTION_OPEN_VIEW_DELETE             = 'ACTION_OPEN_VIEW_DELETE'

@@ -5,6 +5,7 @@ import { getOrCreateGetGroup } from '@anonymouslack/universal/dist/models'
 import { agreeAppActivation, forceAppActivate, forceAppDeactivate, getConfigMsgPermalink, getSelectingChannelToInitialView, postAgreementMesssage, showDeactivateWarning, getNewVoiceView, sendHelpOrAgreementMsg, } from '@anonymouslack/universal/dist/core'
 import { parseWOThrow } from '@anonymouslack/universal/dist/utils'
 import { WebAPIPlatformError } from '@slack/web-api'
+import { Messages } from '@anonymouslack/universal/dist/types/messages'
 
 interface ResponseUrl {
   block_id: string
@@ -15,19 +16,33 @@ interface ResponseUrl {
 
 type TParsedPM = IPMNewVoiceView | IPMNewReplyView | IPMDeletionView | IPMDeactivateWarningView
 
-export const handleShortcut: Middleware<SlackShortcutMiddlewareArgs> = async ({body, ack, client}) => {
-  await ack();
+export const handleShortcut: Middleware<SlackShortcutMiddlewareArgs> = async ({body, ack, client, context}) => {
+  await ack()
   const {trigger_id} = body
+  const {messages: m} = context
 
   const bot = await client.auth.test()
   if (typeof bot.user_id !== 'string') throw new Error('Can not get bot.user_id')
 
-  const viewOpenArg = getSelectingChannelToInitialView(trigger_id, {'hello': 'world'}, bot.user_id)
+  const viewOpenArg = getSelectingChannelToInitialView(m, trigger_id, bot.user_id)
   await client.views.open(viewOpenArg)
 }
 
-export const handleSubmitInit: Middleware<SlackViewMiddlewareArgs> = async ({body, ack, client}) => {
+export const handleShortcutChannelSettings: Middleware<SlackShortcutMiddlewareArgs> = async ({body,ack,client, context}) => {
+  await ack()
+  const {trigger_id} = body
+  const {messages: m} = context
+
+  const bot = await client.auth.test()
+  if (typeof bot.user_id !== 'string') throw new Error('Can not get bot.user_id')
+
+  const viewOpenArg = getSelectingChannelToInitialView(m, trigger_id, bot.user_id)
+  await client.views.open(viewOpenArg)
+}
+
+export const handleSubmitInit: Middleware<SlackViewMiddlewareArgs> = async ({body, ack, client, context}) => {
   console.log('handleSubmitInit')
+  const m = context.message as Messages
   const {user, team} = body
   const responseUrls = (body as any).response_urls as ResponseUrl[]
 
@@ -35,7 +50,7 @@ export const handleSubmitInit: Middleware<SlackViewMiddlewareArgs> = async ({bod
     return await ack({
       response_action: 'errors',
       errors: {
-        target_channel: `채널을 선택해 주세요.`,
+        target_channel: m.P_SELECT_CHANNEL,
       },
     })
   }
@@ -50,7 +65,7 @@ export const handleSubmitInit: Middleware<SlackViewMiddlewareArgs> = async ({bod
     return await ack({
       response_action: 'errors',
       errors: {
-        target_channel: `↓ 앱 이름을 클릭하여 채널에 앱을 추가한 후 다시 시도해주세요.`,
+        target_channel: m.P_ADD_APP_AND_RETRY,
       },
     })
   }

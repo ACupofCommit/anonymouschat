@@ -17,7 +17,7 @@ It consists of some packages below.
 **DynamoDB on local**:
 ```
 $ docker run -d -p8000:8000 -p8002:8002 -eAWS_REGION=$AWS_DEFAULT_REGION instructure/dynamo-local-admin
-$ npx lerna run create-dynamodb-tables --scope=slack-app --stream
+$ npx ts-node packages/slack-app/bin/create-dynamodb-table.ts
 ```
 
 **Run all packages**:

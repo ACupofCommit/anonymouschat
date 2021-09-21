@@ -16,6 +16,8 @@ export interface ISlashCommandPayload {
   enterprise_name?: string;
 }
 
+export type LCA2 = 'en' | 'ko'
+
 export interface IPMDeletionView {
   channelId: string
   channelName: string

@@ -7,6 +7,10 @@ export const getGroupId = (channelId: string, teamId: string, gridId: string=NOT
   return `${gridId}-${teamId}-${channelId}`
 }
 
+export const getChannelIdFromGroupId = (groupId: string) => {
+  return groupId.split('-')[2]
+}
+
 /**
  * voiceId 생성 규칙에 따라 voiceId를 생성하여 반환
  * @param groupId teamId:channelId of slack
@@ -41,7 +45,6 @@ export interface IMyBlockActionPayload extends BlockActionPayload {
   }
   response_url: string
   trigger_id: string
-
 }
 
 export const isMyBlockActionPayload = (o: any): o is IMyBlockActionPayload => {

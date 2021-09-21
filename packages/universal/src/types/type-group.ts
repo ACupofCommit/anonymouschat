@@ -1,4 +1,5 @@
 import { isArray, every } from "lodash"
+import { LCA2 } from "./type-common"
 
 export interface IGroupKeys {
   teamId: string
@@ -19,6 +20,7 @@ export interface IGroup {
   webAccessToken: string
   webAccessTokenExpirationTime: number
   numberOfReportToHidden: number
+  lca2: LCA2
 
   // TODO:
   // limitPerPeriod: number      // reset 시간 전까지 작성 글 수 제한

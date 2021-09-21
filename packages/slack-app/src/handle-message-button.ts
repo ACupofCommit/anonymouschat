@@ -1,17 +1,9 @@
 import { Middleware, SlackActionMiddlewareArgs, SlackViewMiddlewareArgs } from "@slack/bolt"
 import to from "await-to-js"
 import { voteSlackVoice, voteSlackReply, reportVoiceOrReply, openViewToDelete, deleteVoiceOrReply } from "@anonymouslack/universal/dist/core"
-import { isMyBlockActionPayload, ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, isMyViewSubmissionPayload, INPUT_NAME_PASSWORD, STR_NOT_MATCHED_PASSWORD } from "@anonymouslack/universal/dist/models"
-import { IPMNewVoiceView, IPMNewReplyView, IPMDeletionView, IPMDeactivateWarningView } from "@anonymouslack/universal/dist/types"
-
-interface ResponseUrl {
-  block_id: string
-  action_id: string
-  channel_id: string
-  response_url: string
-}
-
-type TParsedPM = IPMNewVoiceView | IPMNewReplyView | IPMDeletionView | IPMDeactivateWarningView
+import { isMyBlockActionPayload, ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, isMyViewSubmissionPayload, INPUT_NAME_PASSWORD } from "@anonymouslack/universal/dist/models"
+import { parseWOThrow } from "@anonymouslack/universal/dist/utils"
+import { getMessageFromChannelId } from "@anonymouslack/universal/dist/core/nls"
 
 export const handleLikeOrDislike: Middleware<SlackActionMiddlewareArgs> = async ({
   ack, body, action,
@@ -62,16 +54,19 @@ export const handleOpenViewToDelete: Middleware<SlackActionMiddlewareArgs> = asy
 }
 
 export const handleSubmitDelete: Middleware<SlackViewMiddlewareArgs> = async ({
-  ack, body, client,
+  ack, body, view, client,
 }) => {
   if (!isMyViewSubmissionPayload(body)) throw new Error('Wrong MyViewSubmissionPayload type')
+
+  const json = parseWOThrow(view.private_metadata)
+  const m = getMessageFromChannelId((json as any).channelId)
 
   const [err] = await to(deleteVoiceOrReply(client, body))
   if (err?.message === 'WRONG_PASSWORD') {
     await ack({
       response_action: 'errors',
       errors: {
-        [INPUT_NAME_PASSWORD]: STR_NOT_MATCHED_PASSWORD,
+        [INPUT_NAME_PASSWORD]: m.STR_NOT_MATCHED_PASSWORD,
       }
     })
     return

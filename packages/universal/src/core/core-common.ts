@@ -23,6 +23,7 @@ import { IPMDeletionView, IChatGetPermalinkResponse, IPMDeactivateWarningView} f
 import { getDeletionViewOpenArg, getAppDeactivateWarningViewsArg, getDeactivatedArg, getActivatedArg } from './argument-common'
 import { isReplyByTsThreadTs, checkAndConvertUrlTsToDotTs } from '../utils/common.util'
 import { isNotEmptyString } from '../utils/typecheck.util'
+import { getMessage } from './nls'
 
 const logger = createLogger('core')
 
@@ -44,6 +45,7 @@ export const reportVoiceOrReply = async (web: WebClient, payload: IMyBlockAction
   // 신고 개수 상승으로 hidden 처리가 될 수 있으므로 updateVoice 에서 반환된 voice를 사용
   const tmp: IVoice | IReply = { ...voiceOrReply, userReportArr, isHiddenByReport }
   const updated: IVoice | IReply = isVoice(tmp) ? await putVoice(tmp) : await putReply(tmp)
+
   const arg = isVoice(updated) ? getVoiceArg(updated) : getReplyArg(updated)
   await axios.post(response_url, { ...arg, ts})
 }
@@ -62,6 +64,7 @@ export const postAgreementMesssage = async (web: WebClient, group: IGroup) => {
 }
 
 export const sendHelpMessage = async (web: WebClient, group: IGroup, user: string, configMsgPermalink: string) => {
+  const m = getMessage(group.lca2)
   const helpArg = getHelpMessageArg(group.channelId, user, configMsgPermalink, group.isPostingAvailable)
   await web.chat.postEphemeral(helpArg)
 }
@@ -94,6 +97,7 @@ export const agreeAppActivation = async (web: WebClient, group: IGroup, userId: 
 }
 
 export const forceAppActivate = async (web: WebClient, group: IGroup, forceActivateUserId: string, responseUrl: string) => {
+  const m = getMessage(group.lca2)
   const webAccessTokenExpirationTime = getWATETByChanging(true, false, group.webAccessTokenExpirationTime)
   const updatedGroup = await putGroup({
     ...group,
@@ -109,6 +113,7 @@ export const forceAppActivate = async (web: WebClient, group: IGroup, forceActiv
 }
 
 export const forceAppDeactivate = async (web: WebClient, group: IGroup, userId: string) => {
+  const m = getMessage(group.lca2)
   const { channelId, agreedUserArr } = group
   const webAccessTokenExpirationTime = getWATETByChanging(false, true, group.webAccessTokenExpirationTime)
   const updatedGroup: IGroup = {
@@ -127,6 +132,7 @@ export const forceAppDeactivate = async (web: WebClient, group: IGroup, userId: 
 }
 
 export const showDeactivateWarning = async (web: WebClient, triggerId: string, group: IGroup) => {
+  const m = getMessage(group.lca2)
   const { channelId, channelName} = group
   const pm: IPMDeactivateWarningView = { channelId, channelName }
   const arg = getAppDeactivateWarningViewsArg(triggerId, group.agreedUserArr.length, pm)
@@ -236,6 +242,8 @@ export const openViewToDelete = async (web: WebClient, payload: IMyBlockActionPa
     channelId: channel.id, ts, threadTs: thread_ts,
     channelName: channel.name, responseUrl: response_url,
   }
+  const group: IGroup = await getGroup(channel.id, { cache: true })
+  const m = getMessage(group.lca2)
   await web.views.open(getDeletionViewOpenArg(trigger_id, pm))
 }
 
@@ -252,6 +260,9 @@ export const deleteVoiceOrReply = async (web: WebClient, payload: IMyViewSubmiss
   const replyId = getReplyId(voiceId, ts)
   const isSuccess = isVoice ? await deleteVoice(voiceId, password) : await deleteReply(replyId, password)
   if (!isSuccess) throw new Error('WRONG_PASSWORD')
+
+  const group: IGroup = await getGroup(channelId, { cache: true })
+  const m = getMessage(group.lca2)
 
   if (isVoice) {
     const voice = await getVoice(voiceId)
