@@ -1,18 +1,11 @@
 import to from 'await-to-js'
 import { Middleware, SlackActionMiddlewareArgs, SlackShortcutMiddlewareArgs, SlackViewMiddlewareArgs } from "@slack/bolt"
-import { IPMDeactivateWarningView, IPMDeletionView, IPMNewReplyView, IPMNewVoiceView, isWebAPIPlatformError } from '@anonymouslack/universal/dist/types'
+import { IPMDeactivateWarningView, IPMDeletionView, IPMNewReplyView, IPMNewVoiceView, isWebAPIPlatformError, ResponseUrl } from '@anonymouslack/universal/dist/types'
 import { getOrCreateGetGroup } from '@anonymouslack/universal/dist/models'
-import { agreeAppActivation, forceAppActivate, forceAppDeactivate, getConfigMsgPermalink, getSelectingChannelToInitialView, postAgreementMesssage, showDeactivateWarning, getNewVoiceView, sendHelpOrAgreementMsg, } from '@anonymouslack/universal/dist/core'
+import { agreeAppActivation, forceAppActivate, forceAppDeactivate, getConfigMsgPermalink, getSelectingChannelToInitialView, postAgreementMesssage, showDeactivateWarning, getNewVoiceView, sendHelpOrAgreementMsg } from '@anonymouslack/universal/dist/core'
 import { parseWOThrow } from '@anonymouslack/universal/dist/utils'
 import { WebAPIPlatformError } from '@slack/web-api'
 import { Messages } from '@anonymouslack/universal/dist/types/messages'
-
-interface ResponseUrl {
-  block_id: string
-  action_id: string
-  channel_id: string
-  response_url: string
-}
 
 type TParsedPM = IPMNewVoiceView | IPMNewReplyView | IPMDeletionView | IPMDeactivateWarningView
 
@@ -28,21 +21,9 @@ export const handleShortcut: Middleware<SlackShortcutMiddlewareArgs> = async ({b
   await client.views.open(viewOpenArg)
 }
 
-export const handleShortcutChannelSettings: Middleware<SlackShortcutMiddlewareArgs> = async ({body,ack,client, context}) => {
-  await ack()
-  const {trigger_id} = body
-  const {messages: m} = context
-
-  const bot = await client.auth.test()
-  if (typeof bot.user_id !== 'string') throw new Error('Can not get bot.user_id')
-
-  const viewOpenArg = getSelectingChannelToInitialView(m, trigger_id, bot.user_id)
-  await client.views.open(viewOpenArg)
-}
-
 export const handleSubmitInit: Middleware<SlackViewMiddlewareArgs> = async ({body, ack, client, context}) => {
   console.log('handleSubmitInit')
-  const m = context.message as Messages
+  const m = context.messages as Messages
   const {user, team} = body
   const responseUrls = (body as any).response_urls as ResponseUrl[]
 

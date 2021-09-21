@@ -1,15 +1,8 @@
 import { getMessage, getMessageFromChannelId } from "@anonymouslack/universal/dist/core/nls"
 import { getOrCreateGetGroup } from "@anonymouslack/universal/dist/models"
-import { IGroup } from "@anonymouslack/universal/dist/types"
+import { IGroup, ResponseUrl } from "@anonymouslack/universal/dist/types"
 import { parseWOThrow } from "@anonymouslack/universal/dist/utils"
 import { AnyMiddlewareArgs, Middleware } from "@slack/bolt"
-
-type ResponseUrl = {
-  block_id: string
-  action_id: string
-  channel_id: string
-  response_url: string
-}
 
 export const setGroupAndMessages: Middleware<AnyMiddlewareArgs> = async ({
   payload,client,context,body,next

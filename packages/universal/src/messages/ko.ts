@@ -75,6 +75,23 @@ export const messages: Messages = {
   P_SELECT_CHANNEL: '채널을 선택해 주세요.',
   P_SELECT_CHANNEL_TO_SETTING: '설정을 확인/변경할 채널을 선택해 주세요.',
   P_SELECT_CHANNEL_TO_USE: `%s 앱을 사용 할 채널을 선택하세요.`,
+
   P_ALLOW_YOU_TO_CHAT: `%s이 선택한 채널에서 익명 대화를 가능하게해줍니다.`,
+  P_SETTINGS_ARE_MANAGED_PER_CHANNEL: `%s의 설정은 채널별로 관리됩니다.`,
+
   P_YOU_CAN_POST: `:point_up_2: 이 버튼을 사용하여 익명 메시지를 작성할 수 있습니다.`,
+  P_LANGUAGE_IS: `이미 작성된 메시지 구성 요소의 언어는 변경되지 않으며, 메시지가 업데이트될 때 변경됩니다. (기본설정: 'English')`,
+
+  LABEL_LANGUAGE: `언어`,
+  LABEL_REPORT_COUNT_TO_HIDE: `글 숨김을 위한 신고 카운트`,
+  P_MESSAGES_THAT_HAVE_ALREADY: `이미 숨김 처리된 메시지는 복원되거나 카운트에 다달은 기존 메시지가 자동으로 숨김 처리 되지 않으며, 이 때 신고 버튼을 클릭하여 메시지를 업데이트하면 적용됩니다.`,
+  P_SAVED: `저장되었습니다.`,
+  P_REPORT_COUNT_TO_HIDE_MUST_BE: `0 보다 큰 정수여야 합니다.`,
+
+  PLACEHOLDER_SELECT: `선택하세요...`,
+
+  BUTTON_SAVE: `저장`,
+  BUTTON_OPEN: `열기`,
+  BUTTON_CLOSE: `닫기`,
+  BUTTON_START: `시작`,
 }

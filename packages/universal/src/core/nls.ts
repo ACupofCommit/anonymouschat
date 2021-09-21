@@ -6,8 +6,7 @@ import { Messages } from '../types/messages'
 import { LCA2 } from '../types'
 
 export const getMessage = (lca2: LCA2) => {
-  // return lca == 'en' ? en : ko
-  return lca2 == 'en' ? ko : en
+  return lca2 == 'en' ? en : ko
 }
 
 export const getString = (key: keyof Messages, lca2: LCA2) => {

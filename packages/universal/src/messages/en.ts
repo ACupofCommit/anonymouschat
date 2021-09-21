@@ -75,6 +75,23 @@ export const messages: Messages = {
   P_SELECT_CHANNEL: 'Select a channel.',
   P_SELECT_CHANNEL_TO_SETTING: 'Please select a channel to check/change settings.',
   P_SELECT_CHANNEL_TO_USE: `Please select a channel to use the %s`,
+
   P_ALLOW_YOU_TO_CHAT: `%s allows you to chat anonymously on the selected channel.`,
+  P_SETTINGS_ARE_MANAGED_PER_CHANNEL: `%s's settings are managed per channel.`,
+
   P_YOU_CAN_POST: `:point_up_2: You can use this button to post an anonymous message.`,
+  P_LANGUAGE_IS: `The language of an already written message component does not change, it changes when the message is updated. (Default: 'English')`,
+
+  LABEL_LANGUAGE: `Language`,
+  LABEL_REPORT_COUNT_TO_HIDE: `Report count for hiding message`,
+  P_MESSAGES_THAT_HAVE_ALREADY: `Messages that have already been hidden will not be restored, and existing messages that have reached the count will not be automatically hidden, then click the report button to update the message and it will take effect.`,
+  P_SAVED: `Saved.`,
+  P_REPORT_COUNT_TO_HIDE_MUST_BE: `It must be an integer greater than zero.`,
+
+  PLACEHOLDER_SELECT: `Select...`,
+
+  BUTTON_SAVE: `Save`,
+  BUTTON_OPEN: `Open`,
+  BUTTON_CLOSE: `Close`,
+  BUTTON_START: `Start`,
 }

@@ -20,7 +20,8 @@ const logger = createLogger('group')
 export const getOrCreateGetGroup = async (channelId: string, teamId: string, channelName: string='private', gridId: string=NOT_GRID) => {
   const [, group] = await to(getGroup(channelId))
   if (isGroup(group) && group.channelName === channelName && group.gridId && gridId) {
-    return group
+    const modified = { ...group, lca2: group.lca2 ? group.lca2 : 'en' }
+    return modified
   }
 
   const updatedOrNewGroup = isGroup(group)
@@ -28,7 +29,8 @@ export const getOrCreateGetGroup = async (channelId: string, teamId: string, cha
     : newGroup(channelId, teamId, channelName, gridId)
 
   const updatedGroup = await putGroup(updatedOrNewGroup)
-  return updatedGroup
+  const modified = { ...updatedGroup, lca2: updatedGroup.lca2 ? updatedGroup.lca2 : 'en' }
+  return modified
 }
 
 interface GetGroupOptions {
@@ -40,13 +42,14 @@ export const getGroupWOCache = async (channelId: string, options?: GetGroupOptio
   const { Item: group } = await ddc.get(params).promise()
   if (!isGroup(group)) throw new Error(`can not get group by: ${channelId}`)
 
-  return group
+  const modified = { ...group, lca2: group.lca2 ? group.lca2 : 'en' }
+  return modified
 }
 export const getGroupWCache = memoizee(getGroupWOCache, { promise: true, max: 100, maxAge: ms('30s') })
 
 export const getGroup = async (channelId: string, options?: GetGroupOptions) => {
   if (!options?.cache) {
-    return getGroupWCache.clear(channelId)
+    getGroupWCache.clear(channelId)
   }
   return await getGroupWCache(channelId)
 }
@@ -65,7 +68,7 @@ export const getGroupKeysArrByTeamId = async (teamId: string) => {
   return result.Items
 }
 
-export const newGroup = (channelId: string, teamId: string, channelName: string, gridId: string) => {
+const newGroup = (channelId: string, teamId: string, channelName: string, gridId: string) => {
   const group: IGroup = {
     channelId, channelName, teamId, gridId,
     agreedUserArr: [], isPostingAvailable: false,

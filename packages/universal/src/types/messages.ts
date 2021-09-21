@@ -74,5 +74,20 @@ export interface Messages {
   P_SELECT_CHANNEL_TO_SETTING: string
   P_SELECT_CHANNEL_TO_USE: string
   P_ALLOW_YOU_TO_CHAT: string
+  P_SETTINGS_ARE_MANAGED_PER_CHANNEL: string
   P_YOU_CAN_POST: string
+  P_LANGUAGE_IS: string
+
+  LABEL_LANGUAGE: string
+  LABEL_REPORT_COUNT_TO_HIDE: string
+  P_MESSAGES_THAT_HAVE_ALREADY: string
+  P_SAVED: string
+  P_REPORT_COUNT_TO_HIDE_MUST_BE: string
+
+  PLACEHOLDER_SELECT: string
+
+  BUTTON_SAVE: string
+  BUTTON_OPEN: string
+  BUTTON_CLOSE: string
+  BUTTON_START: string
 }
