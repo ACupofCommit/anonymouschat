@@ -78,7 +78,7 @@ export const isParamNewVoice = (p: any): p is IParamNewVoice => {
 
 export interface IPMNewVoiceView {
   channelId: string
-  channelName: string
+  channelName?: string
 }
 
 export const isPMNewVoiceView = (o: any): o is IPMNewVoiceView => {

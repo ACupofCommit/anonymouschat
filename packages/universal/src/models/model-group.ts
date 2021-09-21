@@ -1,6 +1,8 @@
 import to from 'await-to-js'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import gp from 'generate-password'
+import memoizee from 'memoizee'
+import ms from 'ms'
 
 import { createLogger } from '../utils/logger.util'
 import { getDDC } from '../utils/common.util'
@@ -18,7 +20,8 @@ const logger = createLogger('group')
 export const getOrCreateGetGroup = async (channelId: string, teamId: string, channelName: string='private', gridId: string=NOT_GRID) => {
   const [, group] = await to(getGroup(channelId))
   if (isGroup(group) && group.channelName === channelName && group.gridId && gridId) {
-    return group
+    const modified = { ...group, lca2: group.lca2 ? group.lca2 : 'en' }
+    return modified
   }
 
   const updatedOrNewGroup = isGroup(group)
@@ -26,15 +29,29 @@ export const getOrCreateGetGroup = async (channelId: string, teamId: string, cha
     : newGroup(channelId, teamId, channelName, gridId)
 
   const updatedGroup = await putGroup(updatedOrNewGroup)
-  return updatedGroup
+  const modified = { ...updatedGroup, lca2: updatedGroup.lca2 ? updatedGroup.lca2 : 'en' }
+  return modified
 }
 
-export const getGroup = async (channelId: string) => {
+interface GetGroupOptions {
+  cache: boolean
+}
+
+export const getGroupWOCache = async (channelId: string, options?: GetGroupOptions) => {
   const params: DocumentClient.GetItemInput = { TableName, Key: { channelId }}
   const { Item: group } = await ddc.get(params).promise()
   if (!isGroup(group)) throw new Error(`can not get group by: ${channelId}`)
 
-  return group
+  const modified = { ...group, lca2: group.lca2 ? group.lca2 : 'en' }
+  return modified
+}
+export const getGroupWCache = memoizee(getGroupWOCache, { promise: true, max: 100, maxAge: ms('30s') })
+
+export const getGroup = async (channelId: string, options?: GetGroupOptions) => {
+  if (!options?.cache) {
+    getGroupWCache.clear(channelId)
+  }
+  return await getGroupWCache(channelId)
 }
 
 export const getGroupKeysArrByTeamId = async (teamId: string) => {
@@ -51,7 +68,7 @@ export const getGroupKeysArrByTeamId = async (teamId: string) => {
   return result.Items
 }
 
-export const newGroup = (channelId: string, teamId: string, channelName: string, gridId: string) => {
+const newGroup = (channelId: string, teamId: string, channelName: string, gridId: string) => {
   const group: IGroup = {
     channelId, channelName, teamId, gridId,
     agreedUserArr: [], isPostingAvailable: false,
@@ -60,15 +77,16 @@ export const newGroup = (channelId: string, teamId: string, channelName: string,
     webAccessToken: createWebAccessToken(),
     // isPostingAvailable: false일때는 갱신을 위한 query날릴때 앞에 나오지 않도록 -1로 셋팅해둠.
     webAccessTokenExpirationTime: -1,
-    numberOfReportToHidden: 5
+    numberOfReportToHidden: 5,
+    lca2: 'en',
   }
   return group
 }
 
 export const putGroup = async (group: IGroup) => {
   const params: DocumentClient.PutItemInput = { TableName, Item: group }
+  logger.debug(`Try to put group into table ${TableName}. teamId: ${group.teamId}, channelId: ${group.channelId}`)
   await ddc.put(params).promise()
-  logger.debug(`put group into table ${TableName}. teamId: ${group.teamId}, channelId: ${group.channelId}`)
   return group
 }
 

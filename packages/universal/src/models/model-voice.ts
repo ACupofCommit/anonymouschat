@@ -2,12 +2,13 @@ import crypto from 'crypto'
 import { isArray, every } from 'lodash'
 import { DocumentClient} from 'aws-sdk/clients/dynamodb'
 
-import { getGroupIdFromVoiceId, getVoiceId } from './model-common'
+import { getGroupIdFromVoiceId, getVoiceId, getChannelIdFromGroupId } from './model-common'
 import { createLogger } from '../utils/logger.util'
 import { getDDC } from '../utils/common.util'
 import { IParamNewVoice, IVoice, isVoice } from '../types/type-voice'
-import { STR_DELETED_MESSAGE } from '../models/strings.model'
 import { TABLENAME_VOICE } from '../models/constants.model'
+import { getMessage } from '../core/nls'
+import { getGroup } from './model-group'
 
 const TableName = TABLENAME_VOICE
 const ddc = getDDC()
@@ -44,8 +45,12 @@ export const getVoiceArrByGroupId = async (groupId: string): Promise<IVoice[]> =
   const { Items } = await ddc.query(params).promise()
   if (!isArray(Items)) throw new Error('can not get voiceArr by groupId: ' + groupId)
 
+  const channelId = getChannelIdFromGroupId(groupId)
+  const group = await getGroup(channelId, { cache: true })
+  const m = getMessage(group.lca2)
+
   const voiceArr = Items.map( item => {
-    const content = item.isDeleted ? STR_DELETED_MESSAGE : item.content
+    const content = item.isDeleted ? m.STR_DELETED_MESSAGE : item.content
     const voice = { ...item, content }
     if (!isVoice(voice)) throw new Error('can not get voice in getVoiceArrByGroupId')
 

@@ -1,6 +1,8 @@
 import { App} from "@slack/bolt"
 import { initialize } from "./action"
 
+Error.stackTraceLimit = 50
+
 const boltApp = new App({
   token: process.env.ANONYMOUSLACK_BOT_TOKEN,
   signingSecret: process.env.ANONYMOUSLACK_SIGNING_SECRET,

@@ -9,7 +9,7 @@ import { getErrorMsgBlockInView } from "./argument-common"
 import { getVoice, putVoice, getVoiceIdArrByTimeRange, newVoice } from "../models/model-voice"
 import { hashAndtoggle, getMSFromHours} from "../utils/common.util"
 import { isNotEmptyString } from '../utils/typecheck.util'
-import { STR_FAILED_TO_CREATE_VOICE } from '../models/strings.model'
+import { getMessageFromChannelId } from './nls'
 
 export const createVoiceFromSlack = async (web: WebClient, payload: IMyViewSubmissionPayload) => {
   const { team, view } = payload
@@ -29,8 +29,9 @@ export const createVoiceFromSlack = async (web: WebClient, payload: IMyViewSubmi
   }
   const [err] = await to<void, Error>(postAndPutSlackVoice(web, param))
   if (err?.message === 'VOICE_LIMIT_RECENT24H') {
+    const m = getMessageFromChannelId(channelId)
     const arg = getNewVoiceViewsArg('', pm)
-    const errorMsgBlock = getErrorMsgBlockInView(STR_FAILED_TO_CREATE_VOICE)
+    const errorMsgBlock = getErrorMsgBlockInView(m.STR_FAILED_TO_CREATE_VOICE)
     const view: View = { ...arg.view, blocks: [...arg.view.blocks, errorMsgBlock]}
     return { response_action: 'update', view }
   }

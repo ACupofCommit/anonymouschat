@@ -1,5 +1,12 @@
 import { isNotEmptyString, isNotNullObject } from "../utils/typecheck.util"
 
+export interface ResponseUrl {
+  block_id: string
+  action_id: string
+  channel_id: string
+  response_url: string
+}
+
 export interface ISlashCommandPayload {
   token?: string;
   team_id: string
@@ -15,6 +22,8 @@ export interface ISlashCommandPayload {
   enterprise_id?: string;
   enterprise_name?: string;
 }
+
+export type LCA2 = 'en' | 'ko'
 
 export interface IPMDeletionView {
   channelId: string

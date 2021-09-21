@@ -2,6 +2,7 @@ import { App, ExpressReceiver } from '@slack/bolt'
 import serverlessExpress from '@vendia/serverless-express'
 import { initialize } from './action'
 
+
 const ANONYMOUSLACK_SIGNING_SECRET = process.env.ANONYMOUSLACK_SIGNING_SECRET
 if (!ANONYMOUSLACK_SIGNING_SECRET) throw new Error('ANONYMOUSLACK_SIGNING_SECRET is required')
 
