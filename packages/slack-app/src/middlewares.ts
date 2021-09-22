@@ -5,7 +5,7 @@ import { parseWOThrow } from "@anonymouschat/universal/dist/utils"
 import { AnyMiddlewareArgs, Middleware } from "@slack/bolt"
 
 export const setGroupAndMessages: Middleware<AnyMiddlewareArgs> = async ({
-  payload,client,context,body,next
+  payload,client,context,body,next,
 }) => {
   const {team, user} = body
 
@@ -19,6 +19,8 @@ export const setGroupAndMessages: Middleware<AnyMiddlewareArgs> = async ({
     if (channelId) {
       group = await getOrCreateGetGroup(channelId, team.id)
     }
+  } else if ((body as any).channel) {
+    group = await getOrCreateGetGroup((body as any).channel.id, team.id)
   }
 
   context.group = group
