@@ -1,9 +1,9 @@
 import { Middleware, SlackActionMiddlewareArgs, SlackViewMiddlewareArgs } from "@slack/bolt"
 import to from "await-to-js"
-import { voteSlackVoice, voteSlackReply, reportVoiceOrReply, openViewToDelete, deleteVoiceOrReply } from "@anonymouslack/universal/dist/core"
-import { isMyBlockActionPayload, ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, isMyViewSubmissionPayload, INPUT_NAME_PASSWORD } from "@anonymouslack/universal/dist/models"
-import { parseWOThrow } from "@anonymouslack/universal/dist/utils"
-import { getMessageFromChannelId } from "@anonymouslack/universal/dist/core/nls"
+import { voteSlackVoice, voteSlackReply, reportVoiceOrReply, openViewToDelete, deleteVoiceOrReply } from "@anonymouschat/universal/dist/core"
+import { isMyBlockActionPayload, ACTION_VOTE_VOICE_LIKE, ACTION_VOTE_VOICE_DISLIKE, ACTION_VOTE_REPLY_LIKE, ACTION_VOTE_REPLY_DISLIKE, isMyViewSubmissionPayload, INPUT_NAME_PASSWORD } from "@anonymouschat/universal/dist/models"
+import { parseWOThrow } from "@anonymouschat/universal/dist/utils"
+import { getMessageFromChannelId } from "@anonymouschat/universal/dist/core/nls"
 
 export const handleLikeOrDislike: Middleware<SlackActionMiddlewareArgs> = async ({
   ack, body, action,

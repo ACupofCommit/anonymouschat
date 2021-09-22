@@ -18,7 +18,7 @@ regardless of whether they appear in singular or in plural.
 ## Definitions
 For the purposes of this Privacy Policy:
 
-- **Service** (referred to as either We", "Us" or "Our" in this Agreement) refers to Anonymouslack as Slack app.
+- **Service** (referred to as either We", "Us" or "Our" in this Agreement) refers to **Anonymous Chat** as Slack app.
 
 - **Personal Data** is any information that relates to an identified or identifiable individual.
 
@@ -43,7 +43,7 @@ We collect several different types of information for various purposes to provid
   and then automatically removed. It may include data provided to the Service by you.
 
 ## Use of Data
-Anonymouslack uses the collected data for various purposes:
+**Anonymous Chat** uses the collected data for various purposes:
 
 - To provide and maintain the Service
 - To notify you about changes to our Service
@@ -60,15 +60,15 @@ where the data protection laws may differ than those from your jurisdiction.
 
 Your consent to this Privacy Policy followed by your submission of such information represents your agreement to that transfer.
 
-Anonymouslack will take all steps reasonably necessary to ensure that your data is treated securely and in accordance with this Privacy Policy and no transfer of your Personal Data will take place to an organization or a country unless there are adequate controls in place including the security of your data and other personal information.
+**Anonymous Chat** will take all steps reasonably necessary to ensure that your data is treated securely and in accordance with this Privacy Policy and no transfer of your Personal Data will take place to an organization or a country unless there are adequate controls in place including the security of your data and other personal information.
 
 # Disclosure Of Data
 
 ## Legal Requirements
-Anonymouslack may disclose your Personal Data in the good faith belief that such action is necessary to:
+**Anonymous Chat** may disclose your Personal Data in the good faith belief that such action is necessary to:
 
 - To comply with a legal obligation
-- To protect and defend the rights or property of Anonymouslack
+- To protect and defend the rights or property of **Anonymous Chat**
 - To prevent or investigate possible wrongdoing in connection with the Service
 - To protect the personal safety of users of the Service or the public
 - To protect against legal liability
@@ -104,4 +104,4 @@ Changes to this Privacy Policy are effective when they are posted on this page.
 
 # Contact Us
 If you have any questions about this Privacy Policy, You can contact us:
-By sending an email: anonymouslack23@gmail.com
+By sending an email: anonymouschat23@gmail.com

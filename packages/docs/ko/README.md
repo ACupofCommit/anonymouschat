@@ -1,7 +1,7 @@
-# Anonymouslack :id=home
+# Anonymous Chat for Slack :id=home
 **Say your honest opinion anonymously!**
 
-- Anonymouslack은 슬랙 채널에서 익명을 사용할 수 있게 도와줍니다.
+- **Anonymous Chat**은 슬랙 채널에서 익명을 사용할 수 있게 도와줍니다.
 - 채널과 쓰레드에 익명 메시지를 남기며 대화할 수 있습니다.
 - 익명으로 안전하게 의견을 말하세요.
 
@@ -19,7 +19,7 @@
 
 ## 사용
 
-1. **Shortcut**에서 **Anonymouslack**를 클릭하여 사용하세요.
+1. **Shortcut**에서 **Anonymous Chat** - **Post message** 를 클릭하여 사용하세요.
 
 ![start](./assets/shortcut.png)
 
@@ -40,7 +40,7 @@
 조직의 건강한 성장을 위해 익명 채널을 운영하세요~
 
 ## 지원
-오픈 소스 프로젝트이므로, [Github Issues](https://github.com/ACupofCommit/anonymouslack/issues) 페이지 사용을 권장합니다.
-[이메일(anonymouslack23@gmail.com)](mailto:anonymouslack23@gmail.com)로 컨택 할 수도 있습니다.
+오픈 소스 프로젝트이므로, [Github Issues](https://github.com/ACupofCommit/anonymouschat/issues) 페이지 사용을 권장합니다.
+[이메일(anonymouschat23@gmail.com)](mailto:anonymouschat23@gmail.com)로 컨택 할 수도 있습니다.
 
 [개인 정보 정책](./privacy) | Copyright © 2021 ACupofCommit

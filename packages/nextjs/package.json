@@ -1,7 +1,8 @@
 {
-  "name": "@anonymouslack/nextjs",
+  "name": "@anonymouschat/nextjs",
   "version": "2.0.0",
   "private": true,
+  "description": "Anonymous Chat - Web package",
   "scripts": {
     "dev": "next dev --port 3003",
     "build": "next build",
@@ -9,7 +10,7 @@
     "tfbuild": "tf-next build"
   },
   "dependencies": {
-    "@anonymouslack/universal": "^2.0.0",
+    "@anonymouschat/universal": "^2.0.0",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "await-to-js": "^3.0.0",

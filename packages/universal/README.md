@@ -1,4 +1,4 @@
-# @anonymouslack/universal
+# @anonymouschat/universal
 
 ## Publishing
 

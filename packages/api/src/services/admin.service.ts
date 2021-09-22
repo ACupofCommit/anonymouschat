@@ -1,8 +1,8 @@
 import { flatten } from "lodash"
 import { WebClient } from "@slack/web-api"
-import { createLogger, getMSFromHours } from "@anonymouslack/universal/dist/utils"
-import { getConfigMsgArg, getConfigMsgPermalink } from "@anonymouslack/universal/dist/core"
-import { createWebAccessToken, getExpiredGroupKeysArrByTeamId, getGroup, getTeamArr, putGroup } from "@anonymouslack/universal/dist/models"
+import { createLogger, getMSFromHours } from "@anonymouschat/universal/dist/utils"
+import { getConfigMsgArg, getConfigMsgPermalink } from "@anonymouschat/universal/dist/core"
+import { createWebAccessToken, getExpiredGroupKeysArrByTeamId, getGroup, getTeamArr, putGroup } from "@anonymouschat/universal/dist/models"
 import { getClientByGroup } from "../helpers/api.helper"
 
 const logger = createLogger('batch.service')

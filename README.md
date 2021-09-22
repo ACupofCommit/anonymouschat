@@ -1,4 +1,4 @@
-# Anonymouslack
+# Anonymous Chat
 Slack app to help you communicate anonymously.
 
 ## Development

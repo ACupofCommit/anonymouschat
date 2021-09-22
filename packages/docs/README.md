@@ -1,9 +1,9 @@
-# Anonymouslack :id=home
+# Anonymous Chat :id=home
 **Say your honest opinion anonymously!**
 
-- Anonymouslack helps you use anonymity in Slack.
+- Anonymous Chat helps you use anonymity in Slack.
 - You can chat by using anonymous messages on channels and threads.
-- For your safety, please use anonymouslack.
+- For your safety, use **Anonymous Chat for Slack**.
 
 ## Installation
 
@@ -20,7 +20,7 @@
 
 ## Usage
 
-1. Click **Anonymouslack** on **Shortcut**.
+1. Click **Anonymous Chat** - **Post message** on **Shortcut**.
 
 ![start](./assets/shortcut.png)
 
@@ -44,8 +44,8 @@
 Operate an anonymous channel for the healthy growth of your organization.
 
 ## Support
-Since this project is open source, [Github Issues](https://github.com/ACupofCommit/anonymouslack/issues)
+Since this project is open source, [Github Issues](https://github.com/ACupofCommit/anonymouschat/issues)
 is the preferred support channel. You can also
-[e-mail me(anonymouslack23@gmail.com)](mailto:anonymouslack23@gmail.com) too.
+[e-mail me(anonymouschat23@gmail.com)](mailto:anonymouschat23@gmail.com) too.
 
 [Privacy Policy](/privacy) | Copyright © 2021 ACupofCommit

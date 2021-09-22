@@ -4,7 +4,7 @@ import { IFaceImoji } from '../types/type-common'
 import AWS from 'aws-sdk'
 import urljoin from 'url-join'
 
-const ANONYMOUSLACK_WEB_DAILY_URL_ENDPOINT = process.env.ANONYMOUSLACK_WEB_DAILY_URL_ENDPOINT || '/'
+const ANONYMOUSCHAT_WEB_DAILY_URL_ENDPOINT = process.env.ANONYMOUSCHAT_WEB_DAILY_URL_ENDPOINT || '/'
 export const getDD = (_region?: string, accessKeyId?: string, secretAccessKey?: string, _endpoint?: string) => {
   const region = _region || process.env.AWS_DEFAULT_REGION || 'us-west-2'
   if (!region) throw new Error('process.env.AWS_DEFAULT_REGION is required')
@@ -32,7 +32,7 @@ export const getDDEndpoint = (region: string) => {
 }
 
 export const getUrlToPostVoice = (webAccessToken: string) => {
-  return urljoin(ANONYMOUSLACK_WEB_DAILY_URL_ENDPOINT,`/${webAccessToken}`)
+  return urljoin(ANONYMOUSCHAT_WEB_DAILY_URL_ENDPOINT,`/${webAccessToken}`)
 }
 
 type TypeReturnS = [Error] | [null,string]

@@ -1,11 +1,13 @@
 {
-  "name": "@anonymouslack/docs",
+  "name": "@anonymouschat/docs",
   "version": "2.0.0",
+  "private": true,
+  "description": "Anonymous Chat - Docs package",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "dev": "docsify serve --port 3050 .",
-    "deploy": "aws s3 cp . s3://$ANONYMOUSLACK_DOCS_S3_BUCKET/ --recursive"
+    "deploy": "aws s3 cp . s3://$ANONYMOUSCHAT_DOCS_S3_BUCKET/ --recursive"
   },
   "devDependencies": {
     "docsify-cli": "^4.4.3"

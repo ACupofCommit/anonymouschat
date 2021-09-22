@@ -19,7 +19,7 @@ provider "aws" {
 
 locals {
   # Your custom domain
-  custom_domain = "web.anonymouslack.commit2.app"
+  custom_domain = "web.anonymouschat.commit2.app"
 }
 
 data "aws_route53_zone" "selected" {

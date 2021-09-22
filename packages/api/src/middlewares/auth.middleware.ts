@@ -1,4 +1,4 @@
-import { TSTError } from "@anonymouslack/universal/dist/models"
+import { TSTError } from "@anonymouschat/universal/dist/models"
 import { Request as ExRequest } from "express"
 
 interface User {

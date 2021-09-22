@@ -1,31 +1,31 @@
-import { botTokenScopes, getToken, setToken } from '@anonymouslack/universal/dist/models'
-import { isInstallationV2, KeyType } from '@anonymouslack/universal/dist/types'
+import { botTokenScopes, getToken, setToken } from '@anonymouschat/universal/dist/models'
+import { isInstallationV2, KeyType } from '@anonymouschat/universal/dist/types'
 import { App, ExpressReceiver } from '@slack/bolt'
 import serverlessExpress from '@vendia/serverless-express'
 import { initialize } from './action'
 
-const ANONYMOUSLACK_SIGNING_SECRET = process.env.ANONYMOUSLACK_SIGNING_SECRET
-const ANONYMOUSLACK_CLIENT_ID = process.env.ANONYMOUSLACK_CLIENT_ID
-const ANONYMOUSLACK_CLIENT_SECRET = process.env.ANONYMOUSLACK_CLIENT_SECRET
-const ANONYMOUSLACK_STATE_SECRET = process.env.ANONYMOUSLACK_STATE_SECRET
+const ANONYMOUSCHAT_SIGNING_SECRET = process.env.ANONYMOUSCHAT_SIGNING_SECRET
+const ANONYMOUSCHAT_CLIENT_ID = process.env.ANONYMOUSCHAT_CLIENT_ID
+const ANONYMOUSCHAT_CLIENT_SECRET = process.env.ANONYMOUSCHAT_CLIENT_SECRET
+const ANONYMOUSCHAT_STATE_SECRET = process.env.ANONYMOUSCHAT_STATE_SECRET
 
-if (!ANONYMOUSLACK_SIGNING_SECRET) throw new Error('ANONYMOUSLACK_SIGNING_SECRET is required')
-if (!ANONYMOUSLACK_CLIENT_ID) throw new Error('ANONYMOUSLACK_CLIENT_ID is required')
-if (!ANONYMOUSLACK_CLIENT_SECRET) throw new Error('SLACK_CLIENT_SECRET is required')
-if (!ANONYMOUSLACK_STATE_SECRET) throw new Error('ANONYMOUSLACK_STATE_SECRET is required')
+if (!ANONYMOUSCHAT_SIGNING_SECRET) throw new Error('ANONYMOUSCHAT_SIGNING_SECRET is required')
+if (!ANONYMOUSCHAT_CLIENT_ID) throw new Error('ANONYMOUSCHAT_CLIENT_ID is required')
+if (!ANONYMOUSCHAT_CLIENT_SECRET) throw new Error('SLACK_CLIENT_SECRET is required')
+if (!ANONYMOUSCHAT_STATE_SECRET) throw new Error('ANONYMOUSCHAT_STATE_SECRET is required')
 
 // Initialize your custom receiver
 export const expressReceiver = new ExpressReceiver({
-  signingSecret: ANONYMOUSLACK_SIGNING_SECRET,
+  signingSecret: ANONYMOUSCHAT_SIGNING_SECRET,
   // The `processBeforeResponse` option is required for all FaaS environments.
   // It allows Bolt methods (e.g. `app.message`) to handle a Slack request
   // before the Bolt framework responds to the request (e.g. `ack()`). This is
   // important because FaaS immediately terminate handlers after the response.
   processBeforeResponse: true,
 
-  clientId: ANONYMOUSLACK_CLIENT_ID,
-  clientSecret: ANONYMOUSLACK_CLIENT_SECRET,
-  stateSecret: ANONYMOUSLACK_STATE_SECRET,
+  clientId: ANONYMOUSCHAT_CLIENT_ID,
+  clientSecret: ANONYMOUSCHAT_CLIENT_SECRET,
+  stateSecret: ANONYMOUSCHAT_STATE_SECRET,
   scopes: botTokenScopes,
   installerOptions: {
     callbackOptions: {
@@ -33,8 +33,8 @@ export const expressReceiver = new ExpressReceiver({
         const htmlResponse = `
 <html>
   <body>
-    <h2>Success! The installation(or installation request) of Anonymouslack in the your ${installation.team?.name} workspace is complete.</h2>
-    <h3>Please refer to <a href="https://anonymouslack.commit2.app/#/?id=usage">the Guide page</a> to use the app.</h3>
+    <h2>Success! The installation(or installation request) of <b>Anonymous Chat</b> in the your ${installation.team?.name} workspace is complete.</h2>
+    <h3>Please refer to <a href="https://anonymouschat.commit2.app/#/?id=usage">the Guide page</a> to use the app.</h3>
   </body>
 </html>
 `.trim()

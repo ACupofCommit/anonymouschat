@@ -16,7 +16,7 @@ const Index: NextPage = () => (
   <>
     <div style={{fontSize: 40}}>
       <span style={styleGreenLight}/>
-      <span>Anonymouslack server in on!!</span>
+      <span>Anonymous Chat for Slack Server in on!!</span>
     </div>
     <div style={{height: 20}}/>
     <div style={{fontSize: 20}}>publicRuntimeConfig:</div>

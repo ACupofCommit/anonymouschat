@@ -1,4 +1,4 @@
-# Anonymouslack spack-app
+# Anonymous Chat - Slack App package
 - [Bolt](https://slack.dev/bolt-js) based slack app.
 - It uses [Serverless framework](https://www.serverless.com/framework/docs/) for production deployment.
 

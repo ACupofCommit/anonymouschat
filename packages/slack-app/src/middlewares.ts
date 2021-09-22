@@ -1,7 +1,7 @@
-import { getMessage, getMessageFromChannelId } from "@anonymouslack/universal/dist/core/nls"
-import { getOrCreateGetGroup } from "@anonymouslack/universal/dist/models"
-import { IGroup, ResponseUrl } from "@anonymouslack/universal/dist/types"
-import { parseWOThrow } from "@anonymouslack/universal/dist/utils"
+import { getMessage, getMessageFromChannelId } from "@anonymouschat/universal/dist/core/nls"
+import { getOrCreateGetGroup } from "@anonymouschat/universal/dist/models"
+import { IGroup, ResponseUrl } from "@anonymouschat/universal/dist/types"
+import { parseWOThrow } from "@anonymouschat/universal/dist/utils"
 import { AnyMiddlewareArgs, Middleware } from "@slack/bolt"
 
 export const setGroupAndMessages: Middleware<AnyMiddlewareArgs> = async ({

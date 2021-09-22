@@ -7,7 +7,7 @@ import { Messages } from '../types/messages'
 import { getMessageFromChannelId } from './nls'
 import { IPMNewVoiceView} from '../types'
 
-const ANONYMOUSLACK_MANAGER_SLACK_ID = process.env.ANONYMOUSLACK_MANAGER_SLACK_ID
+const ANONYMOUSCHAT_MANAGER_SLACK_ID = process.env.ANONYMOUSCHAT_MANAGER_SLACK_ID
 const GIT_REVISION = process.env.GIT_REVISION
 
 export const getHelpMessageArg = (channelId: string, user: string, configMsgPermalink: string, isActivated: boolean): ChatPostEphemeralArguments => {
@@ -17,7 +17,7 @@ export const getHelpMessageArg = (channelId: string, user: string, configMsgPerm
 
   const buttonPointDesc = m.P_YOU_CAN_POST
   const strConfigMsg = '-' + m.STR_CONFIG_MSG.replace('%s', configMsgPermalink)
-  const strQuestion = '-' + m.STR_QUESTION.replace('%s', `<@${ANONYMOUSLACK_MANAGER_SLACK_ID}>`)
+  const strQuestion = '-' + m.STR_QUESTION.replace('%s', `<@${ANONYMOUSCHAT_MANAGER_SLACK_ID}>`)
   const strServerVersion = '-' + m.STR_SERVER_VERSION.replace('%s',GIT_REVISION || '')
   const descForAlreadyActivated = [buttonPointDesc, strConfigMsg].join('\n\n')
 
@@ -38,7 +38,7 @@ export const getHelpMessageArg = (channelId: string, user: string, configMsgPerm
           }
         ]
       },
-      ANONYMOUSLACK_MANAGER_SLACK_ID && { "type": "section", "text": { "type": "mrkdwn", "text": strQuestion }},
+      ANONYMOUSCHAT_MANAGER_SLACK_ID && { "type": "section", "text": { "type": "mrkdwn", "text": strQuestion }},
       isActivated && { "type": "section", "text": { "type": "mrkdwn", "text": descForAlreadyActivated }},
       GIT_REVISION && { "type": "section", "text": { "type": "mrkdwn", "text": strServerVersion }},
     ])
@@ -155,7 +155,7 @@ export const getErrorMsgChannelNotFound = (m: Messages) => {
   return [
     m.STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION1,
     m.STR_SLACK_APP_DOES_NOT_HAVE_PERMISSION2,
-    process.env.ANONYMOUSLACK_SHARABLE_URL,
+    process.env.ANONYMOUSCHAT_SHARABLE_URL,
   ].join('\n')
 }
 

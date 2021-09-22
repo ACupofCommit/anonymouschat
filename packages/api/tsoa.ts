@@ -1,6 +1,6 @@
 import { generateRoutes, generateSpec } from "@tsoa/cli"
 import { ExtendedSpecConfig, ExtendedRoutesConfig } from "@tsoa/cli"
-import { getEnvs } from "@anonymouslack/universal/dist/helpers"
+import { getEnvs } from "@anonymouschat/universal/dist/helpers"
 
 (async () => {
   const specOptions: ExtendedSpecConfig = {

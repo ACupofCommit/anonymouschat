@@ -1,8 +1,8 @@
 import { Middleware, SlackActionMiddlewareArgs, SlackShortcutMiddlewareArgs, SlackViewMiddlewareArgs } from "@slack/bolt"
-import { getOrCreateGetGroup, isMyBlockActionPayload, isMyViewSubmissionPayload } from '@anonymouslack/universal/dist/models'
-import { IPMDeactivateWarningView, IPMDeletionView, IPMNewReplyView, IPMNewVoiceView } from "@anonymouslack/universal/dist/types"
-import { createReplyFromSlack, createVoiceFromSlack, openViewToPostReply, openViewToPostVoice, sendHelpOrAgreementMsg } from "@anonymouslack/universal/dist/core"
-import { parseWOThrow } from "@anonymouslack/universal/dist/utils"
+import { getOrCreateGetGroup, isMyBlockActionPayload, isMyViewSubmissionPayload } from '@anonymouschat/universal/dist/models'
+import { IPMDeactivateWarningView, IPMDeletionView, IPMNewReplyView, IPMNewVoiceView } from "@anonymouschat/universal/dist/types"
+import { createReplyFromSlack, createVoiceFromSlack, openViewToPostReply, openViewToPostVoice, sendHelpOrAgreementMsg } from "@anonymouschat/universal/dist/core"
+import { parseWOThrow } from "@anonymouschat/universal/dist/utils"
 
 type TParsedPM = IPMNewVoiceView | IPMNewReplyView | IPMDeletionView | IPMDeactivateWarningView
 
