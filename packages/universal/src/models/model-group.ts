@@ -37,7 +37,7 @@ interface GetGroupOptions {
   cache: boolean
 }
 
-export const getGroupWOCache = async (channelId: string, options?: GetGroupOptions) => {
+export const getGroupWOCache = async (channelId: string) => {
   const params: DocumentClient.GetItemInput = { TableName, Key: { channelId }}
   const { Item: group } = await ddc.get(params).promise()
   if (!isGroup(group)) throw new Error(`can not get group by: ${channelId}`)
