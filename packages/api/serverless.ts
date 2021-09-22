@@ -27,7 +27,7 @@ if (!AWS_DEFAULT_REGION) throw new Error('AWS_DEFAULT_REGION is required')
 
 console.log('REGION: ' + AWS_DEFAULT_REGION)
 const serverlessConfiguration: AWS = {
-  service: 'anonymouslack-api',
+  service: 'anonymouschat-api',
   frameworkVersion: '2',
   custom: {
     webpack: {
@@ -60,7 +60,7 @@ const serverlessConfiguration: AWS = {
     // @ts-expect-error
     region: AWS_DEFAULT_REGION,
     lambdaHashingVersion: '20201221',
-    runtime: 'nodejs12.x',
+    runtime: 'nodejs14.x',
     apiGateway: {
       shouldStartNameWithService: true,
       minimumCompressionSize: 1024,

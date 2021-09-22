@@ -1,7 +1,6 @@
 {
   "name": "@anonymouschat/universal",
   "version": "2.0.0",
-  "private": true,
   "description": "Anonymous Chat - Universal package",
   "scripts": {
     "build": "tsc",

@@ -1,5 +1,4 @@
 import gp from 'generate-password'
-import { IFaceImoji } from '../types/type-common'
 
 export const isNotEmptyString = (s: any): s is string => {
   return !!(typeof s === 'string' && s)
