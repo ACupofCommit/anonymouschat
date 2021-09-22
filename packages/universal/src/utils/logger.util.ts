@@ -13,8 +13,8 @@ const isEnumLogLevel = (level: any): level is EnumLogLevel => {
   return includes(keys(EnumLogLevel), level)
 }
 
-let level = isEnumLogLevel(process.env.ANONYMOUSLACK_LOGLEVEL)
-  ? EnumLogLevel[process.env.ANONYMOUSLACK_LOGLEVEL]
+let level = isEnumLogLevel(process.env.ANONYMOUSCHAT_LOGLEVEL)
+  ? EnumLogLevel[process.env.ANONYMOUSCHAT_LOGLEVEL]
   : EnumLogLevel.debug
 
 export const setLevel = (l: EnumLogLevel) => { level = l }

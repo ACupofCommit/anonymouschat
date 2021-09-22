@@ -12,7 +12,7 @@ const fakeDDC = {
   },
 }
 
-const REAL_RUN = process.env.ANONYMOUSLACK_DB_MIG_REAL_RUN === 'true'
+const REAL_RUN = process.env.ANONYMOUSCHAT_DB_MIG_REAL_RUN === 'true'
 const REGION = process.env.AWS_DEFAULT_REGION
 const ACCESS_KEY = process.env.AWS_ACCESS_KEY_ID
 const SECRET_KEY = process.env.AWS_SECRET_ACCESS_KEY

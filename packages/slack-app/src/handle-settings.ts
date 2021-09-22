@@ -1,10 +1,10 @@
 import { Middleware, SlackShortcutMiddlewareArgs, SlackViewMiddlewareArgs} from "@slack/bolt"
-import { getChannelSettingView, getSaved, getSelectingChannelToChannelSettings } from '@anonymouslack/universal/dist/core'
-import { IGroup, isGroup, isWebAPIPlatformError, ResponseUrl } from "@anonymouslack/universal/dist/types"
-import { Messages } from "@anonymouslack/universal/dist/types/messages"
+import { getChannelSettingView, getSaved, getSelectingChannelToChannelSettings } from '@anonymouschat/universal/dist/core'
+import { IGroup, isGroup, isWebAPIPlatformError, ResponseUrl } from "@anonymouschat/universal/dist/types"
+import { Messages } from "@anonymouschat/universal/dist/types/messages"
 import to from "await-to-js"
 import { WebAPIPlatformError } from "@slack/web-api"
-import { BLOCK_CHANNEL_CONFIG_REPORT_COUNT_TO_HIDE_MESSAGE, putGroup } from "@anonymouslack/universal/dist/models"
+import { BLOCK_CHANNEL_CONFIG_REPORT_COUNT_TO_HIDE_MESSAGE, putGroup } from "@anonymouschat/universal/dist/models"
 
 export const handleShortcutChannelSettings: Middleware<SlackShortcutMiddlewareArgs> = async ({body,ack,client, context}) => {
   await ack()

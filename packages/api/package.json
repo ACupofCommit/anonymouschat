@@ -1,7 +1,8 @@
 {
-  "name": "@anonymouslack/api",
+  "name": "@anonymouschat/api",
   "version": "2.0.0",
-  "description": "Anonymouslack api",
+  "private": true,
+  "description": "Anonymous Chat - API package",
   "scripts": {
     "dev": "concurrently yarn:sls:offline yarn:tsoa:watch",
     "sls:offline": "npx sls offline start --httpPort=3100 --lambdaPort=3102",
@@ -11,7 +12,7 @@
     "deploy": "yarn tsoa && sls deploy --verbose"
   },
   "dependencies": {
-    "@anonymouslack/universal": "^2.0.0",
+    "@anonymouschat/universal": "^2.0.0",
     "@slack/bolt": "^3.3.0",
     "@slack/web-api": "^6.1.0",
     "@tsoa/runtime": "^3.5.2",

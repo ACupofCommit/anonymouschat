@@ -1,33 +1,33 @@
 import type { AWS } from '@serverless/typescript'
-import { getEnvs } from '@anonymouslack/universal/dist/helpers'
+import { getEnvs } from '@anonymouschat/universal/dist/helpers'
 
-const {ANONYMOUSLACK_BOT_TOKEN, ANONYMOUSLACK_SIGNING_SECRET} = process.env
-const {ANONYMOUSLACK_CLIENT_ID, ANONYMOUSLACK_CLIENT_SECRET} = process.env
-const {ANONYMOUSLACK_TABLENAME_PREFIX} = process.env
+const {ANONYMOUSCHAT_BOT_TOKEN, ANONYMOUSCHAT_SIGNING_SECRET} = process.env
+const {ANONYMOUSCHAT_CLIENT_ID, ANONYMOUSCHAT_CLIENT_SECRET} = process.env
+const {ANONYMOUSCHAT_TABLENAME_PREFIX} = process.env
 const {AWS_DEFAULT_REGION} = process.env
 const {ENV_SLS_STAGE} = process.env
-const {ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD} = process.env
-const {ANONYMOUSLACK_WEB_DAILY_URL_ENDPOINT} = process.env
-const {ANONYMOUSLACK_STATE_SECRET} = process.env
-const {ANONYMOUSLACK_CORS_ALLOWLIST} = process.env
+const {ANONYMOUSCHAT_TOKEN_REFRESH_PASSWORD} = process.env
+const {ANONYMOUSCHAT_WEB_DAILY_URL_ENDPOINT} = process.env
+const {ANONYMOUSCHAT_STATE_SECRET} = process.env
+const {ANONYMOUSCHAT_CORS_ALLOWLIST} = process.env
 const {ENV_REVISION} = process.env
 
-if (!ANONYMOUSLACK_BOT_TOKEN) throw new Error('ANONYMOUSLACK_SIGNING_SECRET is required')
-if (!ANONYMOUSLACK_SIGNING_SECRET) throw new Error('ANONYMOUSLACK_SIGNING_SECRET is required')
-if (!ANONYMOUSLACK_CLIENT_ID) throw new Error('ANONYMOUSLACK_CLIENT_ID is required')
-if (!ANONYMOUSLACK_CLIENT_SECRET) throw new Error('ANONYMOUSLACK_CLIENT_SECRET is required')
-if (!ANONYMOUSLACK_TABLENAME_PREFIX) throw new Error('ANONYMOUSLACK_TABLENAME_PREFIX is required')
-if (!ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD) throw new Error('ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD is required')
-if (!ANONYMOUSLACK_WEB_DAILY_URL_ENDPOINT) throw new Error('ANONYMOUSLACK_WEB_DAILY_URL_ENDPOINT is required')
-if (!ANONYMOUSLACK_STATE_SECRET) throw new Error('ANONYMOUSLACK_STATE_SECRET is required')
-if (!ANONYMOUSLACK_CORS_ALLOWLIST) throw new Error('ANONYMOUSLACK_CORS_ALLOWLIST is required')
+if (!ANONYMOUSCHAT_BOT_TOKEN) throw new Error('ANONYMOUSCHAT_SIGNING_SECRET is required')
+if (!ANONYMOUSCHAT_SIGNING_SECRET) throw new Error('ANONYMOUSCHAT_SIGNING_SECRET is required')
+if (!ANONYMOUSCHAT_CLIENT_ID) throw new Error('ANONYMOUSCHAT_CLIENT_ID is required')
+if (!ANONYMOUSCHAT_CLIENT_SECRET) throw new Error('ANONYMOUSCHAT_CLIENT_SECRET is required')
+if (!ANONYMOUSCHAT_TABLENAME_PREFIX) throw new Error('ANONYMOUSCHAT_TABLENAME_PREFIX is required')
+if (!ANONYMOUSCHAT_TOKEN_REFRESH_PASSWORD) throw new Error('ANONYMOUSCHAT_TOKEN_REFRESH_PASSWORD is required')
+if (!ANONYMOUSCHAT_WEB_DAILY_URL_ENDPOINT) throw new Error('ANONYMOUSCHAT_WEB_DAILY_URL_ENDPOINT is required')
+if (!ANONYMOUSCHAT_STATE_SECRET) throw new Error('ANONYMOUSCHAT_STATE_SECRET is required')
+if (!ANONYMOUSCHAT_CORS_ALLOWLIST) throw new Error('ANONYMOUSCHAT_CORS_ALLOWLIST is required')
 if (!ENV_REVISION) throw new Error('ENV_REVISION is required')
 if (!ENV_SLS_STAGE) throw new Error('ENV_SLS_STAGE is required')
 if (!AWS_DEFAULT_REGION) throw new Error('AWS_DEFAULT_REGION is required')
 
 console.log('REGION: ' + AWS_DEFAULT_REGION)
 const serverlessConfiguration: AWS = {
-  service: 'anonymouslack-api',
+  service: 'anonymouschat-api',
   frameworkVersion: '2',
   custom: {
     webpack: {
@@ -60,7 +60,7 @@ const serverlessConfiguration: AWS = {
     // @ts-expect-error
     region: AWS_DEFAULT_REGION,
     lambdaHashingVersion: '20201221',
-    runtime: 'nodejs12.x',
+    runtime: 'nodejs14.x',
     apiGateway: {
       shouldStartNameWithService: true,
       minimumCompressionSize: 1024,
@@ -105,15 +105,15 @@ const serverlessConfiguration: AWS = {
       environment: {
         ENV_SLS_STAGE,
         ENV_REVISION,
-        ANONYMOUSLACK_BOT_TOKEN,
-        ANONYMOUSLACK_SIGNING_SECRET,
-        ANONYMOUSLACK_TABLENAME_PREFIX,
-        ANONYMOUSLACK_CLIENT_ID,
-        ANONYMOUSLACK_CLIENT_SECRET,
-        ANONYMOUSLACK_TOKEN_REFRESH_PASSWORD,
-        ANONYMOUSLACK_WEB_DAILY_URL_ENDPOINT,
-        ANONYMOUSLACK_STATE_SECRET,
-        ANONYMOUSLACK_CORS_ALLOWLIST,
+        ANONYMOUSCHAT_BOT_TOKEN,
+        ANONYMOUSCHAT_SIGNING_SECRET,
+        ANONYMOUSCHAT_TABLENAME_PREFIX,
+        ANONYMOUSCHAT_CLIENT_ID,
+        ANONYMOUSCHAT_CLIENT_SECRET,
+        ANONYMOUSCHAT_TOKEN_REFRESH_PASSWORD,
+        ANONYMOUSCHAT_WEB_DAILY_URL_ENDPOINT,
+        ANONYMOUSCHAT_STATE_SECRET,
+        ANONYMOUSCHAT_CORS_ALLOWLIST,
       },
     },
     batch: {
@@ -127,9 +127,9 @@ const serverlessConfiguration: AWS = {
       ],
       environment: {
         ENV_SLS_STAGE,
-        ANONYMOUSLACK_TABLENAME_PREFIX,
-        ANONYMOUSLACK_WEB_DAILY_URL_ENDPOINT,
-        ANONYMOUSLACK_STATE_SECRET,
+        ANONYMOUSCHAT_TABLENAME_PREFIX,
+        ANONYMOUSCHAT_WEB_DAILY_URL_ENDPOINT,
+        ANONYMOUSCHAT_STATE_SECRET,
       }
     }
   }

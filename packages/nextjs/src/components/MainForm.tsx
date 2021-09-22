@@ -20,10 +20,10 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import { SvgIconProps } from '@material-ui/core/SvgIcon'
 
-import { STR_DIALOG_VOICE_PLACEHOLDER, STR_PLACEHOLDER_CONTENT_FOR_REPLY } from '@anonymouslack/universal/dist/models/strings.model'
-import { isParamNewVoiceFromWeb, IParamNewVoiceFromWeb } from '@anonymouslack/universal/dist/types/type-voice'
-import { isParamNewReplyFromWeb, IParamNewReplyFromWeb } from '@anonymouslack/universal/dist/types/type-reply'
-import { IFaceImoji } from '@anonymouslack/universal/dist/types/type-common'
+import { STR_DIALOG_VOICE_PLACEHOLDER, STR_PLACEHOLDER_CONTENT_FOR_REPLY } from '@anonymouschat/universal/dist/models/strings.model'
+import { isParamNewVoiceFromWeb, IParamNewVoiceFromWeb } from '@anonymouschat/universal/dist/types/type-voice'
+import { isParamNewReplyFromWeb, IParamNewReplyFromWeb } from '@anonymouschat/universal/dist/types/type-reply'
+import { IFaceImoji } from '@anonymouschat/universal/dist/types/type-common'
 import { axiosInstance } from '../core/web'
 import { getRawPassword } from '../utils/common.util'
 
@@ -183,8 +183,8 @@ const MainForm: FC<IPropsMainForm> = (props) => {
         <Container maxWidth="sm">
           <ButtonNavi tabIdx={tabIdx} setTabIdx={setTabIdx}/>
           <Typography component="div" style={style}>
-            <div>- Anonymouslack is an Slack app that enables anonymous communication in Slack.</div>
-            <div>- Anonymouslack is OpenSource</div>
+            <div>- Anonymous Chat is an Slack app that enables anonymous communication in Slack.</div>
+            <div>- Anonymous Chat is OpenSource</div>
           </Typography>
         </Container>
       </>
@@ -199,7 +199,7 @@ const MainForm: FC<IPropsMainForm> = (props) => {
         <Typography component="div" style={style}>
           <div style={{display: 'flex'}}>
             <Avatar className={classes.rounded} component={IconMood}/>
-            <div style={{fontSize: 24, marginLeft: 20}}>Anonymouslack</div>
+            <div style={{fontSize: 24, marginLeft: 20}}>Anonymous Chat</div>
           </div>
           <div style={{marginTop: 10, fontSize: 18, minHeight: 60, wordBreak: 'keep-all' }}>
             { tabId === 'TAB_NEW_MSG' && <span><b>{modifiedChannelName}</b> 채널에 새로운 익명 메시지를 작성합니다.</span>}

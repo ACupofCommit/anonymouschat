@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Anonymouslack</title>
+  <title>Anonymous Chat</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
@@ -48,7 +48,7 @@
           }
         },
         created() {
-          fetch('https://afb7jqx801.execute-api.us-west-2.amazonaws.com/prod/api/admin/get-install-url')
+          fetch('https://ijvz1pxyt5.execute-api.us-west-2.amazonaws.com/prod/api/admin/get-install-url')
             .then(res => res.json())
             .then(json => { this.installLink = json.item })
         }

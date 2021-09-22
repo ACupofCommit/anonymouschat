@@ -1,8 +1,7 @@
 {
-  "name": "@anonymouslack/universal",
+  "name": "@anonymouschat/universal",
   "version": "2.0.0",
-  "private": false,
-  "description": "Anonymouslack universal",
+  "description": "Anonymous Chat - Universal package",
   "scripts": {
     "build": "tsc",
     "clean": "rimraf dist",

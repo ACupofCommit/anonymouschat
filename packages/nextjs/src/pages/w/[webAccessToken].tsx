@@ -4,7 +4,7 @@ import Head from 'next/head'
 import to from 'await-to-js'
 import CssBaseline from '@material-ui/core/CssBaseline'
 
-import {getFaceImojiList} from '@anonymouslack/universal/dist/utils/common.util'
+import {getFaceImojiList} from '@anonymouschat/universal/dist/utils/common.util'
 import MainForm, { IPropsMainForm } from '../../components/MainForm'
 import { axiosInstance } from '../../core/web'
 import { isNotEmptyString } from '../../utils/common.util'
@@ -14,13 +14,13 @@ interface IPropsHome extends IPropsMainForm {
 const Home: NextPage<IPropsHome> = (p) => (
   <div>
     <Head>
-      <title>Anonymouslack</title>
+      <title>Anonymous Chat</title>
       <link rel='icon' href='/favicon.ico' />
     </Head>
 
     <CssBaseline />
     <div className='hero'>
-      <h1 className='title'>Anonymouslack</h1>
+      <h1 className='title'>Anonymous Chat</h1>
       <MainForm
         faceImojiList={p.faceImojiList}
         channelId={p.channelId}

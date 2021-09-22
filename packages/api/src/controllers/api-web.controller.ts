@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Route} from "@tsoa/runtime"
 import to from "await-to-js"
-import { getGroupByWebAccessToken, getGroupId, isWebTokenValid, NOT_YET, TSTError, } from "@anonymouslack/universal/dist/models"
-import { IParamNewReply, IParamNewReplyFromWeb, IParamNewVoice, IParamNewVoiceFromWeb, isGroup, isParamNewReplyFromWeb, isParamNewVoiceFromWeb, ResOK } from "@anonymouslack/universal/dist/types"
-import { postAndPutReply, postAndPutSlackVoice } from "@anonymouslack/universal/dist/core"
-import { checkAndConvertUrlTsToDotTs, isDotTs, isPTs } from "@anonymouslack/universal/dist/utils"
+import { getGroupByWebAccessToken, getGroupId, isWebTokenValid, NOT_YET, TSTError, } from "@anonymouschat/universal/dist/models"
+import { IParamNewReply, IParamNewReplyFromWeb, IParamNewVoice, IParamNewVoiceFromWeb, isGroup, isParamNewReplyFromWeb, isParamNewVoiceFromWeb, ResOK } from "@anonymouschat/universal/dist/types"
+import { postAndPutReply, postAndPutSlackVoice } from "@anonymouschat/universal/dist/core"
+import { checkAndConvertUrlTsToDotTs, isDotTs, isPTs } from "@anonymouschat/universal/dist/utils"
 import { getClientByGroup } from "../helpers/api.helper"
 
 type ReqCreateVoice = {

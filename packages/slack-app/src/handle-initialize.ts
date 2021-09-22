@@ -1,11 +1,11 @@
 import to from 'await-to-js'
 import { Middleware, SlackActionMiddlewareArgs, SlackShortcutMiddlewareArgs, SlackViewMiddlewareArgs } from "@slack/bolt"
-import { IPMDeactivateWarningView, IPMDeletionView, IPMNewReplyView, IPMNewVoiceView, isWebAPIPlatformError, ResponseUrl } from '@anonymouslack/universal/dist/types'
-import { getOrCreateGetGroup } from '@anonymouslack/universal/dist/models'
-import { agreeAppActivation, forceAppActivate, forceAppDeactivate, getConfigMsgPermalink, getSelectingChannelToInitialView, postAgreementMesssage, showDeactivateWarning, getNewVoiceView, sendHelpOrAgreementMsg } from '@anonymouslack/universal/dist/core'
-import { parseWOThrow } from '@anonymouslack/universal/dist/utils'
+import { IPMDeactivateWarningView, IPMDeletionView, IPMNewReplyView, IPMNewVoiceView, isWebAPIPlatformError, ResponseUrl } from '@anonymouschat/universal/dist/types'
+import { getOrCreateGetGroup } from '@anonymouschat/universal/dist/models'
+import { agreeAppActivation, forceAppActivate, forceAppDeactivate, getConfigMsgPermalink, getSelectingChannelToInitialView, postAgreementMesssage, showDeactivateWarning, getNewVoiceView, sendHelpOrAgreementMsg } from '@anonymouschat/universal/dist/core'
+import { parseWOThrow } from '@anonymouschat/universal/dist/utils'
 import { WebAPIPlatformError } from '@slack/web-api'
-import { Messages } from '@anonymouslack/universal/dist/types/messages'
+import { Messages } from '@anonymouschat/universal/dist/types/messages'
 
 type TParsedPM = IPMNewVoiceView | IPMNewReplyView | IPMDeletionView | IPMDeactivateWarningView
 

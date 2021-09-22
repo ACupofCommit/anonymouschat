@@ -19,7 +19,7 @@ provider "aws" {
 
 locals {
   # Your custom domain
-  custom_domain = "web.anonymouslack.commit2.app"
+  custom_domain = "web.anonymouschat.commit2.app"
 }
 
 data "aws_route53_zone" "selected" {
@@ -58,7 +58,7 @@ resource "aws_route53_record" "service" {
 module "tf_next" {
   source = "dealmore/next-js/aws"
 
-  deployment_name            = "anonymouslack"
+  deployment_name            = "anonymouschat"
   create_image_optimization  = false
   create_domain_name_records = false
 
@@ -82,7 +82,7 @@ output "custom_domain" {
 }
 
 locals {
-  name_prefix = "anonymouslack-docsify"
+  name_prefix = "anonymouschat-docsify"
   name_suffix = "aabbcc"
 }
 
@@ -91,6 +91,6 @@ module "cdn" {
   name_prefix = local.name_prefix
   name_suffix = local.name_suffix
   route53_zone_name = "commit2.app"
-  domain            = "anonymouslack.commit2.app"
+  domain            = "anonymouschat.commit2.app"
 }
 

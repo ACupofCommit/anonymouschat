@@ -15,7 +15,7 @@ export const AWS_LAMBDA_FUNCTION_NAME = process.env.AWS_LAMBDA_FUNCTION_NAME
 export const AWS_LAMBDA_FUNCTION_MEMORY_SIZE = process.env.AWS_LAMBDA_FUNCTION_MEMORY_SIZE
 export const AWS_LAMBDA_FUNCTION_VERSION = process.env.AWS_LAMBDA_FUNCTION_VERSION
 
-const TABLENAME_PREFIX = process.env.ANONYMOUSLACK_TABLENAME_PREFIX || 'Anonymouslack'
+const TABLENAME_PREFIX = process.env.ANONYMOUSCHAT_TABLENAME_PREFIX || 'Anonymouslack'
 export const TABLENAME_TEAM = `${TABLENAME_PREFIX}-Team`
 export const TABLENAME_GROUP = `${TABLENAME_PREFIX}-Group-v2`
 export const TABLENAME_VOICE = `${TABLENAME_PREFIX}-Voice`
@@ -93,8 +93,8 @@ const getSlashCommand = (str?: string) => {
   if (!str || str === '/') return `/anonymouslack`
   return /^\//.test(str) ? str : '/' + str
 }
-export const CONST_SLASH_COMMAND = getSlashCommand(process.env.ANONYMOUSLACK_SLASH_COMMAND)
-export const CONST_APP_NAME = process.env.ANONYMOUSLACK_APP_NAME || 'Anonymouslack'
+export const CONST_SLASH_COMMAND = getSlashCommand(process.env.ANONYMOUSCHAT_SLASH_COMMAND)
+export const CONST_APP_NAME = process.env.ANONYMOUSCHAT_APP_NAME || 'Anonymouslack'
 
 /**
  * botTokenScopes. The scopes setting should be the same as the scope below.

@@ -1,6 +1,6 @@
 import { WebClient } from "@slack/web-api"
-import { getGroupId, getToken } from "@anonymouslack/universal/dist/models"
-import { IGroup } from "@anonymouslack/universal/dist/types"
+import { getGroupId, getToken } from "@anonymouschat/universal/dist/models"
+import { IGroup } from "@anonymouschat/universal/dist/types"
 
 export const getClientByGroup = async (group: IGroup) => {
   const groupId = getGroupId(group.channelId, group.teamId, group.gridId)

@@ -1,4 +1,4 @@
-import { statusCodes, TSTError } from "@anonymouslack/universal/dist/models"
+import { statusCodes, TSTError } from "@anonymouschat/universal/dist/models"
 import { ValidateError } from "@tsoa/runtime"
 import { ErrorRequestHandler, RequestHandler } from "express"
 

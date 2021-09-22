@@ -1,6 +1,6 @@
 import { CreateTableInput } from 'aws-sdk/clients/dynamodb'
-import { getDD } from '@anonymouslack/universal/dist/utils'
-import { TABLENAME_AT, TABLENAME_GROUP, TABLENAME_OAUTH_TOKENS, TABLENAME_REPLY, TABLENAME_TEAM, TABLENAME_VOICE } from '@anonymouslack/universal/dist/models/constants.model'
+import { getDD } from '@anonymouschat/universal/dist/utils'
+import { TABLENAME_AT, TABLENAME_GROUP, TABLENAME_OAUTH_TOKENS, TABLENAME_REPLY, TABLENAME_TEAM, TABLENAME_VOICE } from '@anonymouschat/universal/dist/models/constants.model'
 
 const paramAT: CreateTableInput = {
   AttributeDefinitions: [

@@ -5,8 +5,8 @@ import cors, { CorsOptions } from 'cors'
 import { RegisterRoutes } from "./routes"
 import { handle404NotFound, handleError } from './middlewares/error-handle.middleware'
 
-const ANONYMOUSLACK_CORS_ALLOWLIST = process.env.ANONYMOUSLACK_CORS_ALLOWLIST || ''
-const allowlist = ANONYMOUSLACK_CORS_ALLOWLIST.split(',')
+const ANONYMOUSCHAT_CORS_ALLOWLIST = process.env.ANONYMOUSCHAT_CORS_ALLOWLIST || ''
+const allowlist = ANONYMOUSCHAT_CORS_ALLOWLIST.split(',')
 
 type CustomOrigin = (requestOrigin: string | undefined, callback: (err: Error | null, origin?: boolean) => void) => void;
 const customOrigin: CustomOrigin = (origin='', callback) => {
