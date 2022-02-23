@@ -1,6 +1,17 @@
 # Anonymous Chat
 Slack app to help you communicate anonymously.
 
+## Prerequisite
+- Nodejs 14.x
+- Terraform
+- AWS
+
+## Install dependencies
+
+```
+$ yarn
+```
+
 ## Development
 It consists of some packages below.
 - **slack-app**: Slack app based on [bolt-js][bolt-js].
@@ -34,6 +45,7 @@ export SLACK_APP_TOKEN=xapp-1-A000000000R-1000000000005-fxxxxxxxxxxxxxxxxxxxxxxx
 **DynamoDB on local**:
 ```
 $ docker run -d -p8000:8000 -p8002:8002 -eAWS_REGION=$AWS_DEFAULT_REGION instructure/dynamo-local-admin
+$ yarn --cwd packages/universal build
 $ npx ts-node packages/slack-app/bin/create-dynamodb-table.ts
 ```
 
