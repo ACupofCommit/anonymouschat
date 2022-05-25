@@ -64,8 +64,8 @@ export const messages: Messages = {
   STR_REPORT: ':rotating_light:Report',
   STR_REPORT_N: ':rotating_light:Report %d',
 
-  STR_VIEW_TITLE_VOICE_DELETION: 'Delete anonymous messages',
-  STR_VIEW_TITLE_REPLY_DELETION: 'Delete anonymous comments',
+  STR_VIEW_TITLE_VOICE_DELETION: 'Delete a message',
+  STR_VIEW_TITLE_REPLY_DELETION: 'Delete a comment',
   STR_VIEW_DELETE: 'Delete',
   STR_VIEW_CANCEL: 'Cancel',
   STR_NOT_MATCHED_PASSWORD: 'Passwords do not match.',
