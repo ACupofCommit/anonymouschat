@@ -242,8 +242,6 @@ export const openViewToDelete = async (web: WebClient, payload: IMyBlockActionPa
     channelId: channel.id, ts, threadTs: thread_ts,
     channelName: channel.name, responseUrl: response_url,
   }
-  const group: IGroup = await getGroup(channel.id, { cache: true })
-  const m = getMessage(group.lca2)
   await web.views.open(getDeletionViewOpenArg(trigger_id, pm))
 }
 

@@ -13,5 +13,5 @@ const boltApp = new App({
   socketMode: true,
 });
 
-boltApp.start().then(() => console.log('⚡️ Bolt app started'))
+boltApp.start().then(() => console.log('⚡️ Socket mode Bolt app started'))
 initialize(boltApp)
